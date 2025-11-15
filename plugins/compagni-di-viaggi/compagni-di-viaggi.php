@@ -76,7 +76,7 @@ class Compagni_Di_Sport {
         require_once CDV_PLUGIN_DIR . 'includes/class-database.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-user-roles.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-registration.php';
-        require_once CDV_PLUGIN_DIR . 'includes/class-travel-moderation.php';
+        require_once CDV_PLUGIN_DIR . 'includes/class-activity-moderation.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-user-profiles.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-email-verification.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-email-notifications.php';
@@ -87,11 +87,11 @@ class Compagni_Di_Sport {
         require_once CDV_PLUGIN_DIR . 'includes/class-reviews.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-participants.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-badges.php';
-        require_once CDV_PLUGIN_DIR . 'includes/class-travel-stories.php';
+        require_once CDV_PLUGIN_DIR . 'includes/class-sport-stories.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-private-messages.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-group-chat.php';
-        require_once CDV_PLUGIN_DIR . 'includes/class-travel-gallery.php';
-        require_once CDV_PLUGIN_DIR . 'includes/class-travel-maps.php';
+        require_once CDV_PLUGIN_DIR . 'includes/class-activity-gallery.php';
+        require_once CDV_PLUGIN_DIR . 'includes/class-activity-maps.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-wishlist.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-notifications.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-social-sharing.php';
@@ -126,7 +126,7 @@ class Compagni_Di_Sport {
         CDV_User_Meta::init();
         CDV_User_Roles::init();
         CDV_Registration::init();
-        CDV_Travel_Moderation::init();
+        CDV_Activity_Moderation::init();
         CDV_User_Profiles::init();
         CDV_Email_Verification::init();
         CDV_Email_Notifications::init();
@@ -135,10 +135,10 @@ class Compagni_Di_Sport {
         CDV_Reviews::init();
         CDV_Participants::init();
         CDV_Badges::init();
-        CDV_Travel_Stories::init();
+        CDV_Sport_Stories::init();
         CDV_Private_Messages::init();
-        CDV_Travel_Gallery::init();
-        CDV_Travel_Maps::init();
+        CDV_Activity_Gallery::init();
+        CDV_Activity_Maps::init();
         CDV_Wishlist::init();
         CDV_Notifications::init();
         CDV_Social_Sharing::init();
