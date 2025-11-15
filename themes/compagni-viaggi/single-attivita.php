@@ -54,7 +54,7 @@ while (have_posts()) : the_post();
 
                     <!-- Travel Details Box - Prominent placement -->
                     <div class="travel-details-box-top">
-                        <h3>📋 Dettagli Attività</h3>
+                        <h3>📋 Dettagli Annuncio</h3>
                         <div class="travel-details-grid">
                             <?php
                             // Core fields
@@ -229,7 +229,7 @@ while (have_posts()) : the_post();
                     <!-- Featured Image caricata dall'utente - Mostrata dopo la descrizione -->
                     <?php if (has_post_thumbnail() && $taxonomy_hero_url) : ?>
                         <div class="travel-user-image">
-                            <h3>📸 Immagine del Attività</h3>
+                            <h3>📸 Immagine dell'Annuncio</h3>
                             <div class="user-image-wrapper">
                                 <?php the_post_thumbnail('large'); ?>
                             </div>
@@ -238,7 +238,7 @@ while (have_posts()) : the_post();
 
                     <!-- Social Sharing -->
                     <div class="travel-share-section">
-                        <h3>💬 Condividi questo attività</h3>
+                        <h3>💬 Condividi questo annuncio</h3>
                         <?php
                         if (class_exists('CDV_Social_Sharing')) {
                             echo CDV_Social_Sharing::render_share_buttons($activity_id);
@@ -279,7 +279,7 @@ while (have_posts()) : the_post();
                     <?php elseif ($is_organizer) : ?>
                         <div class="travel-gallery-section empty">
                             <div class="gallery-empty-state">
-                                <p>📷 Nessuna foto ancora. Aggiungi foto per far vedere la bellezza di questo attività!</p>
+                                <p>📷 Nessuna foto ancora. Aggiungi foto per far vedere la bellezza di questo annuncio!</p>
                                 <a href="#" id="add-first-photo-btn" class="btn btn-primary">
                                     Aggiungi Prime Foto
                                 </a>
@@ -465,16 +465,16 @@ while (have_posts()) : the_post();
                     <!-- Wishlist Card -->
                     <div class="sidebar-card wishlist-card">
                         <?php echo CDV_Wishlist::get_wishlist_button_html($activity_id, 'btn btn-secondary wishlist-toggle-btn'); ?>
-                        <p class="wishlist-help-text">Salva questo attività per dopo</p>
+                        <p class="wishlist-help-text">Salva questo annuncio per dopo</p>
                     </div>
 
                     <!-- Join Card -->
                     <?php if (is_user_logged_in()) : ?>
                         <?php if ($is_organizer) : ?>
                             <div class="sidebar-card">
-                                <p><strong>Questo è il tua attività!</strong></p>
+                                <p><strong>Questo è il tuo annuncio!</strong></p>
                                 <a href="<?php echo home_url('/modifica-attività/?activity_id=' . $activity_id); ?>" class="btn-primary" style="width: 100%; text-align: center;">
-                                    Modifica Attività
+                                    Modifica Annuncio
                                 </a>
                             </div>
                         <?php elseif ($is_participant) : ?>
@@ -483,7 +483,7 @@ while (have_posts()) : the_post();
                                 <p>Hai accesso alla chat di gruppo</p>
                                 <button id="leave-travel-btn" class="btn-danger" style="width: 100%; margin-top: 1rem;"
                                         data-travel-id="<?php echo $activity_id; ?>">
-                                    Lascia il Attività
+                                    Lascia l'Annuncio
                                 </button>
                             </div>
                         <?php elseif ($has_requested) : ?>
@@ -493,7 +493,7 @@ while (have_posts()) : the_post();
                             </div>
                         <?php else : ?>
                             <div class="sidebar-card join-card">
-                                <h3>Partecipa al Attività</h3>
+                                <h3>Partecipa all'Annuncio</h3>
                                 <form id="join-travel-form">
                                     <div class="form-group">
                                         <label for="join-message">Messaggio per l'organizzatore</label>
@@ -525,7 +525,7 @@ while (have_posts()) : the_post();
                     <?php else : ?>
                         <div class="sidebar-card">
                             <h3>Vuoi partecipare?</h3>
-                            <p>Accedi o registrati per unirti a questo attività</p>
+                            <p>Accedi o registrati per unirti a questo annuncio</p>
                             <a href="<?php echo wp_login_url(get_permalink()); ?>" class="btn-primary" style="width: 100%; text-align: center; margin-bottom: 10px;">
                                 Accedi
                             </a>
@@ -1341,7 +1341,7 @@ while (have_posts()) : the_post();
             var userId = btn.data('user-id');
             var userName = btn.data('user-name');
 
-            if (!confirm('Sei sicuro di voler rimuovere ' + userName + ' dal attività?')) {
+            if (!confirm('Sei sicuro di voler rimuovere ' + userName + ' dall\'annuncio?')) {
                 return;
             }
 
@@ -1377,7 +1377,7 @@ while (have_posts()) : the_post();
             var btn = $(this);
             var travelId = btn.data('travel-id');
 
-            if (!confirm('Sei sicuro di voler lasciare questo attività? Questa azione non può essere annullata.')) {
+            if (!confirm('Sei sicuro di voler lasciare questo annuncio? Questa azione non può essere annullata.')) {
                 return;
             }
 
@@ -1393,16 +1393,16 @@ while (have_posts()) : the_post();
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert('Hai lasciato l'attività con successo');
+                        alert('Hai lasciato l\'annuncio con successo');
                         location.reload();
                     } else {
-                        alert(response.data.message || 'Errore durante l\'uscita dal attività');
-                        btn.prop('disabled', false).text('Lascia il Attività');
+                        alert(response.data.message || 'Errore durante l\'uscita dall\'annuncio');
+                        btn.prop('disabled', false).text('Lascia l\'Annuncio');
                     }
                 },
                 error: function() {
                     alert('Errore di connessione');
-                    btn.prop('disabled', false).text('Lascia il Attività');
+                    btn.prop('disabled', false).text('Lascia l\'Annuncio');
                 }
             });
         });

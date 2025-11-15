@@ -158,7 +158,7 @@ class CDV_Email_Notifications {
         <div class="email-footer">
             <p style="margin: 0 0 10px 0;">
                 <strong>' . esc_html($site_name) . '</strong><br>
-                La piattaforma per trovare compagni di attivitào
+                La piattaforma per trovare compagni di sport
             </p>
             <p style="margin: 0; font-size: 12px;">
                 <a href="' . esc_url($site_url) . '">Visita il sito</a> |
@@ -189,7 +189,7 @@ class CDV_Email_Notifications {
         $content = '
             <h2>Ciao ' . esc_html($organizer->display_name) . ',</h2>
 
-            <p><strong>' . esc_html($requester->display_name) . '</strong> ha richiesto di partecipare al tuo attivitào!</p>
+            <p><strong>' . esc_html($requester->display_name) . '</strong> ha richiesto di partecipare al tuo annuncio!</p>
 
             <div class="travel-info">
                 <h3>📍 ' . esc_html($activity->post_title) . '</h3>
@@ -245,7 +245,7 @@ class CDV_Email_Notifications {
                     <p style="margin: 0;"><strong>La tua richiesta è stata accettata!</strong></p>
                 </div>
 
-                <p>Sei stato accettato per il attivitào:</p>
+                <p>Sei stato accettato per l\'annuncio:</p>
 
                 <div class="travel-info">
                     <h3>📍 ' . esc_html($activity->post_title) . '</h3>
@@ -266,7 +266,7 @@ class CDV_Email_Notifications {
                 <div class="info-box">
                     <p style="margin: 0;"><strong>💡 Prossimi passi:</strong></p>
                     <ul style="margin: 10px 0 0 0; padding-left: 20px;">
-                        <li>Ora hai accesso alla chat di gruppo del attivitào</li>
+                        <li>Ora hai accesso alla chat di gruppo dell\'annuncio</li>
                         <li>Puoi coordinare i dettagli con l\'organizzatore e gli altri partecipanti</li>
                         <li>Controlla la dashboard per tutti i dettagli</li>
                     </ul>
@@ -274,12 +274,12 @@ class CDV_Email_Notifications {
 
                 <p style="text-align: center;">
                     <a href="' . esc_url($travel_url) . '" class="button">
-                        Vai al Attività
+                        Vai all\'Annuncio
                     </a>
                 </p>
 
                 <p style="font-size: 14px; color: #6c757d;">
-                    Buon attivitào! 🌍
+                    Buon divertimento! 🌍
                 </p>
             ';
 
@@ -291,19 +291,19 @@ class CDV_Email_Notifications {
                 <h2>Ciao ' . esc_html($user->display_name) . ',</h2>
 
                 <div class="warning-box">
-                    <p style="margin: 0;">Ci dispiace, ma la tua richiesta per partecipare al attivitào <strong>' . esc_html($activity->post_title) . '</strong> non è stata accettata.</p>
+                    <p style="margin: 0;">Ci dispiace, ma la tua richiesta per partecipare all\'annuncio <strong>' . esc_html($activity->post_title) . '</strong> non è stata accettata.</p>
                 </div>
 
-                <p>Non preoccuparti! Ci sono molti altri attività disponibili sulla piattaforma.</p>
+                <p>Non preoccuparti! Ci sono molti altri annunci disponibili sulla piattaforma.</p>
 
                 <p style="text-align: center;">
                     <a href="' . esc_url(home_url()) . '" class="button">
-                        Scopri Altri Attività
+                        Scopri Altri Annunci
                     </a>
                 </p>
 
                 <p style="font-size: 14px; color: #6c757d;">
-                    Continua a cercare il attivitào perfetto per te!
+                    Continua a cercare l\'annuncio perfetto per te!
                 </p>
             ';
 
@@ -406,10 +406,10 @@ class CDV_Email_Notifications {
         $review_url = home_url('/dashboard?action=write_review&activity_id=' . $activity_id);
 
         if ($days === 15) {
-            $intro = 'Sono passate due settimane dal tuo attivitào';
+            $intro = 'Sono passate due settimane dalla tua attività sportiva';
             $cta = 'Condividi la tua esperienza!';
         } else {
-            $intro = 'È passato un mese dal tuo attivitào';
+            $intro = 'È passato un mese dalla tua attività sportiva';
             $cta = 'Non dimenticare di lasciare una recensione!';
         }
 
@@ -446,7 +446,7 @@ class CDV_Email_Notifications {
             </p>
         ';
 
-        $subject = 'Lascia una recensione per il attivitào: ' . $activity->post_title;
+        $subject = 'Lascia una recensione per l\'annuncio: ' . $activity->post_title;
         $message = self::get_email_template($content, 'Scrivi una Recensione');
         $headers = array('Content-Type: text/html; charset=UTF-8');
 

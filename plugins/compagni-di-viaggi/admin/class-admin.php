@@ -52,8 +52,8 @@ class CDV_Admin {
 
         add_submenu_page(
             'cdv-dashboard',
-            'Attività in Attesa',
-            'Attività in Attesa' . $travels_badge,
+            'Annunci in Attesa',
+            'Annunci in Attesa' . $travels_badge,
             'approve_attività',
             'cdv-pending-travels',
             array(__CLASS__, 'pending_travels_page')
@@ -110,7 +110,7 @@ class CDV_Admin {
 
             <div class="cdv-stats">
                 <div class="cdv-stat-box">
-                    <h3>Attività Pubblicati</h3>
+                    <h3>Annunci Pubblicati</h3>
                     <p class="cdv-stat-number"><?php echo $stats['total_travels']; ?></p>
                 </div>
                 <div class="cdv-stat-box">
@@ -216,7 +216,7 @@ class CDV_Admin {
                         </th>
                         <td>
                             <input type="number" name="cdv_max_participants" id="cdv_max_participants" value="<?php echo esc_attr($max_participants); ?>" class="regular-text" />
-                            <p class="description">Numero massimo di partecipanti per attivitào (può essere sovrascritto per singolo attivitào)</p>
+                            <p class="description">Numero massimo di partecipanti per annuncio (può essere sovrascritto per singolo annuncio)</p>
                         </td>
                     </tr>
                     <tr>
@@ -320,7 +320,7 @@ class CDV_Admin {
                 <ul>
                     <li>✉️ <strong>Verifica email</strong> - Inviata agli utenti al momento della registrazione</li>
                     <li>✉️ <strong>Notifica admin</strong> - Inviata all'amministratore quando un nuovo utente si registra</li>
-                    <li>✉️ <strong>Notifiche attività</strong> - Per richieste di partecipazione, approvazioni, ecc.</li>
+                    <li>✉️ <strong>Notifiche annunci</strong> - Per richieste di partecipazione, approvazioni, ecc.</li>
                 </ul>
 
                 <p><strong>Nota:</strong> Le email di verifica sono opzionali. Gli utenti possono comunque accedere anche senza verificare l'email. L'invio email è stato configurato per non bloccare le registrazioni in caso di problemi.</p>
@@ -335,7 +335,7 @@ class CDV_Admin {
     public static function add_meta_boxes() {
         add_meta_box(
             'cdv_activity_details',
-            'Dettagli Attività',
+            'Dettagli Annuncio',
             array(__CLASS__, 'travel_details_meta_box'),
             'attivita',
             'normal',
@@ -604,27 +604,27 @@ class CDV_Admin {
 
         ?>
         <div class="wrap">
-            <h1>Attività in Attesa di Approvazione</h1>
+            <h1>Annunci in Attesa di Approvazione</h1>
 
             <?php if (isset($_GET['approved'])) : ?>
                 <div class="notice notice-success is-dismissible">
-                    <p>Attività approvato con successo!</p>
+                    <p>Annuncio approvato con successo!</p>
                 </div>
             <?php endif; ?>
 
             <?php if (isset($_GET['rejected'])) : ?>
                 <div class="notice notice-info is-dismissible">
-                    <p>Attività rifiutato.</p>
+                    <p>Annuncio rifiutato.</p>
                 </div>
             <?php endif; ?>
 
             <?php if (empty($pending_travels)) : ?>
-                <p>Nessun attivitào in attesa di approvazione.</p>
+                <p>Nessun annuncio in attesa di approvazione.</p>
             <?php else : ?>
                 <table class="wp-list-table widefat fixed striped">
                     <thead>
                         <tr>
-                            <th>Attività</th>
+                            <th>Annuncio</th>
                             <th>Organizzatore</th>
                             <th>Destinazione</th>
                             <th>Date</th>
@@ -667,7 +667,7 @@ class CDV_Admin {
                                         <?php wp_nonce_field('cdv_approve_travel_' . $activity->ID); ?>
                                         <input type="hidden" name="activity_id" value="<?php echo $activity->ID; ?>">
                                         <button type="submit" name="approve_travel" class="button button-primary">✓ Approva</button>
-                                        <button type="submit" name="reject_travel" class="button button-link-delete" onclick="return confirm('Sei sicuro di voler rifiutare questo attivitào?');">✗ Rifiuta</button>
+                                        <button type="submit" name="reject_travel" class="button button-link-delete" onclick="return confirm('Sei sicuro di voler rifiutare questo annuncio?');">✗ Rifiuta</button>
                                     </form>
                                 </td>
                             </tr>

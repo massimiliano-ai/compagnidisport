@@ -92,7 +92,7 @@ function cdv_fallback_menu() {
 function cdv_fallback_mobile_menu() {
     echo '<ul class="mobile-menu">';
     echo '<li><a href="' . esc_url(home_url('/')) . '">🏠 Home</a></li>';
-    echo '<li><a href="' . esc_url(home_url('/attività')) . '">✈️ Attività</a></li>';
+    echo '<li><a href="' . esc_url(home_url('/attività')) . '">⚽ Annunci</a></li>';
     echo '<li><a href="' . esc_url(home_url('/storie sport')) . '">📖 Storie Sport</a></li>';
     if (is_user_logged_in()) {
         echo '<li><a href="' . esc_url(home_url('/dashboard')) . '">👤 Dashboard</a></li>';

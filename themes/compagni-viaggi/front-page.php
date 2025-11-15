@@ -40,7 +40,7 @@ get_header();
                             </select>
                         </div>
 
-                        <button type="submit" class="btn-search">Cerca Attività</button>
+                        <button type="submit" class="btn-search">Cerca Annunci</button>
                     </form>
 
                     <!-- CTA Button -->
@@ -58,7 +58,7 @@ get_header();
     <section class="section">
         <div class="container">
             <div class="section-title">
-                <h2><?php echo esc_html(get_theme_mod('cdv_travels_title', 'Proposte di Attività')); ?></h2>
+                <h2><?php echo esc_html(get_theme_mod('cdv_travels_title', 'Annunci Sportivi')); ?></h2>
                 <p><?php echo esc_html(get_theme_mod('cdv_travels_subtitle', 'Scopri le prossime attività sportive e unisciti agli sportivi')); ?></p>
             </div>
 
@@ -90,7 +90,7 @@ get_header();
                 else :
                     ?>
                     <div class="no-travels">
-                        <p>Nessun attività disponibile al momento. <?php if (is_user_logged_in()) : ?><a href="<?php echo esc_url(home_url('/crea-attività')); ?>">Crea il primo annuncio!</a><?php endif; ?></p>
+                        <p>Nessun annuncio disponibile al momento. <?php if (is_user_logged_in()) : ?><a href="<?php echo esc_url(home_url('/crea-attività')); ?>">Crea il primo annuncio!</a><?php endif; ?></p>
                     </div>
                     <?php
                 endif;
@@ -99,7 +99,7 @@ get_header();
 
             <div class="text-center mt-3">
                 <a href="<?php echo esc_url(get_post_type_archive_link('attivita')); ?>" class="btn-primary">
-                    <?php echo esc_html(get_theme_mod('cdv_travels_button_text', 'Vedi Tutti i Attività')); ?> →
+                    <?php echo esc_html(get_theme_mod('cdv_travels_button_text', 'Vedi Tutti gli Annunci')); ?> →
                 </a>
             </div>
         </div>
@@ -122,8 +122,8 @@ get_header();
 
                 <div class="step-card">
                     <div class="step-number">2</div>
-                    <h3><?php echo esc_html(get_theme_mod('cdv_step2_title', '2. Cerca o Crea un Attività')); ?></h3>
-                    <p><?php echo esc_html(get_theme_mod('cdv_step2_text', 'Cerca tra i attività disponibili o crea il tuo e aspetta che altri viaggiatori si uniscano.')); ?></p>
+                    <h3><?php echo esc_html(get_theme_mod('cdv_step2_title', '2. Cerca o Crea un Annuncio')); ?></h3>
+                    <p><?php echo esc_html(get_theme_mod('cdv_step2_text', 'Cerca tra gli annunci disponibili o crea il tuo e aspetta che altri sportivi si uniscano.')); ?></p>
                 </div>
 
                 <div class="step-card">
@@ -217,7 +217,7 @@ get_header();
 
                 <div class="stat-item">
                     <div class="stat-number"><?php echo $total_travels; ?></div>
-                    <div class="stat-label">Attività Pubblicati</div>
+                    <div class="stat-label">Annunci Pubblicati</div>
                 </div>
 
                 <div class="stat-item">

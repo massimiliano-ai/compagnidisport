@@ -114,13 +114,13 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                 <span></span>
                 <span></span>
             </span>
-            <span class="current-tab-label">I Miei Attività</span>
+            <span class="current-tab-label">I Miei Annunci</span>
             <span class="dropdown-arrow">▼</span>
         </button>
 
         <div class="dashboard-tabs" id="dashboard-tabs">
             <button class="tab-button active" data-tab="my-travels">
-                I Miei Attività (<?php echo $my_travels->post_count; ?>)
+                I Miei Annunci (<?php echo $my_travels->post_count; ?>)
             </button>
             <button class="tab-button" data-tab="requests">
                 Richieste di Partecipazione
@@ -181,12 +181,12 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
             <button class="tab-button" data-tab="settings">Impostazioni</button>
         </div>
 
-        <!-- Tab: I Miei Attività -->
+        <!-- Tab: I Miei Annunci -->
         <div class="tab-content active" id="tab-my-travels">
             <div class="section-header">
-                <h2>I Miei Attività</h2>
+                <h2>I Miei Annunci</h2>
                 <a href="<?php echo esc_url(home_url('/crea-attività')); ?>" class="btn btn-primary" id="btn-new-travel">
-                    <i class="icon-plus"></i> Nuovo Attività
+                    <i class="icon-plus"></i> Nuovo Annuncio
                 </a>
             </div>
 
@@ -260,7 +260,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                     <?php wp_reset_postdata(); ?>
                 </div>
             <?php else : ?>
-                <p class="no-content">Non hai ancora creato nessun attività. <a href="<?php echo esc_url(home_url('/crea-attività')); ?>" id="link-new-travel">Crea il tuo primo attività!</a></p>
+                <p class="no-content">Non hai ancora creato nessun annuncio. <a href="<?php echo esc_url(home_url('/crea-attività')); ?>" id="link-new-travel">Crea il tuo primo annuncio!</a></p>
             <?php endif; ?>
         </div>
 
@@ -284,7 +284,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                                                 <?php echo esc_html($request->organizer_name); ?>
                                             </a>
                                         </h4>
-                                        <p class="request-travel">Attività: <strong><?php echo esc_html($request->post_title); ?></strong></p>
+                                        <p class="request-travel">Annuncio: <strong><?php echo esc_html($request->post_title); ?></strong></p>
                                         <p class="request-date">
                                             <i class="icon-clock"></i>
                                             Inviata <?php echo human_time_diff(strtotime($request->requested_at), current_time('timestamp')); ?> fa
@@ -324,7 +324,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                                                 <?php echo esc_html($request->user_login); ?>
                                             </a>
                                         </h4>
-                                        <p class="request-travel">Attività: <strong><?php echo esc_html($request->post_title); ?></strong></p>
+                                        <p class="request-travel">Annuncio: <strong><?php echo esc_html($request->post_title); ?></strong></p>
                                         <p class="request-date">
                                             <i class="icon-clock"></i>
                                             <?php echo human_time_diff(strtotime($request->requested_at), current_time('timestamp')); ?> fa
@@ -370,7 +370,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                     <?php wp_reset_postdata(); ?>
                 </div>
             <?php else : ?>
-                <p class="no-content">Non stai partecipando a nessun attività. <a href="<?php echo get_post_type_archive_link('attivita'); ?>">Cerca un attività!</a></p>
+                <p class="no-content">Non stai partecipando a nessun annuncio. <a href="<?php echo get_post_type_archive_link('attivita'); ?>">Cerca un annuncio!</a></p>
             <?php endif; ?>
         </div>
 
@@ -725,10 +725,10 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                 <div class="empty-state">
                     <span class="empty-icon">💝</span>
                     <h3>La tua wishlist è vuota</h3>
-                    <p>Non hai ancora salvato nessun attività nella tua wishlist.</p>
-                    <p>Esplora i attività disponibili e salva quelli che ti interessano per trovarli facilmente!</p>
+                    <p>Non hai ancora salvato nessun annuncio nella tua wishlist.</p>
+                    <p>Esplora gli annunci disponibili e salva quelli che ti interessano per trovarli facilmente!</p>
                     <a href="<?php echo get_post_type_archive_link('attivita'); ?>" class="btn btn-primary">
-                        Esplora Attività
+                        Esplora Annunci
                     </a>
                 </div>
             <?php endif; ?>

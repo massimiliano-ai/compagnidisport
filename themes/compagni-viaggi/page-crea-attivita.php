@@ -25,8 +25,8 @@ get_header();
         <div class="container">
             <div class="create-travel-wrapper">
                 <div class="page-header">
-                    <h1>Crea una Nuova Attività</h1>
-                    <p>Compila il form per proporre il tua attività e trovare compagni di avventura!</p>
+                    <h1>Crea un Nuovo Annuncio</h1>
+                    <p>Compila il form per proporre la tua attività sportiva e trovare compagni!</p>
                 </div>
 
                 <form id="create-travel-form" class="travel-form">
@@ -34,13 +34,13 @@ get_header();
                         <h3>Informazioni Generali</h3>
 
                         <div class="form-group">
-                            <label for="activity_title">Titolo dell'Attività <span class="required">*</span></label>
+                            <label for="activity_title">Titolo dell'Annuncio <span class="required">*</span></label>
                             <input type="text" id="activity_title" name="activity_title" required placeholder="Es: Partita di calcetto, Escursione in montagna">
                         </div>
 
                         <div class="form-group">
                             <label for="activity_description">Descrizione <span class="required">*</span></label>
-                            <textarea id="activity_description" name="activity_description" rows="6" required placeholder="Descrivi il tua attività: destinazioni, attività previste, cosa rende speciale questa esperienza..."></textarea>
+                            <textarea id="activity_description" name="activity_description" rows="6" required placeholder="Descrivi la tua attività sportiva: cosa farete, cosa rende speciale questa esperienza..."></textarea>
                         </div>
                     </div>
 
@@ -237,7 +237,7 @@ get_header();
                                     ?>
                                 </select>
                                 <small style="display: block; margin-top: calc(var(--spacing-unit) * 0.5); color: #666;">
-                                    Il attività sarà disponibile per tutto il mese selezionato (date flessibili)
+                                    L'annuncio sarà disponibile per tutto il mese selezionato (date flessibili)
                                 </small>
                             </div>
                         </div>
@@ -382,19 +382,19 @@ get_header();
                     <div class="form-section">
                         <div class="disclaimer-box" style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
                             <h4 style="margin-top: 0; color: #856404;">⚠️ Informativa Importante</h4>
-                            <p style="margin-bottom: 15px;">Pubblicando questo attività, dichiari di comprendere e accettare che:</p>
+                            <p style="margin-bottom: 15px;">Pubblicando questo annuncio, dichiari di comprendere e accettare che:</p>
                             <ul style="margin: 0; padding-left: 20px;">
-                                <li style="margin-bottom: 8px;">La piattaforma <strong>facilita l'incontro tra viaggiatori</strong> ma non organizza materialmente i attività</li>
+                                <li style="margin-bottom: 8px;">La piattaforma <strong>facilita l'incontro tra sportivi</strong> ma non organizza materialmente le attività</li>
                                 <li style="margin-bottom: 8px;">Sei <strong>l'unico responsabile</strong> per l'organizzazione, la sicurezza e la gestione dell'attività</li>
                                 <li style="margin-bottom: 8px;">Devi verificare <strong>personalmente</strong> l'identità e l'affidabilità dei partecipanti</li>
                                 <li style="margin-bottom: 8px;">La piattaforma <strong>non è responsabile</strong> per comportamenti, danni, cancellazioni o disservizi</li>
                                 <li style="margin-bottom: 8px;">Tutte le <strong>questioni economiche e logistiche</strong> sono gestite direttamente tra te e i partecipanti</li>
-                                <li style="margin-bottom: 8px;">Devi rispettare tutte le <strong>leggi locali e internazionali</strong> applicabili al attività</li>
+                                <li style="margin-bottom: 8px;">Devi rispettare tutte le <strong>leggi locali e internazionali</strong> applicabili all'attività</li>
                             </ul>
                             <div style="margin-top: 15px;">
                                 <label style="display: flex; align-items: start; gap: 10px; cursor: pointer;">
                                     <input type="checkbox" id="accept_activity_disclaimer" name="accept_activity_disclaimer" required style="margin-top: 4px;">
-                                    <span>Ho letto e accetto l'informativa. Comprendo che sono l'unico responsabile per questo attività e sollevo la piattaforma da ogni responsabilità.</span>
+                                    <span>Ho letto e accetto l'informativa. Comprendo che sono l'unico responsabile per questa attività e sollevo la piattaforma da ogni responsabilità.</span>
                                 </label>
                             </div>
                         </div>

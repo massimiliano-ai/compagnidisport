@@ -144,7 +144,7 @@ $search_query = get_search_query();
                                 </div>
 
                                 <a href="<?php the_permalink(); ?>" class="result-link">
-                                    <?php echo get_post_type() === 'attivita' ? 'Vedi l'attività' : 'Leggi di più'; ?> →
+                                    <?php echo get_post_type() === 'attivita' ? 'Vedi annuncio' : 'Leggi di più'; ?> →
                                 </a>
                             </div>
                         </div>

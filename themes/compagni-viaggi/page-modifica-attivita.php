@@ -62,8 +62,8 @@ get_header();
         <div class="container">
             <div class="create-travel-wrapper">
                 <div class="page-header">
-                    <h1>Modifica Attività</h1>
-                    <p>Aggiorna i dettagli del tua attività</p>
+                    <h1>Modifica Annuncio</h1>
+                    <p>Aggiorna i dettagli del tuo annuncio</p>
                 </div>
 
                 <form id="edit-travel-form" class="travel-form">
@@ -73,13 +73,13 @@ get_header();
                         <h3>Informazioni Generali</h3>
 
                         <div class="form-group">
-                            <label for="activity_title">Titolo dell'Attività <span class="required">*</span></label>
+                            <label for="activity_title">Titolo dell'Annuncio <span class="required">*</span></label>
                             <input type="text" id="activity_title" name="activity_title" required placeholder="Es: Partita di calcetto, Escursione in montagna" value="<?php echo esc_attr($travel->post_title); ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="activity_description">Descrizione <span class="required">*</span></label>
-                            <textarea id="activity_description" name="activity_description" rows="6" required placeholder="Descrivi il tua attività: destinazioni, attività previste, cosa rende speciale questa esperienza..."><?php echo esc_textarea($travel->post_content); ?></textarea>
+                            <textarea id="activity_description" name="activity_description" rows="6" required placeholder="Descrivi la tua attività sportiva: cosa farete, cosa rende speciale questa esperienza..."><?php echo esc_textarea($travel->post_content); ?></textarea>
                         </div>
                     </div>
 
@@ -223,7 +223,7 @@ get_header();
                                     ?>
                                 </select>
                                 <small style="display: block; margin-top: calc(var(--spacing-unit) * 0.5); color: #666;">
-                                    Il attività sarà disponibile per tutto il mese selezionato (date flessibili)
+                                    L'annuncio sarà disponibile per tutto il mese selezionato (date flessibili)
                                 </small>
                             </div>
                         </div>
@@ -388,7 +388,7 @@ get_header();
 
                     <div class="form-actions">
                         <a href="<?php echo esc_url(get_permalink($activity_id)); ?>" class="btn-secondary">Annulla</a>
-                        <button type="submit" class="btn-primary btn-large">Aggiorna Attività 💾</button>
+                        <button type="submit" class="btn-primary btn-large">Aggiorna Annuncio 💾</button>
                     </div>
 
                     <div id="form-messages" style="margin-top: 20px;"></div>

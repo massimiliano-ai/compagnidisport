@@ -11,10 +11,10 @@ get_header();
         <div class="container">
             <?php if (is_search() && get_search_query()) : ?>
                 <h1>Risultati per: "<?php echo esc_html(get_search_query()); ?>"</h1>
-                <p>Trovati <strong><?php echo $wp_query->found_posts; ?></strong> attività<?php if ($wp_query->found_posts != 1) : ?><?php endif; ?></p>
+                <p>Trovati <strong><?php echo $wp_query->found_posts; ?></strong> annunci<?php if ($wp_query->found_posts != 1) : ?><?php endif; ?></p>
             <?php else : ?>
-                <h1>Tutti i Attività</h1>
-                <p>Esplora tutti i attività disponibili e trova la tua prossima avventura</p>
+                <h1>Tutti gli Annunci</h1>
+                <p>Esplora tutti gli annunci disponibili e trova la tua prossima avventura</p>
             <?php endif; ?>
         </div>
     </div>
@@ -23,7 +23,7 @@ get_header();
         <div class="archive-layout">
             <!-- Filters Sidebar -->
             <aside class="filters-sidebar">
-                <h3>Filtra Attività</h3>
+                <h3>Filtra Annunci</h3>
 
                 <form method="get" action="<?php echo esc_url(home_url('/')); ?>" class="filters-form">
                     <!-- Mantieni il post_type attività durante la ricerca -->
@@ -191,7 +191,7 @@ get_header();
                         <div class="filter-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" name="solo_posti_disponibili" value="1" <?php checked(isset($_GET['solo_posti_disponibili'])); ?>>
-                                Solo attività con posti disponibili
+                                Solo annunci con posti disponibili
                             </label>
                         </div>
                     </div>
@@ -251,7 +251,7 @@ get_header();
                     ?>
                     <div class="results-header">
                         <p>
-                            <?php echo $total_travels . ' ' . ($total_travels === 1 ? 'attività trovato' : 'attività trovati'); ?>
+                            <?php echo $total_travels . ' ' . ($total_travels === 1 ? 'annuncio trovato' : 'annunci trovati'); ?>
                         </p>
                     </div>
 
@@ -278,11 +278,11 @@ get_header();
 
                 <?php else : ?>
                     <div class="no-results">
-                        <h2>Nessun attività trovato</h2>
-                        <p>Prova a modificare i filtri di ricerca o <a href="<?php echo esc_url(get_post_type_archive_link('attivita')); ?>">visualizza tutti i attività</a>.</p>
+                        <h2>Nessun annuncio trovato</h2>
+                        <p>Prova a modificare i filtri di ricerca o <a href="<?php echo esc_url(get_post_type_archive_link('attivita')); ?>">visualizza tutti gli annunci</a>.</p>
                         <?php if (is_user_logged_in()) : ?>
                             <a href="<?php echo esc_url(admin_url('post-new.php?post_type=attività')); ?>" class="btn-primary">
-                                Crea il Primo Attività
+                                Crea il Primo Annuncio
                             </a>
                         <?php endif; ?>
                     </div>
