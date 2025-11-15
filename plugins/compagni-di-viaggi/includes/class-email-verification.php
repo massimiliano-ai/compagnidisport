@@ -53,7 +53,7 @@ class CDV_Email_Verification {
         $verification_link = home_url('/conferma-email/?token=' . $token);
 
         // Invia email HTML
-        $subject = 'Conferma il tuo account - Compagni di Viaggi';
+        $subject = 'Conferma il tuo account - Compagni di Attività';
         $message = '
 <!DOCTYPE html>
 <html>
@@ -70,7 +70,7 @@ class CDV_Email_Verification {
     <div class="container">
         <h2>Ciao ' . esc_html($user->display_name) . ',</h2>
 
-        <p>Grazie per esserti registrato su <strong>Compagni di Viaggi</strong>!</p>
+        <p>Grazie per esserti registrato su <strong>Compagni di Attività</strong>!</p>
 
         <p>Per completare la registrazione e attivare il tuo account, clicca sul pulsante qui sotto:</p>
 
@@ -87,13 +87,13 @@ class CDV_Email_Verification {
 
         <p><strong>Questo link è valido per 24 ore.</strong></p>
 
-        <p>Una volta confermata l\'email potrai accedere alla piattaforma e iniziare a organizzare i tuoi viaggi!</p>
+        <p>Una volta confermata l\'email potrai accedere alla piattaforma e iniziare a organizzare i tuoi attività!</p>
 
         <p>Se non hai richiesto questa registrazione, ignora questa email.</p>
 
         <div class="footer">
             <p>A presto,<br>
-            Il team di Compagni di Viaggi</p>
+            Il team di Compagni di Attività</p>
         </div>
     </div>
 </body>

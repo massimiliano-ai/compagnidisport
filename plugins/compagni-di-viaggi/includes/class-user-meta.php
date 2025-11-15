@@ -25,64 +25,64 @@ class CDV_User_Meta {
      */
     public static function add_profile_fields($user) {
         ?>
-        <h2><?php _e('Informazioni Viaggiatore', 'compagni-di-viaggi'); ?></h2>
+        <h2><?php _e('Informazioni Attivitàatore', 'compagni-di-sport'); ?></h2>
         <table class="form-table">
             <tr>
-                <th><label for="cdv_bio"><?php _e('Bio', 'compagni-di-viaggi'); ?></label></th>
+                <th><label for="cdv_bio"><?php _e('Bio', 'compagni-di-sport'); ?></label></th>
                 <td>
                     <textarea name="cdv_bio" id="cdv_bio" rows="5" cols="30" class="regular-text"><?php echo esc_textarea(get_user_meta($user->ID, 'cdv_bio', true)); ?></textarea>
-                    <p class="description"><?php _e('Parlaci di te come viaggiatore', 'compagni-di-viaggi'); ?></p>
+                    <p class="description"><?php _e('Parlaci di te come attivitàatore', 'compagni-di-sport'); ?></p>
                 </td>
             </tr>
             <tr>
-                <th><label for="cdv_birth_date"><?php _e('Data di Nascita', 'compagni-di-viaggi'); ?></label></th>
+                <th><label for="cdv_birth_date"><?php _e('Data di Nascita', 'compagni-di-sport'); ?></label></th>
                 <td>
                     <input type="date" name="cdv_birth_date" id="cdv_birth_date" value="<?php echo esc_attr(get_user_meta($user->ID, 'cdv_birth_date', true)); ?>" class="regular-text" />
                 </td>
             </tr>
             <tr>
-                <th><label for="cdv_gender"><?php _e('Genere', 'compagni-di-viaggi'); ?></label></th>
+                <th><label for="cdv_gender"><?php _e('Genere', 'compagni-di-sport'); ?></label></th>
                 <td>
                     <select name="cdv_gender" id="cdv_gender">
                         <?php $gender = get_user_meta($user->ID, 'cdv_gender', true); ?>
-                        <option value=""><?php _e('Non specificato', 'compagni-di-viaggi'); ?></option>
-                        <option value="male" <?php selected($gender, 'male'); ?>><?php _e('Uomo', 'compagni-di-viaggi'); ?></option>
-                        <option value="female" <?php selected($gender, 'female'); ?>><?php _e('Donna', 'compagni-di-viaggi'); ?></option>
-                        <option value="other" <?php selected($gender, 'other'); ?>><?php _e('Altro', 'compagni-di-viaggi'); ?></option>
+                        <option value=""><?php _e('Non specificato', 'compagni-di-sport'); ?></option>
+                        <option value="male" <?php selected($gender, 'male'); ?>><?php _e('Uomo', 'compagni-di-sport'); ?></option>
+                        <option value="female" <?php selected($gender, 'female'); ?>><?php _e('Donna', 'compagni-di-sport'); ?></option>
+                        <option value="other" <?php selected($gender, 'other'); ?>><?php _e('Altro', 'compagni-di-sport'); ?></option>
                     </select>
                 </td>
             </tr>
             <tr>
-                <th><label for="cdv_city"><?php _e('Città', 'compagni-di-viaggi'); ?></label></th>
+                <th><label for="cdv_city"><?php _e('Città', 'compagni-di-sport'); ?></label></th>
                 <td>
                     <input type="text" name="cdv_city" id="cdv_city" value="<?php echo esc_attr(get_user_meta($user->ID, 'cdv_city', true)); ?>" class="regular-text" />
                 </td>
             </tr>
             <tr>
-                <th><label for="cdv_country"><?php _e('Paese', 'compagni-di-viaggi'); ?></label></th>
+                <th><label for="cdv_country"><?php _e('Paese', 'compagni-di-sport'); ?></label></th>
                 <td>
                     <input type="text" name="cdv_country" id="cdv_country" value="<?php echo esc_attr(get_user_meta($user->ID, 'cdv_country', true)); ?>" class="regular-text" />
                 </td>
             </tr>
             <tr>
-                <th><label for="cdv_languages"><?php _e('Lingue Parlate', 'compagni-di-viaggi'); ?></label></th>
+                <th><label for="cdv_languages"><?php _e('Lingue Parlate', 'compagni-di-sport'); ?></label></th>
                 <td>
                     <input type="text" name="cdv_languages" id="cdv_languages" value="<?php echo esc_attr(get_user_meta($user->ID, 'cdv_languages', true)); ?>" class="regular-text" />
-                    <p class="description"><?php _e('Separate da virgola (es: Italiano, Inglese, Spagnolo)', 'compagni-di-viaggi'); ?></p>
+                    <p class="description"><?php _e('Separate da virgola (es: Italiano, Inglese, Spagnolo)', 'compagni-di-sport'); ?></p>
                 </td>
             </tr>
             <tr>
-                <th><label for="cdv_travel_styles"><?php _e('Stili di Viaggio Preferiti', 'compagni-di-viaggi'); ?></label></th>
+                <th><label for="cdv_activity_styles"><?php _e('Stili di Attività Preferiti', 'compagni-di-sport'); ?></label></th>
                 <td>
-                    <input type="text" name="cdv_travel_styles" id="cdv_travel_styles" value="<?php echo esc_attr(get_user_meta($user->ID, 'cdv_travel_styles', true)); ?>" class="regular-text" />
-                    <p class="description"><?php _e('Separate da virgola (es: Avventura, Cultura, Relax)', 'compagni-di-viaggi'); ?></p>
+                    <input type="text" name="cdv_activity_styles" id="cdv_activity_styles" value="<?php echo esc_attr(get_user_meta($user->ID, 'cdv_activity_styles', true)); ?>" class="regular-text" />
+                    <p class="description"><?php _e('Separate da virgola (es: Avventura, Cultura, Relax)', 'compagni-di-sport'); ?></p>
                 </td>
             </tr>
             <tr>
-                <th><label for="cdv_verified"><?php _e('Account Verificato', 'compagni-di-viaggi'); ?></label></th>
+                <th><label for="cdv_verified"><?php _e('Account Verificato', 'compagni-di-sport'); ?></label></th>
                 <td>
                     <input type="checkbox" name="cdv_verified" id="cdv_verified" value="1" <?php checked(get_user_meta($user->ID, 'cdv_verified', true), '1'); ?> />
-                    <label for="cdv_verified"><?php _e('L\'utente ha verificato la sua identità', 'compagni-di-viaggi'); ?></label>
+                    <label for="cdv_verified"><?php _e('L\'utente ha verificato la sua identità', 'compagni-di-sport'); ?></label>
                 </td>
             </tr>
         </table>
@@ -104,7 +104,7 @@ class CDV_User_Meta {
             'cdv_city',
             'cdv_country',
             'cdv_languages',
-            'cdv_travel_styles',
+            'cdv_activity_styles',
         );
 
         foreach ($fields as $field) {
@@ -135,7 +135,7 @@ class CDV_User_Meta {
             'cdv_city',
             'cdv_country',
             'cdv_languages',
-            'cdv_travel_styles',
+            'cdv_activity_styles',
             'cdv_verified',
             'cdv_reputation_score',
         );

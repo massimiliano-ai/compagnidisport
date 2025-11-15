@@ -85,9 +85,9 @@ class CDV_Performance {
             // Custom tables indexes
             array(
                 'table' => $wpdb->prefix . 'cdv_participants',
-                'index' => 'user_travel_idx',
-                'columns' => '(user_id, travel_id)',
-                'check_query' => "SHOW INDEX FROM {$wpdb->prefix}cdv_participants WHERE Key_name = 'user_travel_idx'"
+                'index' => 'user_activity_idx',
+                'columns' => '(user_id, activity_id)',
+                'check_query' => "SHOW INDEX FROM {$wpdb->prefix}cdv_participants WHERE Key_name = 'user_activity_idx'"
             ),
             array(
                 'table' => $wpdb->prefix . 'cdv_participants',
@@ -109,14 +109,14 @@ class CDV_Performance {
             ),
             array(
                 'table' => $wpdb->prefix . 'cdv_reviews',
-                'index' => 'user_travel_idx',
-                'columns' => '(user_id, travel_id)',
-                'check_query' => "SHOW INDEX FROM {$wpdb->prefix}cdv_reviews WHERE Key_name = 'user_travel_idx'"
+                'index' => 'user_activity_idx',
+                'columns' => '(user_id, activity_id)',
+                'check_query' => "SHOW INDEX FROM {$wpdb->prefix}cdv_reviews WHERE Key_name = 'user_activity_idx'"
             ),
             array(
                 'table' => $wpdb->prefix . 'cdv_group_messages',
                 'index' => 'travel_created_idx',
-                'columns' => '(travel_id, created_at)',
+                'columns' => '(activity_id, created_at)',
                 'check_query' => "SHOW INDEX FROM {$wpdb->prefix}cdv_group_messages WHERE Key_name = 'travel_created_idx'"
             )
         );
@@ -137,8 +137,8 @@ class CDV_Performance {
     public static function optimize_travel_queries($clauses, $query) {
         global $wpdb;
 
-        // Only optimize main query for viaggi post type
-        if (!$query->is_main_query() || $query->get('post_type') !== 'viaggio') {
+        // Only optimize main query for attività post type
+        if (!$query->is_main_query() || $query->get('post_type') !== 'attivita') {
             return $clauses;
         }
 
@@ -153,8 +153,8 @@ class CDV_Performance {
     /**
      * Get cached travel data
      */
-    public static function get_cached_travel_data($travel_id, $force_refresh = false) {
-        $cache_key = 'travel_data_' . $travel_id;
+    public static function get_cached_travel_data($activity_id, $force_refresh = false) {
+        $cache_key = 'travel_data_' . $activity_id;
 
         if (!$force_refresh) {
             $cached = wp_cache_get($cache_key, self::CACHE_GROUP);
@@ -165,18 +165,18 @@ class CDV_Performance {
 
         // Build travel data
         $data = array(
-            'id' => $travel_id,
-            'title' => get_the_title($travel_id),
-            'content' => get_post_field('post_content', $travel_id),
-            'author_id' => get_post_field('post_author', $travel_id),
-            'destination' => get_post_meta($travel_id, 'cdv_destination', true),
-            'country' => get_post_meta($travel_id, 'cdv_country', true),
-            'start_date' => get_post_meta($travel_id, 'cdv_start_date', true),
-            'end_date' => get_post_meta($travel_id, 'cdv_end_date', true),
-            'budget' => get_post_meta($travel_id, 'cdv_budget', true),
-            'max_participants' => get_post_meta($travel_id, 'cdv_max_participants', true),
-            'travel_status' => get_post_meta($travel_id, 'cdv_travel_status', true),
-            'thumbnail_url' => get_the_post_thumbnail_url($travel_id, 'medium')
+            'id' => $activity_id,
+            'title' => get_the_title($activity_id),
+            'content' => get_post_field('post_content', $activity_id),
+            'author_id' => get_post_field('post_author', $activity_id),
+            'destination' => get_post_meta($activity_id, 'cdv_destination', true),
+            'country' => get_post_meta($activity_id, 'cdv_country', true),
+            'start_date' => get_post_meta($activity_id, 'cdv_start_date', true),
+            'end_date' => get_post_meta($activity_id, 'cdv_end_date', true),
+            'budget' => get_post_meta($activity_id, 'cdv_budget', true),
+            'max_participants' => get_post_meta($activity_id, 'cdv_max_participants', true),
+            'travel_status' => get_post_meta($activity_id, 'cdv_activity_status', true),
+            'thumbnail_url' => get_the_post_thumbnail_url($activity_id, 'medium')
         );
 
         // Cache for 1 hour
@@ -188,8 +188,8 @@ class CDV_Performance {
     /**
      * Clear travel cache
      */
-    public static function clear_travel_cache($travel_id) {
-        $cache_key = 'travel_data_' . $travel_id;
+    public static function clear_travel_cache($activity_id) {
+        $cache_key = 'travel_data_' . $activity_id;
         wp_cache_delete($cache_key, self::CACHE_GROUP);
 
         // Also clear related caches
@@ -224,7 +224,7 @@ class CDV_Performance {
             'location' => get_user_meta($user_id, 'cdv_location', true),
             'verified' => get_user_meta($user_id, 'cdv_verified', true),
             'reputation_score' => get_user_meta($user_id, 'cdv_reputation_score', true),
-            'travel_count' => count_user_posts($user_id, 'viaggio')
+            'travel_count' => count_user_posts($user_id, 'attivita')
         );
 
         wp_cache_set($cache_key, $data, self::CACHE_GROUP, self::CACHE_EXPIRATION);
@@ -258,7 +258,7 @@ class CDV_Performance {
              FROM {$wpdb->postmeta} pm
              INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
              WHERE pm.meta_key = 'cdv_destination'
-             AND p.post_type = 'viaggio'
+             AND p.post_type = 'attivita'
              AND p.post_status = 'publish'
              AND pm.meta_value != ''
              GROUP BY pm.meta_value
@@ -287,14 +287,14 @@ class CDV_Performance {
         global $wpdb;
 
         $stats = array(
-            'total_travels' => wp_count_posts('viaggio')->publish,
+            'total_travels' => wp_count_posts('attivita')->publish,
             'total_users' => count_users()['total_users'],
             'total_reviews' => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}cdv_reviews"),
             'active_travels' => $wpdb->get_var($wpdb->prepare(
                 "SELECT COUNT(DISTINCT p.ID)
                  FROM {$wpdb->posts} p
                  INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
-                 WHERE p.post_type = 'viaggio'
+                 WHERE p.post_type = 'attivita'
                  AND p.post_status = 'publish'
                  AND pm.meta_key = 'cdv_start_date'
                  AND pm.meta_value >= %s",
@@ -480,18 +480,18 @@ class CDV_Performance {
      * Batch process to update all travel caches
      */
     public static function refresh_all_travel_caches() {
-        $travels = get_posts(array(
-            'post_type' => 'viaggio',
+        $activities = get_posts(array(
+            'post_type' => 'attivita',
             'post_status' => 'publish',
             'posts_per_page' => -1,
             'fields' => 'ids'
         ));
 
-        foreach ($travels as $travel_id) {
-            self::get_cached_travel_data($travel_id, true);
+        foreach ($activities as $activity_id) {
+            self::get_cached_travel_data($activity_id, true);
         }
 
-        return count($travels);
+        return count($activities);
     }
 
     /**
@@ -502,7 +502,7 @@ class CDV_Performance {
 
         return array(
             'database_size' => $wpdb->get_var("SELECT SUM(data_length + index_length) / 1024 / 1024 AS 'Size (MB)' FROM information_schema.TABLES WHERE table_schema = DATABASE()"),
-            'total_posts' => wp_count_posts('viaggio')->publish,
+            'total_posts' => wp_count_posts('attivita')->publish,
             'total_users' => count_users()['total_users'],
             'transients_count' => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE '_transient_%'"),
             'autoload_size' => $wpdb->get_var("SELECT SUM(LENGTH(option_value)) / 1024 / 1024 FROM {$wpdb->options} WHERE autoload = 'yes'"),

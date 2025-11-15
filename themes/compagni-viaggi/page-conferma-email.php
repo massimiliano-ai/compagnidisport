@@ -30,13 +30,13 @@ if ($success) {
                     <p>Il tuo indirizzo email è stato verificato correttamente.</p>
 
                     <div class="next-steps">
-                        <h3>🎉 Benvenuto su Compagni di Viaggi!</h3>
+                        <h3>🎉 Benvenuto su Compagni di Attività!</h3>
                         <p><strong>Il tuo account è ora attivo e pronto all'uso.</strong></p>
                         <p>Puoi iniziare subito a:</p>
                         <ul style="text-align: left; display: inline-block;">
-                            <li>Cercare compagni di viaggio</li>
-                            <li>Creare i tuoi annunci di viaggio</li>
-                            <li>Partecipare ai viaggi di altri</li>
+                            <li>Cercare compagni di sport</li>
+                            <li>Creare i tuoi annunci di attività</li>
+                            <li>Partecipare ai attività di altri</li>
                             <li>Condividere le tue esperienze</li>
                         </ul>
                         <div class="action-buttons">
@@ -49,8 +49,8 @@ if ($success) {
                                     Accedi Ora
                                 </a>
                             <?php endif; ?>
-                            <a href="<?php echo get_post_type_archive_link('viaggio'); ?>" class="btn btn-secondary">
-                                Scopri i Viaggi
+                            <a href="<?php echo get_post_type_archive_link('attivita'); ?>" class="btn btn-secondary">
+                                Scopri i Attività
                             </a>
                         </div>
                     </div>

@@ -19,21 +19,21 @@ class CDV_Chat {
     /**
      * Create chat group for a travel
      */
-    public static function create_chat_group($travel_id) {
+    public static function create_chat_group($activity_id) {
         global $wpdb;
 
         $table = $wpdb->prefix . 'cdv_chat_groups';
 
-        $travel = get_post($travel_id);
-        if (!$travel) {
+        $activity = get_post($activity_id);
+        if (!$activity) {
             return false;
         }
 
         $wpdb->insert(
             $table,
             array(
-                'travel_id' => $travel_id,
-                'name' => 'Chat: ' . get_the_title($travel_id),
+                'activity_id' => $activity_id,
+                'name' => 'Chat: ' . get_the_title($activity_id),
             ),
             array('%d', '%s')
         );
@@ -44,14 +44,14 @@ class CDV_Chat {
     /**
      * Get chat group by travel ID
      */
-    public static function get_chat_group($travel_id) {
+    public static function get_chat_group($activity_id) {
         global $wpdb;
 
         $table = $wpdb->prefix . 'cdv_chat_groups';
 
         return $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM $table WHERE travel_id = %d",
-            $travel_id
+            "SELECT * FROM $table WHERE activity_id = %d",
+            $activity_id
         ));
     }
 
@@ -65,7 +65,7 @@ class CDV_Chat {
 
         // Anti-spam check
         if (!self::check_spam($chat_group_id, $user_id)) {
-            return new WP_Error('spam', __('Stai inviando troppi messaggi. Attendi un momento.', 'compagni-di-viaggi'));
+            return new WP_Error('spam', __('Stai inviando troppi messaggi. Attendi un momento.', 'compagni-di-sport'));
         }
 
         $result = $wpdb->insert(
@@ -138,12 +138,12 @@ class CDV_Chat {
         }
 
         // Check if user is organizer or accepted participant
-        $travel = get_post($chat_group->travel_id);
-        if ($travel->post_author == $user_id) {
+        $activity = get_post($chat_group->activity_id);
+        if ($activity->post_author == $user_id) {
             return true;
         }
 
-        return CDV_Participants::is_participant($chat_group->travel_id, $user_id, 'accepted');
+        return CDV_Participants::is_participant($chat_group->activity_id, $user_id, 'accepted');
     }
 
     /**

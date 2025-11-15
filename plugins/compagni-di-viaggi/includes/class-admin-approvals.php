@@ -4,7 +4,7 @@
  *
  * Gestisce i pannelli di amministrazione per approvare:
  * - Immagini profilo
- * - Viaggi
+ * - Attività
  * - Recensioni
  */
 
@@ -36,11 +36,11 @@ class CDV_Admin_Approvals {
             30
         );
 
-        // Sottomenu: Viaggi da approvare (stesso slug del menu principale)
+        // Sottomenu: Attività da approvare (stesso slug del menu principale)
         add_submenu_page(
             'cdv-approvals',
-            'Viaggi da Approvare',
-            'Viaggi',
+            'Attività da Approvare',
+            'Attività',
             'manage_options',
             'cdv-approvals',
             array(__CLASS__, 'render_travels_page')
@@ -187,7 +187,7 @@ class CDV_Admin_Approvals {
     }
 
     /**
-     * Pagina viaggi da approvare
+     * Pagina attività da approvare
      */
     public static function render_travels_page() {
         // Check user capabilities
@@ -197,7 +197,7 @@ class CDV_Admin_Approvals {
 
         // Get pending travels
         $pending_travels = get_posts(array(
-            'post_type' => 'viaggio',
+            'post_type' => 'attivita',
             'post_status' => 'pending',
             'posts_per_page' => -1,
             'orderby' => 'date',
@@ -206,20 +206,20 @@ class CDV_Admin_Approvals {
 
         ?>
         <div class="wrap">
-            <h1>🌍 Viaggi da Approvare</h1>
+            <h1>🌍 Attività da Approvare</h1>
 
             <div class="cdv-stats">
                 <div class="cdv-stat-box">
                     <div class="cdv-stat-number"><?php echo count($pending_travels); ?></div>
-                    <div class="cdv-stat-label">Viaggi in Attesa</div>
+                    <div class="cdv-stat-label">Attività in Attesa</div>
                 </div>
             </div>
 
             <?php if (empty($pending_travels)) : ?>
                 <div class="cdv-no-items">
                     <div class="cdv-no-items-icon">✓</div>
-                    <h2>Nessun viaggio da approvare</h2>
-                    <p>Tutti i viaggi sono stati approvati o non ci sono nuove richieste.</p>
+                    <h2>Nessun attivitào da approvare</h2>
+                    <p>Tutti i attività sono stati approvati o non ci sono nuove richieste.</p>
                 </div>
             <?php else : ?>
                 <table class="cdv-approval-table">
@@ -234,28 +234,28 @@ class CDV_Admin_Approvals {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($pending_travels as $travel) : ?>
+                        <?php foreach ($pending_travels as $activity) : ?>
                             <?php
-                            $organizer = get_userdata($travel->post_author);
-                            $destination = get_post_meta($travel->ID, '_cdv_destination', true);
-                            $start_date = get_post_meta($travel->ID, '_cdv_start_date', true);
-                            $end_date = get_post_meta($travel->ID, '_cdv_end_date', true);
+                            $organizer = get_userdata($activity->post_author);
+                            $destination = get_post_meta($activity->ID, '_cdv_destination', true);
+                            $start_date = get_post_meta($activity->ID, '_cdv_start_date', true);
+                            $end_date = get_post_meta($activity->ID, '_cdv_end_date', true);
 
                             $approve_url = wp_nonce_url(
-                                admin_url('admin-post.php?action=cdv_approve_travel&travel_id=' . $travel->ID),
-                                'approve_travel_' . $travel->ID
+                                admin_url('admin-post.php?action=cdv_approve_travel&activity_id=' . $activity->ID),
+                                'approve_travel_' . $activity->ID
                             );
 
                             $reject_url = wp_nonce_url(
-                                admin_url('admin-post.php?action=cdv_reject_travel&travel_id=' . $travel->ID),
-                                'reject_travel_' . $travel->ID
+                                admin_url('admin-post.php?action=cdv_reject_travel&activity_id=' . $activity->ID),
+                                'reject_travel_' . $activity->ID
                             );
 
-                            $edit_url = admin_url('post.php?post=' . $travel->ID . '&action=edit');
+                            $edit_url = admin_url('post.php?post=' . $activity->ID . '&action=edit');
                             ?>
                             <tr>
                                 <td>
-                                    <strong><?php echo esc_html($travel->post_title); ?></strong>
+                                    <strong><?php echo esc_html($activity->post_title); ?></strong>
                                     <br>
                                     <a href="<?php echo esc_url($edit_url); ?>">Visualizza/Modifica</a>
                                 </td>
@@ -272,14 +272,14 @@ class CDV_Admin_Approvals {
                                     }
                                     ?>
                                 </td>
-                                <td><?php echo date('d/m/Y H:i', strtotime($travel->post_date)); ?></td>
+                                <td><?php echo date('d/m/Y H:i', strtotime($activity->post_date)); ?></td>
                                 <td>
                                     <div class="cdv-actions">
                                         <a href="<?php echo esc_url($approve_url); ?>" class="cdv-approve-btn">
                                             ✓ Approva
                                         </a>
                                         <a href="<?php echo esc_url($reject_url); ?>" class="cdv-reject-btn"
-                                           onclick="return confirm('Sei sicuro di voler rifiutare questo viaggio?');">
+                                           onclick="return confirm('Sei sicuro di voler rifiutare questo attivitào?');">
                                             ✗ Rifiuta
                                         </a>
                                     </div>
@@ -430,7 +430,7 @@ class CDV_Admin_Approvals {
                     p.post_title as travel_title
              FROM $table_name r
              LEFT JOIN {$wpdb->users} u ON r.reviewer_id = u.ID
-             LEFT JOIN {$wpdb->posts} p ON r.travel_id = p.ID
+             LEFT JOIN {$wpdb->posts} p ON r.activity_id = p.ID
              WHERE r.status = 'pending'
              ORDER BY r.created_at DESC"
         );
@@ -456,7 +456,7 @@ class CDV_Admin_Approvals {
                 <table class="cdv-approval-table">
                     <thead>
                         <tr>
-                            <th>Viaggio</th>
+                            <th>Attività</th>
                             <th>Recensore</th>
                             <th>Valutazione</th>
                             <th>Recensione</th>
@@ -477,13 +477,13 @@ class CDV_Admin_Approvals {
                                 'reject_review_' . $review->id
                             );
 
-                            $travel_url = get_permalink($review->travel_id);
+                            $travel_url = get_permalink($review->activity_id);
                             ?>
                             <tr>
                                 <td>
                                     <strong><?php echo esc_html($review->travel_title); ?></strong>
                                     <br>
-                                    <a href="<?php echo esc_url($travel_url); ?>" target="_blank">Visualizza viaggio</a>
+                                    <a href="<?php echo esc_url($travel_url); ?>" target="_blank">Visualizza attivitào</a>
                                 </td>
                                 <td>
                                     <?php echo esc_html($review->reviewer_name); ?>
@@ -570,47 +570,47 @@ class CDV_Admin_Approvals {
     }
 
     /**
-     * Gestisce approvazione viaggio
+     * Gestisce approvazione attivitào
      */
     public static function handle_approve_travel() {
         if (!current_user_can('manage_options')) {
             wp_die('Permessi insufficienti');
         }
 
-        $travel_id = isset($_GET['travel_id']) ? intval($_GET['travel_id']) : 0;
+        $activity_id = isset($_GET['activity_id']) ? intval($_GET['activity_id']) : 0;
 
-        if (!wp_verify_nonce($_GET['_wpnonce'], 'approve_travel_' . $travel_id)) {
+        if (!wp_verify_nonce($_GET['_wpnonce'], 'approve_travel_' . $activity_id)) {
             wp_die('Richiesta non valida');
         }
 
         // Publish travel
         wp_update_post(array(
-            'ID' => $travel_id,
+            'ID' => $activity_id,
             'post_status' => 'publish',
         ));
 
         // Notifica l'organizzatore
-        $travel = get_post($travel_id);
-        $organizer = get_userdata($travel->post_author);
+        $activity = get_post($activity_id);
+        $organizer = get_userdata($activity->post_author);
 
-        $subject = '✅ Il tuo viaggio è stato approvato - ' . $travel->post_title;
+        $subject = '✅ Il tuo attivitào è stato approvato - ' . $activity->post_title;
         $message = '
         <!DOCTYPE html>
         <html>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                <h2 style="color: #00a32a;">✅ Viaggio Approvato!</h2>
+                <h2 style="color: #00a32a;">✅ Attività Approvato!</h2>
                 <p>Ciao ' . esc_html($organizer->display_name) . ',</p>
-                <p>Il tuo viaggio "<strong>' . esc_html($travel->post_title) . '</strong>" è stato approvato e ora è visibile sulla piattaforma.</p>
-                <p>Gli altri viaggiatori possono ora visualizzarlo e richiedere di partecipare.</p>
+                <p>Il tuo attivitào "<strong>' . esc_html($activity->post_title) . '</strong>" è stato approvato e ora è visibile sulla piattaforma.</p>
+                <p>Gli altri attivitàatori possono ora visualizzarlo e richiedere di partecipare.</p>
                 <p style="text-align: center; margin: 30px 0;">
-                    <a href="' . esc_url(get_permalink($travel_id)) . '"
+                    <a href="' . esc_url(get_permalink($activity_id)) . '"
                        style="display: inline-block; padding: 15px 30px; background: #667eea;
                               color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">
-                        Visualizza il tuo viaggio
+                        Visualizza il tuo attivitào
                     </a>
                 </p>
-                <p>Buon viaggio!<br>Il team di Compagni di Viaggi</p>
+                <p>Buon attivitào!<br>Il team di Compagni di Attività</p>
             </div>
         </body>
         </html>';
@@ -623,21 +623,21 @@ class CDV_Admin_Approvals {
     }
 
     /**
-     * Gestisce rifiuto viaggio
+     * Gestisce rifiuto attivitào
      */
     public static function handle_reject_travel() {
         if (!current_user_can('manage_options')) {
             wp_die('Permessi insufficienti');
         }
 
-        $travel_id = isset($_GET['travel_id']) ? intval($_GET['travel_id']) : 0;
+        $activity_id = isset($_GET['activity_id']) ? intval($_GET['activity_id']) : 0;
 
-        if (!wp_verify_nonce($_GET['_wpnonce'], 'reject_travel_' . $travel_id)) {
+        if (!wp_verify_nonce($_GET['_wpnonce'], 'reject_travel_' . $activity_id)) {
             wp_die('Richiesta non valida');
         }
 
         // Move to trash
-        wp_trash_post($travel_id);
+        wp_trash_post($activity_id);
 
         // Redirect back
         wp_safe_redirect(admin_url('admin.php?page=cdv-approvals&rejected=1'));

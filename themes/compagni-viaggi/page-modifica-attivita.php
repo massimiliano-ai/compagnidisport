@@ -1,7 +1,7 @@
 <?php
 /**
- * Template Name: Modifica Viaggio
- * Description: Form per modificare un viaggio esistente
+ * Template Name: Modifica Attività
+ * Description: Form per modificare un attività esistente
  */
 
 // Check if user is logged in
@@ -11,17 +11,17 @@ if (!is_user_logged_in()) {
 }
 
 // Get travel ID from URL
-$travel_id = isset($_GET['travel_id']) ? intval($_GET['travel_id']) : 0;
+$activity_id = isset($_GET['activity_id']) ? intval($_GET['activity_id']) : 0;
 
-if (!$travel_id) {
+if (!$activity_id) {
     wp_redirect(home_url('/dashboard'));
     exit;
 }
 
 // Get travel post
-$travel = get_post($travel_id);
+$travel = get_post($activity_id);
 
-if (!$travel || $travel->post_type !== 'viaggio') {
+if (!$travel || $travel->post_type !== 'attivita') {
     wp_redirect(home_url('/dashboard'));
     exit;
 }
@@ -34,25 +34,25 @@ if ($travel->post_author != $user_id) {
 }
 
 // Get travel meta data
-$destination = get_post_meta($travel_id, 'cdv_destination', true);
-$country = get_post_meta($travel_id, 'cdv_country', true);
-$start_date = get_post_meta($travel_id, 'cdv_start_date', true);
-$end_date = get_post_meta($travel_id, 'cdv_end_date', true);
-$date_type = get_post_meta($travel_id, 'cdv_date_type', true) ?: 'precise';
-$travel_month = get_post_meta($travel_id, 'cdv_travel_month', true);
-$budget = get_post_meta($travel_id, 'cdv_budget', true);
-$max_participants = get_post_meta($travel_id, 'cdv_max_participants', true);
+$destination = get_post_meta($activity_id, 'cdv_location', true);
+$country = get_post_meta($activity_id, 'cdv_country', true);
+$start_date = get_post_meta($activity_id, 'cdv_start_date', true);
+$end_date = get_post_meta($activity_id, 'cdv_end_date', true);
+$date_type = get_post_meta($activity_id, 'cdv_date_type', true) ?: 'precise';
+$activity_month = get_post_meta($activity_id, 'cdv_activity_month', true);
+$budget = get_post_meta($activity_id, 'cdv_budget', true);
+$max_participants = get_post_meta($activity_id, 'cdv_max_participants', true);
 
 // Optional fields
-$transport = get_post_meta($travel_id, 'cdv_travel_transport', true);
-$accommodation = get_post_meta($travel_id, 'cdv_travel_accommodation', true);
-$difficulty = get_post_meta($travel_id, 'cdv_travel_difficulty', true);
-$meals = get_post_meta($travel_id, 'cdv_travel_meals', true);
-$guide_type = get_post_meta($travel_id, 'cdv_travel_guide_type', true);
-$requirements = get_post_meta($travel_id, 'cdv_travel_requirements', true);
+$transport = get_post_meta($activity_id, 'cdv_activity_transport', true);
+$accommodation = get_post_meta($activity_id, 'cdv_activity_accommodation', true);
+$difficulty = get_post_meta($activity_id, 'cdv_activity_difficulty', true);
+$meals = get_post_meta($activity_id, 'cdv_activity_meals', true);
+$guide_type = get_post_meta($activity_id, 'cdv_activity_guide_type', true);
+$requirements = get_post_meta($activity_id, 'cdv_activity_requirements', true);
 
 // Get travel types
-$travel_types = wp_get_post_terms($travel_id, 'tipo_viaggio', array('fields' => 'ids'));
+$activity_types = wp_get_post_terms($activity_id, 'tipo_sport', array('fields' => 'ids'));
 
 get_header();
 ?>
@@ -62,39 +62,39 @@ get_header();
         <div class="container">
             <div class="create-travel-wrapper">
                 <div class="page-header">
-                    <h1>Modifica Viaggio</h1>
-                    <p>Aggiorna i dettagli del tuo viaggio</p>
+                    <h1>Modifica Attività</h1>
+                    <p>Aggiorna i dettagli del tua attività</p>
                 </div>
 
                 <form id="edit-travel-form" class="travel-form">
-                    <input type="hidden" id="travel_id" name="travel_id" value="<?php echo esc_attr($travel_id); ?>">
+                    <input type="hidden" id="activity_id" name="activity_id" value="<?php echo esc_attr($activity_id); ?>">
 
                     <div class="form-section">
                         <h3>Informazioni Generali</h3>
 
                         <div class="form-group">
-                            <label for="travel_title">Titolo del Viaggio <span class="required">*</span></label>
-                            <input type="text" id="travel_title" name="travel_title" required placeholder="Es: Weekend a Venezia, Road Trip in Toscana" value="<?php echo esc_attr($travel->post_title); ?>">
+                            <label for="activity_title">Titolo dell'Attività <span class="required">*</span></label>
+                            <input type="text" id="activity_title" name="activity_title" required placeholder="Es: Partita di calcetto, Escursione in montagna" value="<?php echo esc_attr($travel->post_title); ?>">
                         </div>
 
                         <div class="form-group">
-                            <label for="travel_description">Descrizione <span class="required">*</span></label>
-                            <textarea id="travel_description" name="travel_description" rows="6" required placeholder="Descrivi il tuo viaggio: destinazioni, attività previste, cosa rende speciale questa esperienza..."><?php echo esc_textarea($travel->post_content); ?></textarea>
+                            <label for="activity_description">Descrizione <span class="required">*</span></label>
+                            <textarea id="activity_description" name="activity_description" rows="6" required placeholder="Descrivi il tua attività: destinazioni, attività previste, cosa rende speciale questa esperienza..."><?php echo esc_textarea($travel->post_content); ?></textarea>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h3>Destinazione</h3>
+                        <h3>Luogo</h3>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="travel_destination">Destinazione <span class="required">*</span></label>
-                                <input type="text" id="travel_destination" name="travel_destination" required placeholder="Es: Venezia, Toscana" value="<?php echo esc_attr($destination); ?>">
+                                <label for="activity_destination">Luogo <span class="required">*</span></label>
+                                <input type="text" id="activity_destination" name="activity_destination" required placeholder="Es: Venezia, Toscana" value="<?php echo esc_attr($destination); ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="travel_country_select">Paese <span class="required">*</span></label>
-                                <select id="travel_country_select" name="travel_country_select" required>
+                                <label for="activity_country_select">Paese <span class="required">*</span></label>
+                                <select id="activity_country_select" name="activity_country_select" required>
                                     <option value="">Seleziona un paese</option>
 
                                     <optgroup label="🇪🇺 Europa">
@@ -151,10 +151,10 @@ get_header();
                                 </select>
 
                                 <!-- Campo "Altro" che appare quando selezionato -->
-                                <input type="text" id="travel_country_other" name="travel_country_other" style="<?php echo ($country && !in_array($country, array_merge($european_countries, $african_countries, $asian_countries, $american_countries, $oceania_countries))) ? '' : 'display: none;'; ?> margin-top: 10px;" placeholder="Specifica il paese" value="<?php echo (!in_array($country, array_merge($european_countries, $african_countries, $asian_countries, $american_countries, $oceania_countries))) ? esc_attr($country) : ''; ?>">
+                                <input type="text" id="activity_country_other" name="activity_country_other" style="<?php echo ($country && !in_array($country, array_merge($european_countries, $african_countries, $asian_countries, $american_countries, $oceania_countries))) ? '' : 'display: none;'; ?> margin-top: 10px;" placeholder="Specifica il paese" value="<?php echo (!in_array($country, array_merge($european_countries, $african_countries, $asian_countries, $american_countries, $oceania_countries))) ? esc_attr($country) : ''; ?>">
 
                                 <!-- Hidden field che conterrà il valore finale -->
-                                <input type="hidden" id="travel_country" name="travel_country" value="<?php echo esc_attr($country); ?>">
+                                <input type="hidden" id="activity_country" name="activity_country" value="<?php echo esc_attr($country); ?>">
                             </div>
                         </div>
                     </div>
@@ -179,21 +179,21 @@ get_header();
                         <div id="precise-dates-container" style="<?php echo ($date_type === 'month') ? 'display: none;' : ''; ?>">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="travel_start_date">Data Inizio <span class="required">*</span></label>
-                                    <input type="date" id="travel_start_date" name="travel_start_date" min="<?php echo date('Y-m-d'); ?>" value="<?php echo esc_attr($start_date); ?>">
+                                    <label for="activity_start_date">Data Inizio <span class="required">*</span></label>
+                                    <input type="date" id="activity_start_date" name="activity_start_date" min="<?php echo date('Y-m-d'); ?>" value="<?php echo esc_attr($start_date); ?>">
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="travel_end_date">Data Fine <span class="required">*</span></label>
-                                    <input type="date" id="travel_end_date" name="travel_end_date" min="<?php echo date('Y-m-d'); ?>" value="<?php echo esc_attr($end_date); ?>">
+                                    <label for="activity_end_date">Data Fine <span class="required">*</span></label>
+                                    <input type="date" id="activity_end_date" name="activity_end_date" min="<?php echo date('Y-m-d'); ?>" value="<?php echo esc_attr($end_date); ?>">
                                 </div>
                             </div>
                         </div>
 
                         <div id="month-container" style="<?php echo ($date_type === 'month') ? '' : 'display: none;'; ?>">
                             <div class="form-group">
-                                <label for="travel_month">Mese di Partenza <span class="required">*</span></label>
-                                <select id="travel_month" name="travel_month">
+                                <label for="activity_month">Mese di Partenza <span class="required">*</span></label>
+                                <select id="activity_month" name="activity_month">
                                     <option value="">Seleziona il mese</option>
                                     <?php
                                     $months = array(
@@ -209,7 +209,7 @@ get_header();
                                     for ($i = $current_month; $i <= 12; $i++) {
                                         $month_num = str_pad($i, 2, '0', STR_PAD_LEFT);
                                         $value = $current_year . '-' . $month_num;
-                                        $selected = ($travel_month === $value) ? 'selected' : '';
+                                        $selected = ($activity_month === $value) ? 'selected' : '';
                                         echo '<option value="' . $value . '" ' . $selected . '>' . $months[$month_num] . ' ' . $current_year . '</option>';
                                     }
 
@@ -217,13 +217,13 @@ get_header();
                                     $next_year = $current_year + 1;
                                     foreach ($months as $num => $name) {
                                         $value = $next_year . '-' . $num;
-                                        $selected = ($travel_month === $value) ? 'selected' : '';
+                                        $selected = ($activity_month === $value) ? 'selected' : '';
                                         echo '<option value="' . $value . '" ' . $selected . '>' . $name . ' ' . $next_year . '</option>';
                                     }
                                     ?>
                                 </select>
                                 <small style="display: block; margin-top: calc(var(--spacing-unit) * 0.5); color: #666;">
-                                    Il viaggio sarà disponibile per tutto il mese selezionato (date flessibili)
+                                    Il attività sarà disponibile per tutto il mese selezionato (date flessibili)
                                 </small>
                             </div>
                         </div>
@@ -232,31 +232,31 @@ get_header();
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="travel_budget">Budget per Persona (€) <span class="required">*</span></label>
-                                <input type="number" id="travel_budget" name="travel_budget" min="0" required placeholder="500" value="<?php echo esc_attr($budget); ?>">
+                                <label for="activity_budget">Budget per Persona (€) <span class="required">*</span></label>
+                                <input type="number" id="activity_budget" name="activity_budget" min="0" required placeholder="500" value="<?php echo esc_attr($budget); ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="travel_max_participants">Max Partecipanti <span class="required">*</span></label>
-                                <input type="number" id="travel_max_participants" name="travel_max_participants" min="2" max="50" required value="<?php echo esc_attr($max_participants); ?>">
+                                <label for="activity_max_participants">Max Partecipanti <span class="required">*</span></label>
+                                <input type="number" id="activity_max_participants" name="activity_max_participants" min="2" max="50" required value="<?php echo esc_attr($max_participants); ?>">
                             </div>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h3>Tipo di Viaggio</h3>
+                        <h3>Tipo di Attività</h3>
                         <div class="checkbox-group">
                             <?php
-                            $all_travel_types = get_terms(array(
-                                'taxonomy' => 'tipo_viaggio',
+                            $all_activity_types = get_terms(array(
+                                'taxonomy' => 'tipo_sport',
                                 'hide_empty' => false,
                             ));
-                            if (!empty($all_travel_types) && !is_wp_error($all_travel_types)) :
-                                foreach ($all_travel_types as $type) :
-                                    $checked = in_array($type->term_id, $travel_types) ? 'checked' : '';
+                            if (!empty($all_activity_types) && !is_wp_error($all_activity_types)) :
+                                foreach ($all_activity_types as $type) :
+                                    $checked = in_array($type->term_id, $activity_types) ? 'checked' : '';
                             ?>
                                 <label>
-                                    <input type="checkbox" name="travel_types[]" value="<?php echo esc_attr($type->term_id); ?>" <?php echo $checked; ?>>
+                                    <input type="checkbox" name="activity_types[]" value="<?php echo esc_attr($type->term_id); ?>" <?php echo $checked; ?>>
                                     <?php echo esc_html($type->name); ?>
                                 </label>
                             <?php
@@ -268,11 +268,11 @@ get_header();
 
                     <div class="form-section">
                         <h3>Dettagli Aggiuntivi <span style="font-weight: normal; font-size: 0.9rem; color: var(--text-medium);">(Facoltativi)</span></h3>
-                        <p style="color: var(--text-medium); margin-bottom: calc(var(--spacing-unit) * 3);">Questi dettagli aiutano i viaggiatori a capire meglio il viaggio</p>
+                        <p style="color: var(--text-medium); margin-bottom: calc(var(--spacing-unit) * 3);">Questi dettagli aiutano i viaggiatori a capire meglio l'attività</p>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="travel_transport">🚗 Mezzi di Trasporto</label>
+                                <label for="activity_transport">🚗 Mezzi di Trasporto</label>
                                 <div class="checkbox-group" style="grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));">
                                     <?php
                                     $transport_options = array(
@@ -288,7 +288,7 @@ get_header();
                                         $checked = in_array($value, $transport_array) ? 'checked' : '';
                                     ?>
                                     <label>
-                                        <input type="checkbox" name="travel_transport[]" value="<?php echo esc_attr($value); ?>" <?php echo $checked; ?>>
+                                        <input type="checkbox" name="activity_transport[]" value="<?php echo esc_attr($value); ?>" <?php echo $checked; ?>>
                                         <?php echo esc_html($label); ?>
                                     </label>
                                     <?php endforeach; ?>
@@ -298,8 +298,8 @@ get_header();
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="travel_accommodation">🏨 Tipologia Alloggio</label>
-                                <select id="travel_accommodation" name="travel_accommodation">
+                                <label for="activity_accommodation">🏨 Tipologia Alloggio</label>
+                                <select id="activity_accommodation" name="activity_accommodation">
                                     <option value="">Non specificato</option>
                                     <?php
                                     $accommodation_options = array(
@@ -321,8 +321,8 @@ get_header();
                             </div>
 
                             <div class="form-group">
-                                <label for="travel_difficulty">📈 Livello di Difficoltà</label>
-                                <select id="travel_difficulty" name="travel_difficulty">
+                                <label for="activity_difficulty">📈 Livello di Difficoltà</label>
+                                <select id="activity_difficulty" name="activity_difficulty">
                                     <option value="">Non specificato</option>
                                     <?php
                                     $difficulty_options = array(
@@ -342,8 +342,8 @@ get_header();
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="travel_meals">🍽️ Pasti</label>
-                                <select id="travel_meals" name="travel_meals">
+                                <label for="activity_meals">🍽️ Pasti</label>
+                                <select id="activity_meals" name="activity_meals">
                                     <option value="">Non specificato</option>
                                     <?php
                                     $meals_options = array(
@@ -361,12 +361,12 @@ get_header();
                             </div>
 
                             <div class="form-group">
-                                <label for="travel_guide_type">👥 Organizzazione</label>
-                                <select id="travel_guide_type" name="travel_guide_type">
+                                <label for="activity_guide_type">👥 Organizzazione</label>
+                                <select id="activity_guide_type" name="activity_guide_type">
                                     <option value="">Non specificato</option>
                                     <?php
                                     $guide_options = array(
-                                        'autonomo' => 'Viaggio autonomo',
+                                        'autonomo' => 'Attività autonomo',
                                         'guida_locale' => 'Con guida locale',
                                         'tour_organizzato' => 'Tour organizzato'
                                     );
@@ -380,15 +380,15 @@ get_header();
                         </div>
 
                         <div class="form-group">
-                            <label for="travel_requirements">📝 Requisiti e Note Particolari</label>
-                            <textarea id="travel_requirements" name="travel_requirements" rows="4" placeholder="Es: Documenti necessari (visto, passaporto), vaccinazioni richieste, equipaggiamento speciale, requisiti fisici specifici..."><?php echo esc_textarea($requirements); ?></textarea>
+                            <label for="activity_requirements">📝 Requisiti e Note Particolari</label>
+                            <textarea id="activity_requirements" name="activity_requirements" rows="4" placeholder="Es: Documenti necessari (visto, passaporto), vaccinazioni richieste, equipaggiamento speciale, requisiti fisici specifici..."><?php echo esc_textarea($requirements); ?></textarea>
                             <small style="display: block; margin-top: 8px; color: #666;">Inserisci qui eventuali requisiti particolari, documenti necessari o informazioni importanti per i partecipanti</small>
                         </div>
                     </div>
 
                     <div class="form-actions">
-                        <a href="<?php echo esc_url(get_permalink($travel_id)); ?>" class="btn-secondary">Annulla</a>
-                        <button type="submit" class="btn-primary btn-large">Aggiorna Viaggio 💾</button>
+                        <a href="<?php echo esc_url(get_permalink($activity_id)); ?>" class="btn-secondary">Annulla</a>
+                        <button type="submit" class="btn-primary btn-large">Aggiorna Attività 💾</button>
                     </div>
 
                     <div id="form-messages" style="margin-top: 20px;"></div>
@@ -539,29 +539,29 @@ jQuery(document).ready(function($) {
         if (dateType === 'precise') {
             $('#precise-dates-container').show();
             $('#month-container').hide();
-            $('#travel_start_date').prop('required', true);
-            $('#travel_end_date').prop('required', true);
-            $('#travel_month').prop('required', false);
+            $('#activity_start_date').prop('required', true);
+            $('#activity_end_date').prop('required', true);
+            $('#activity_month').prop('required', false);
         } else {
             $('#precise-dates-container').hide();
             $('#month-container').show();
-            $('#travel_start_date').prop('required', false);
-            $('#travel_end_date').prop('required', false);
-            $('#travel_month').prop('required', true);
+            $('#activity_start_date').prop('required', false);
+            $('#activity_end_date').prop('required', false);
+            $('#activity_month').prop('required', true);
         }
     });
 
     // Update end date min when start date changes
-    $('#travel_start_date').on('change', function() {
+    $('#activity_start_date').on('change', function() {
         const startDate = $(this).val();
-        $('#travel_end_date').attr('min', startDate);
+        $('#activity_end_date').attr('min', startDate);
     });
 
     // Handle country select with "Altro" option
-    $('#travel_country_select').on('change', function() {
+    $('#activity_country_select').on('change', function() {
         const selectedValue = $(this).val();
-        const $otherField = $('#travel_country_other');
-        const $hiddenField = $('#travel_country');
+        const $otherField = $('#activity_country_other');
+        const $hiddenField = $('#activity_country');
 
         if (selectedValue === 'altro') {
             // Show the "other" text field
@@ -575,12 +575,12 @@ jQuery(document).ready(function($) {
     });
 
     // Update hidden field when "other" text field changes
-    $('#travel_country_other').on('input', function() {
-        $('#travel_country').val($(this).val());
+    $('#activity_country_other').on('input', function() {
+        $('#activity_country').val($(this).val());
     });
 
     // Initialize on page load
-    $('#travel_country_select').trigger('change');
+    $('#activity_country_select').trigger('change');
 
     $('#edit-travel-form').on('submit', function(e) {
         e.preventDefault();
@@ -593,36 +593,36 @@ jQuery(document).ready(function($) {
         let dataToSend = {
             action: 'cdv_update_travel',
             nonce: cdvAjax.nonce,
-            travel_id: $('#travel_id').val(),
-            title: $('#travel_title').val(),
-            description: $('#travel_description').val(),
-            destination: $('#travel_destination').val(),
-            country: $('#travel_country').val(),
-            budget: $('#travel_budget').val(),
-            max_participants: $('#travel_max_participants').val(),
-            travel_types: [],
-            travel_transport: [],
-            travel_accommodation: $('#travel_accommodation').val(),
-            travel_difficulty: $('#travel_difficulty').val(),
-            travel_meals: $('#travel_meals').val(),
-            travel_guide_type: $('#travel_guide_type').val(),
-            travel_requirements: $('#travel_requirements').val()
+            activity_id: $('#activity_id').val(),
+            title: $('#activity_title').val(),
+            description: $('#activity_description').val(),
+            destination: $('#activity_destination').val(),
+            country: $('#activity_country').val(),
+            budget: $('#activity_budget').val(),
+            max_participants: $('#activity_max_participants').val(),
+            activity_types: [],
+            activity_transport: [],
+            activity_accommodation: $('#activity_accommodation').val(),
+            activity_difficulty: $('#activity_difficulty').val(),
+            activity_meals: $('#activity_meals').val(),
+            activity_guide_type: $('#activity_guide_type').val(),
+            activity_requirements: $('#activity_requirements').val()
         };
 
         // Get travel types
-        $('input[name="travel_types[]"]:checked').each(function() {
-            dataToSend.travel_types.push($(this).val());
+        $('input[name="activity_types[]"]:checked').each(function() {
+            dataToSend.activity_types.push($(this).val());
         });
 
         // Get travel transport methods
-        $('input[name="travel_transport[]"]:checked').each(function() {
-            dataToSend.travel_transport.push($(this).val());
+        $('input[name="activity_transport[]"]:checked').each(function() {
+            dataToSend.activity_transport.push($(this).val());
         });
 
         // Add date info based on type
         if (dateType === 'precise') {
-            const startDate = $('#travel_start_date').val();
-            const endDate = $('#travel_end_date').val();
+            const startDate = $('#activity_start_date').val();
+            const endDate = $('#activity_end_date').val();
 
             if (!startDate || !endDate) {
                 $messages.html('<div class="error-message">Inserisci sia la data di inizio che di fine.</div>');
@@ -638,14 +638,14 @@ jQuery(document).ready(function($) {
             dataToSend.end_date = endDate;
             dataToSend.date_type = 'precise';
         } else {
-            const monthValue = $('#travel_month').val();
+            const monthValue = $('#activity_month').val();
 
             if (!monthValue) {
                 $messages.html('<div class="error-message">Seleziona il mese di partenza.</div>');
                 return;
             }
 
-            dataToSend.travel_month = monthValue;
+            dataToSend.activity_month = monthValue;
             dataToSend.date_type = 'month';
         }
 
@@ -666,12 +666,12 @@ jQuery(document).ready(function($) {
                     }, 1000);
                 } else {
                     $messages.html('<div class="error-message">' + response.data.message + '</div>');
-                    $submitBtn.prop('disabled', false).text('Aggiorna Viaggio 💾');
+                    $submitBtn.prop('disabled', false).text('Aggiorna Attività 💾');
                 }
             },
             error: function() {
                 $messages.html('<div class="error-message">Si è verificato un errore. Riprova più tardi.</div>');
-                $submitBtn.prop('disabled', false).text('Aggiorna Viaggio 💾');
+                $submitBtn.prop('disabled', false).text('Aggiorna Attività 💾');
             }
         });
     });

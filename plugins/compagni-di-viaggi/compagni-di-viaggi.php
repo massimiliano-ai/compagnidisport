@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name: Compagni di Viaggi
- * Plugin URI: https://www.compagnidiviaggi.com
- * Description: Piattaforma completa per trovare compagni di viaggio, organizzare avventure e costruire una community di viaggiatori. Include gestione viaggi, profili utente, chat, recensioni e REST API per app mobile.
- * Version: 1.0.0
+ * Plugin Name: Compagni di Sport
+ * Plugin URI: https://www.compagnidisport.com
+ * Description: Piattaforma completa per trovare compagni per attività sportive, organizzare eventi sportivi e costruire una community di sportivi. Include gestione attività, profili utente, chat, recensioni e REST API per app mobile.
+ * Version: 2.0.0
  * Author: Max74vr
  * Author URI: https://github.com/max74vr
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: compagni-di-viaggi
+ * Text Domain: compagni-di-sport
  * Domain Path: /languages
  * Requires at least: 6.0
  * Requires PHP: 7.4
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('CDV_VERSION', '1.0.0');
+define('CDV_VERSION', '2.0.0');
 define('CDV_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('CDV_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('CDV_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -28,7 +28,7 @@ define('CDV_PLUGIN_BASENAME', plugin_basename(__FILE__));
 /**
  * Main Plugin Class
  */
-class Compagni_Di_Viaggi {
+class Compagni_Di_Sport {
 
     /**
      * Single instance of the class
@@ -159,7 +159,7 @@ class Compagni_Di_Viaggi {
      * Load plugin textdomain
      */
     public function load_textdomain() {
-        load_plugin_textdomain('compagni-di-viaggi', false, dirname(CDV_PLUGIN_BASENAME) . '/languages');
+        load_plugin_textdomain('compagni-di-sport', false, dirname(CDV_PLUGIN_BASENAME) . '/languages');
     }
 
     /**
@@ -216,7 +216,7 @@ class Compagni_Di_Viaggi {
  * Initialize the plugin
  */
 function cdv_init() {
-    return Compagni_Di_Viaggi::get_instance();
+    return Compagni_Di_Sport::get_instance();
 }
 
 // Start the plugin

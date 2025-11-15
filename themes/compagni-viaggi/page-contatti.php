@@ -86,22 +86,22 @@ get_header();
                     <div class="faq-list">
                         <details class="faq-item">
                             <summary>Come funziona la piattaforma?</summary>
-                            <p>Compagni di Viaggi è una piattaforma che mette in contatto persone che vogliono viaggiare insieme. Gli organizzatori pubblicano i loro viaggi e i viaggiatori interessati possono richiedere di partecipare.</p>
+                            <p>Compagni di Attività è una piattaforma che mette in contatto persone che vogliono viaggiare insieme. Gli organizzatori pubblicano i loro attività e i viaggiatori interessati possono richiedere di partecipare.</p>
                         </details>
 
                         <details class="faq-item">
                             <summary>È sicuro viaggiare con sconosciuti?</summary>
-                            <p>La piattaforma facilita l'incontro ma la responsabilità di organizzare e partecipare ai viaggi è degli utenti. Ti consigliamo di verificare sempre l'identità e l'affidabilità delle persone prima di impegnarti.</p>
+                            <p>La piattaforma facilita l'incontro ma la responsabilità di organizzare e partecipare ai attività è degli utenti. Ti consigliamo di verificare sempre l'identità e l'affidabilità delle persone prima di impegnarti.</p>
                         </details>
 
                         <details class="faq-item">
                             <summary>Quanto costa usare la piattaforma?</summary>
-                            <p>La registrazione e l'utilizzo base della piattaforma sono completamente gratuiti. Gli eventuali costi sono relativi ai viaggi stessi (trasporti, alloggi, etc).</p>
+                            <p>La registrazione e l'utilizzo base della piattaforma sono completamente gratuiti. Gli eventuali costi sono relativi ai attività stessi (trasporti, alloggi, etc).</p>
                         </details>
 
                         <details class="faq-item">
                             <summary>Come posso segnalare un problema?</summary>
-                            <p>Puoi usare questo form di contatto oppure segnalare contenuti inappropriati direttamente dalla pagina del viaggio usando i pulsanti di moderazione.</p>
+                            <p>Puoi usare questo form di contatto oppure segnalare contenuti inappropriati direttamente dalla pagina dell'attività usando i pulsanti di moderazione.</p>
                         </details>
                     </div>
                 </div>
@@ -111,7 +111,7 @@ get_header();
                     <h3>🔗 Link Utili</h3>
 
                     <ul class="quick-links">
-                        <li><a href="<?php echo esc_url(home_url('/viaggi')); ?>">✈️ Esplora Viaggi</a></li>
+                        <li><a href="<?php echo esc_url(home_url('/attività')); ?>">✈️ Esplora Attività</a></li>
                         <li><a href="<?php echo esc_url(home_url('/registrazione')); ?>">✨ Registrati</a></li>
                         <li><a href="<?php echo esc_url(home_url('/privacy-policy')); ?>">🔒 Privacy Policy</a></li>
                         <li><a href="<?php echo esc_url(home_url('/termini-condizioni')); ?>">📜 Termini e Condizioni</a></li>

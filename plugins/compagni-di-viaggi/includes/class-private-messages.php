@@ -42,14 +42,14 @@ class CDV_Private_Messages {
             id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             sender_id bigint(20) UNSIGNED NOT NULL,
             receiver_id bigint(20) UNSIGNED NOT NULL,
-            travel_id bigint(20) UNSIGNED NOT NULL,
+            activity_id bigint(20) UNSIGNED NOT NULL,
             message text NOT NULL,
             is_read tinyint(1) DEFAULT 0,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id),
             KEY sender_id (sender_id),
             KEY receiver_id (receiver_id),
-            KEY travel_id (travel_id),
+            KEY activity_id (activity_id),
             KEY created_at (created_at)
         ) $charset_collate;";
 
@@ -62,14 +62,14 @@ class CDV_Private_Messages {
             id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             user_id bigint(20) UNSIGNED NOT NULL,
             blocked_user_id bigint(20) UNSIGNED NOT NULL,
-            travel_id bigint(20) UNSIGNED NOT NULL,
+            activity_id bigint(20) UNSIGNED NOT NULL,
             reason varchar(255) DEFAULT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id),
-            UNIQUE KEY unique_block (user_id, blocked_user_id, travel_id),
+            UNIQUE KEY unique_block (user_id, blocked_user_id, activity_id),
             KEY user_id (user_id),
             KEY blocked_user_id (blocked_user_id),
-            KEY travel_id (travel_id)
+            KEY activity_id (activity_id)
         ) $charset_collate;";
 
         dbDelta($sql_blocked);
@@ -78,29 +78,29 @@ class CDV_Private_Messages {
     /**
      * Check if user can message another user
      */
-    public static function can_message($sender_id, $receiver_id, $travel_id) {
+    public static function can_message($sender_id, $receiver_id, $activity_id) {
         global $wpdb;
 
         // Get travel organizer
-        $travel = get_post($travel_id);
-        if (!$travel) {
+        $activity = get_post($activity_id);
+        if (!$activity) {
             return false;
         }
-        $organizer_id = $travel->post_author;
+        $organizer_id = $activity->post_author;
 
         // Check if they are both participants or have pending request
-        $participants_table = $wpdb->prefix . 'cdv_travel_participants';
+        $participants_table = $wpdb->prefix . 'cdv_activity_participants';
 
         $sender_participant = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM $participants_table
-            WHERE travel_id = %d AND user_id = %d AND status IN ('accepted', 'pending')",
-            $travel_id, $sender_id
+            WHERE activity_id = %d AND user_id = %d AND status IN ('accepted', 'pending')",
+            $activity_id, $sender_id
         ));
 
         $receiver_participant = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM $participants_table
-            WHERE travel_id = %d AND user_id = %d AND status IN ('accepted', 'pending')",
-            $travel_id, $receiver_id
+            WHERE activity_id = %d AND user_id = %d AND status IN ('accepted', 'pending')",
+            $activity_id, $receiver_id
         ));
 
         // Allow messaging if:
@@ -118,7 +118,7 @@ class CDV_Private_Messages {
         }
 
         // Check if conversation is blocked
-        if (self::is_conversation_blocked($sender_id, $receiver_id, $travel_id)) {
+        if (self::is_conversation_blocked($sender_id, $receiver_id, $activity_id)) {
             return false;
         }
 
@@ -128,17 +128,17 @@ class CDV_Private_Messages {
     /**
      * Check if conversation is blocked
      */
-    public static function is_conversation_blocked($user1_id, $user2_id, $travel_id) {
+    public static function is_conversation_blocked($user1_id, $user2_id, $activity_id) {
         global $wpdb;
         $blocked_table = $wpdb->prefix . 'cdv_blocked_conversations';
 
         $blocked = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM $blocked_table
-            WHERE travel_id = %d AND (
+            WHERE activity_id = %d AND (
                 (user_id = %d AND blocked_user_id = %d) OR
                 (user_id = %d AND blocked_user_id = %d)
             )",
-            $travel_id, $user1_id, $user2_id, $user2_id, $user1_id
+            $activity_id, $user1_id, $user2_id, $user2_id, $user1_id
         ));
 
         return !empty($blocked);
@@ -147,11 +147,11 @@ class CDV_Private_Messages {
     /**
      * Send a message
      */
-    public static function send_message($sender_id, $receiver_id, $travel_id, $message) {
+    public static function send_message($sender_id, $receiver_id, $activity_id, $message) {
         global $wpdb;
 
         // Validate
-        if (!self::can_message($sender_id, $receiver_id, $travel_id)) {
+        if (!self::can_message($sender_id, $receiver_id, $activity_id)) {
             return new WP_Error('cannot_message', 'Non puoi inviare messaggi a questo utente');
         }
 
@@ -166,7 +166,7 @@ class CDV_Private_Messages {
             array(
                 'sender_id' => $sender_id,
                 'receiver_id' => $receiver_id,
-                'travel_id' => $travel_id,
+                'activity_id' => $activity_id,
                 'message' => sanitize_textarea_field($message),
                 'is_read' => 0,
                 'created_at' => current_time('mysql'),
@@ -181,7 +181,7 @@ class CDV_Private_Messages {
         $message_id = $wpdb->insert_id;
 
         // Send email notification
-        self::send_notification_email($receiver_id, $sender_id, $travel_id);
+        self::send_notification_email($receiver_id, $sender_id, $activity_id);
 
         return $message_id;
     }
@@ -189,22 +189,22 @@ class CDV_Private_Messages {
     /**
      * Send notification email (without message content)
      */
-    private static function send_notification_email($receiver_id, $sender_id, $travel_id) {
+    private static function send_notification_email($receiver_id, $sender_id, $activity_id) {
         $receiver = get_userdata($receiver_id);
         $sender = get_userdata($sender_id);
-        $travel = get_post($travel_id);
+        $activity = get_post($activity_id);
 
-        if (!$receiver || !$sender || !$travel) {
+        if (!$receiver || !$sender || !$activity) {
             return false;
         }
 
         $subject = 'Nuovo messaggio da ' . $sender->display_name;
         $message = sprintf(
-            "Ciao %s,\n\n%s ti ha inviato un nuovo messaggio riguardo al viaggio \"%s\".\n\nAccedi alla tua dashboard per leggere il messaggio:\n%s\n\nNon rispondere a questa email.\n\nCompagni di Viaggi",
+            "Ciao %s,\n\n%s ti ha inviato un nuovo messaggio riguardo al attivitào \"%s\".\n\nAccedi alla tua dashboard per leggere il messaggio:\n%s\n\nNon rispondere a questa email.\n\nCompagni di Attività",
             $receiver->display_name,
             $sender->display_name,
-            $travel->post_title,
-            home_url('/dashboard?tab=messaggi&travel_id=' . $travel_id)
+            $activity->post_title,
+            home_url('/dashboard?tab=messaggi&activity_id=' . $activity_id)
         );
 
         $headers = array('Content-Type: text/plain; charset=UTF-8');
@@ -215,19 +215,19 @@ class CDV_Private_Messages {
     /**
      * Get conversation between two users
      */
-    public static function get_conversation($user1_id, $user2_id, $travel_id, $limit = 50, $offset = 0) {
+    public static function get_conversation($user1_id, $user2_id, $activity_id, $limit = 50, $offset = 0) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'cdv_private_messages';
 
         $messages = $wpdb->get_results($wpdb->prepare(
             "SELECT * FROM $table_name
-            WHERE travel_id = %d AND (
+            WHERE activity_id = %d AND (
                 (sender_id = %d AND receiver_id = %d) OR
                 (sender_id = %d AND receiver_id = %d)
             )
             ORDER BY created_at DESC
             LIMIT %d OFFSET %d",
-            $travel_id, $user1_id, $user2_id, $user2_id, $user1_id, $limit, $offset
+            $activity_id, $user1_id, $user2_id, $user2_id, $user1_id, $limit, $offset
         ));
 
         return array_reverse($messages);
@@ -245,30 +245,30 @@ class CDV_Private_Messages {
         $conversations = $wpdb->get_results($wpdb->prepare(
             "SELECT
                 m1.other_user_id,
-                m1.travel_id,
+                m1.activity_id,
                 m1.last_message_time,
                 COALESCE(unread.unread_count, 0) as unread_count
             FROM (
                 SELECT
                     CASE WHEN sender_id = %d THEN receiver_id ELSE sender_id END as other_user_id,
-                    travel_id,
+                    activity_id,
                     MAX(created_at) as last_message_time
                 FROM $messages_table
                 WHERE sender_id = %d OR receiver_id = %d
                 GROUP BY
                     CASE WHEN sender_id = %d THEN receiver_id ELSE sender_id END,
-                    travel_id
+                    activity_id
             ) m1
             LEFT JOIN (
                 SELECT
                     sender_id as other_user_id,
-                    travel_id,
+                    activity_id,
                     COUNT(*) as unread_count
                 FROM $messages_table
                 WHERE receiver_id = %d AND is_read = 0
-                GROUP BY sender_id, travel_id
+                GROUP BY sender_id, activity_id
             ) unread ON m1.other_user_id = unread.other_user_id
-                AND m1.travel_id = unread.travel_id
+                AND m1.activity_id = unread.activity_id
             ORDER BY m1.last_message_time DESC",
             $user_id, $user_id, $user_id, $user_id, $user_id
         ));
@@ -279,7 +279,7 @@ class CDV_Private_Messages {
     /**
      * Mark messages as read
      */
-    public static function mark_as_read($user_id, $other_user_id, $travel_id) {
+    public static function mark_as_read($user_id, $other_user_id, $activity_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'cdv_private_messages';
 
@@ -289,7 +289,7 @@ class CDV_Private_Messages {
             array(
                 'receiver_id' => $user_id,
                 'sender_id' => $other_user_id,
-                'travel_id' => $travel_id,
+                'activity_id' => $activity_id,
                 'is_read' => 0,
             ),
             array('%d'),
@@ -300,7 +300,7 @@ class CDV_Private_Messages {
     /**
      * Block conversation
      */
-    public static function block_conversation($user_id, $blocked_user_id, $travel_id, $reason = '') {
+    public static function block_conversation($user_id, $blocked_user_id, $activity_id, $reason = '') {
         global $wpdb;
         $blocked_table = $wpdb->prefix . 'cdv_blocked_conversations';
 
@@ -309,7 +309,7 @@ class CDV_Private_Messages {
             array(
                 'user_id' => $user_id,
                 'blocked_user_id' => $blocked_user_id,
-                'travel_id' => $travel_id,
+                'activity_id' => $activity_id,
                 'reason' => $reason,
                 'created_at' => current_time('mysql'),
             ),
@@ -322,7 +322,7 @@ class CDV_Private_Messages {
     /**
      * Unblock conversation
      */
-    public static function unblock_conversation($user_id, $blocked_user_id, $travel_id) {
+    public static function unblock_conversation($user_id, $blocked_user_id, $activity_id) {
         global $wpdb;
         $blocked_table = $wpdb->prefix . 'cdv_blocked_conversations';
 
@@ -331,7 +331,7 @@ class CDV_Private_Messages {
             array(
                 'user_id' => $user_id,
                 'blocked_user_id' => $blocked_user_id,
-                'travel_id' => $travel_id,
+                'activity_id' => $activity_id,
             ),
             array('%d', '%d', '%d')
         );
@@ -340,12 +340,12 @@ class CDV_Private_Messages {
     /**
      * Block conversation when participant is rejected
      */
-    public static function block_on_rejection($travel_id, $user_id) {
-        $organizer_id = get_post_field('post_author', $travel_id);
+    public static function block_on_rejection($activity_id, $user_id) {
+        $organizer_id = get_post_field('post_author', $activity_id);
 
         // Block both ways
-        self::block_conversation($organizer_id, $user_id, $travel_id, 'Partecipazione rifiutata');
-        self::block_conversation($user_id, $organizer_id, $travel_id, 'Partecipazione rifiutata');
+        self::block_conversation($organizer_id, $user_id, $activity_id, 'Partecipazione rifiutata');
+        self::block_conversation($user_id, $organizer_id, $activity_id, 'Partecipazione rifiutata');
     }
 
     /**
@@ -374,10 +374,10 @@ class CDV_Private_Messages {
 
         $sender_id = get_current_user_id();
         $receiver_id = isset($_POST['receiver_id']) ? intval($_POST['receiver_id']) : 0;
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
         $message = isset($_POST['message']) ? $_POST['message'] : '';
 
-        $result = self::send_message($sender_id, $receiver_id, $travel_id, $message);
+        $result = self::send_message($sender_id, $receiver_id, $activity_id, $message);
 
         if (is_wp_error($result)) {
             wp_send_json_error(array('message' => $result->get_error_message()));
@@ -401,29 +401,29 @@ class CDV_Private_Messages {
 
         $user_id = get_current_user_id();
         $other_user_id = isset($_POST['other_user_id']) ? intval($_POST['other_user_id']) : 0;
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
 
-        if (!$other_user_id || !$travel_id) {
+        if (!$other_user_id || !$activity_id) {
             wp_send_json_error(array('message' => 'Parametri mancanti'));
             return;
         }
 
         // Get messages
-        $messages = self::get_conversation($user_id, $other_user_id, $travel_id);
+        $messages = self::get_conversation($user_id, $other_user_id, $activity_id);
 
         // Get other user info
         $other_user = get_userdata($other_user_id);
         $other_user_name = $other_user ? $other_user->display_name : 'Utente sconosciuto';
 
         // Get travel info
-        $travel = get_post($travel_id);
-        $travel_title = $travel ? $travel->post_title : 'Viaggio sconosciuto';
+        $activity = get_post($activity_id);
+        $travel_title = $activity ? $activity->post_title : 'Attività sconosciuto';
 
         // Check if blocked
-        $is_blocked = self::is_conversation_blocked($user_id, $other_user_id, $travel_id);
+        $is_blocked = self::is_conversation_blocked($user_id, $other_user_id, $activity_id);
 
         // Mark as read
-        self::mark_as_read($user_id, $other_user_id, $travel_id);
+        self::mark_as_read($user_id, $other_user_id, $activity_id);
 
         // Format messages for frontend
         $formatted_messages = array();
@@ -463,15 +463,15 @@ class CDV_Private_Messages {
         $formatted_conversations = array();
         foreach ($conversations as $conv) {
             $other_user = get_userdata($conv->other_user_id);
-            $travel = get_post($conv->travel_id);
+            $activity = get_post($conv->activity_id);
 
-            if ($other_user && $travel) {
+            if ($other_user && $activity) {
                 $formatted_conversations[] = array(
                     'other_user_id' => $conv->other_user_id,
                     'other_user_name' => $other_user->display_name,
                     'avatar' => get_avatar($conv->other_user_id, 50),
-                    'travel_id' => $conv->travel_id,
-                    'travel_title' => $travel->post_title,
+                    'activity_id' => $conv->activity_id,
+                    'travel_title' => $activity->post_title,
                     'last_message_time' => human_time_diff(strtotime($conv->last_message_time), current_time('timestamp')) . ' fa',
                     'unread_count' => intval($conv->unread_count)
                 );
@@ -493,19 +493,19 @@ class CDV_Private_Messages {
 
         $user_id = get_current_user_id();
         $other_user_id = isset($_POST['other_user_id']) ? intval($_POST['other_user_id']) : 0;
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
 
-        if (!$other_user_id || !$travel_id) {
+        if (!$other_user_id || !$activity_id) {
             wp_send_json_error(array('message' => 'Parametri mancanti'));
             return;
         }
 
         // Check if already blocked
-        $is_blocked = self::is_conversation_blocked($user_id, $other_user_id, $travel_id);
+        $is_blocked = self::is_conversation_blocked($user_id, $other_user_id, $activity_id);
 
         if ($is_blocked) {
             // Unblock
-            $result = self::unblock_conversation($user_id, $other_user_id, $travel_id);
+            $result = self::unblock_conversation($user_id, $other_user_id, $activity_id);
             if ($result) {
                 wp_send_json_success(array('message' => 'Conversazione sbloccata', 'blocked' => false));
             } else {
@@ -513,7 +513,7 @@ class CDV_Private_Messages {
             }
         } else {
             // Block
-            $result = self::block_conversation($user_id, $other_user_id, $travel_id, 'Bloccato dall\'utente');
+            $result = self::block_conversation($user_id, $other_user_id, $activity_id, 'Bloccato dall\'utente');
             if ($result) {
                 wp_send_json_success(array('message' => 'Conversazione bloccata', 'blocked' => true));
             } else {
@@ -534,9 +534,9 @@ class CDV_Private_Messages {
 
         $user_id = get_current_user_id();
         $blocked_user_id = isset($_POST['blocked_user_id']) ? intval($_POST['blocked_user_id']) : 0;
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
 
-        $result = self::unblock_conversation($user_id, $blocked_user_id, $travel_id);
+        $result = self::unblock_conversation($user_id, $blocked_user_id, $activity_id);
 
         if ($result) {
             wp_send_json_success(array('message' => 'Conversazione sbloccata'));
@@ -557,9 +557,9 @@ class CDV_Private_Messages {
 
         $user_id = get_current_user_id();
         $other_user_id = isset($_POST['other_user_id']) ? intval($_POST['other_user_id']) : 0;
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
 
-        self::mark_as_read($user_id, $other_user_id, $travel_id);
+        self::mark_as_read($user_id, $other_user_id, $activity_id);
 
         wp_send_json_success(array('message' => 'Messaggi segnati come letti'));
     }
@@ -582,11 +582,11 @@ class CDV_Private_Messages {
             "SELECT
                 sender_id,
                 receiver_id,
-                travel_id,
+                activity_id,
                 MAX(created_at) as last_message_time,
                 COUNT(*) as message_count
             FROM $messages_table
-            GROUP BY sender_id, receiver_id, travel_id
+            GROUP BY sender_id, receiver_id, activity_id
             ORDER BY last_message_time DESC
             LIMIT 100"
         );
@@ -606,9 +606,9 @@ class CDV_Private_Messages {
 
         $user1_id = isset($_POST['user1_id']) ? intval($_POST['user1_id']) : 0;
         $user2_id = isset($_POST['user2_id']) ? intval($_POST['user2_id']) : 0;
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
 
-        $messages = self::get_conversation($user1_id, $user2_id, $travel_id);
+        $messages = self::get_conversation($user1_id, $user2_id, $activity_id);
 
         wp_send_json_success(array('messages' => $messages));
     }

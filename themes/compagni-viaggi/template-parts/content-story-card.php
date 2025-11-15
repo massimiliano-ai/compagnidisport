@@ -4,8 +4,8 @@
  */
 
 $author_id = get_the_author_meta('ID');
-$destination = get_post_meta(get_the_ID(), 'cdv_destination', true);
-$travel_date = get_post_meta(get_the_ID(), 'cdv_travel_date', true);
+$destination = get_post_meta(get_the_ID(), 'cdv_location', true);
+$activity_date = get_post_meta(get_the_ID(), 'cdv_activity_date', true);
 $duration = get_post_meta(get_the_ID(), 'cdv_duration', true);
 $stats = CDV_Travel_Stories::get_story_stats(get_the_ID());
 $categories = get_the_terms(get_the_ID(), 'categoria_racconto');
@@ -62,14 +62,14 @@ $categories = get_the_terms(get_the_ID(), 'categoria_racconto');
                 </div>
             </div>
 
-            <?php if ($travel_date || $duration) : ?>
+            <?php if ($activity_date || $duration) : ?>
                 <div class="story-details">
-                    <?php if ($travel_date) : ?>
+                    <?php if ($activity_date) : ?>
                         <span class="detail">
                             <span class="icon">📅</span>
                             <?php
-                            $date = DateTime::createFromFormat('Y-m', $travel_date);
-                            echo $date ? $date->format('F Y') : $travel_date;
+                            $date = DateTime::createFromFormat('Y-m', $activity_date);
+                            echo $date ? $date->format('F Y') : $activity_date;
                             ?>
                         </span>
                     <?php endif; ?>

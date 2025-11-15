@@ -1,6 +1,6 @@
 <?php
 /**
- * Single Story (Racconto) Template
+ * Single Story (Storia Sport) Template
  */
 
 get_header();
@@ -10,8 +10,8 @@ while (have_posts()) : the_post();
     CDV_Travel_Stories::increment_views(get_the_ID());
 
     $author_id = get_the_author_meta('ID');
-    $destination = get_post_meta(get_the_ID(), 'cdv_destination', true);
-    $travel_date = get_post_meta(get_the_ID(), 'cdv_travel_date', true);
+    $destination = get_post_meta(get_the_ID(), 'cdv_location', true);
+    $activity_date = get_post_meta(get_the_ID(), 'cdv_activity_date', true);
     $duration = get_post_meta(get_the_ID(), 'cdv_duration', true);
     $stats = CDV_Travel_Stories::get_story_stats(get_the_ID());
     $categories = get_the_terms(get_the_ID(), 'categoria_racconto');
@@ -90,15 +90,15 @@ while (have_posts()) : the_post();
                 </div>
 
                 <!-- Trip Details -->
-                <?php if ($travel_date || $duration) : ?>
+                <?php if ($activity_date || $duration) : ?>
                     <div class="trip-details" style="display: flex; gap: calc(var(--spacing-unit) * 4); padding: calc(var(--spacing-unit) * 3) 0; background: #f8f9fa; border-radius: 8px; margin: calc(var(--spacing-unit) * 4) 0; padding: calc(var(--spacing-unit) * 3);">
-                        <?php if ($travel_date) : ?>
+                        <?php if ($activity_date) : ?>
                             <div>
                                 <div style="color: var(--text-light); font-size: 0.9rem; margin-bottom: calc(var(--spacing-unit) * 0.5);">Quando</div>
                                 <div style="font-weight: 600; font-size: 1.1rem;">
                                     📅 <?php
-                                    $date = DateTime::createFromFormat('Y-m', $travel_date);
-                                    echo $date ? $date->format('F Y') : $travel_date;
+                                    $date = DateTime::createFromFormat('Y-m', $activity_date);
+                                    echo $date ? $date->format('F Y') : $activity_date;
                                     ?>
                                 </div>
                             </div>
@@ -134,11 +134,11 @@ while (have_posts()) : the_post();
                 <!-- Edit/Delete for Author -->
                 <?php if (get_current_user_id() == $author_id || current_user_can('edit_others_posts')) : ?>
                     <div class="story-actions" style="margin: calc(var(--spacing-unit) * 4) 0; padding: calc(var(--spacing-unit) * 3); background: #f8f9fa; border-radius: 8px; display: flex; gap: calc(var(--spacing-unit) * 2);">
-                        <a href="<?php echo esc_url(add_query_arg('story_id', get_the_ID(), home_url('/racconta-viaggio'))); ?>" class="btn-secondary">
-                            ✏️ Modifica Racconto
+                        <a href="<?php echo esc_url(add_query_arg('story_id', get_the_ID(), home_url('/racconta-attività'))); ?>" class="btn-secondary">
+                            ✏️ Modifica Storia Sport
                         </a>
                         <button type="button" id="delete-story-btn" class="btn-danger" data-story-id="<?php echo esc_attr(get_the_ID()); ?>">
-                            🗑️ Elimina Racconto
+                            🗑️ Elimina Storia Sport
                         </button>
                     </div>
                 <?php endif; ?>
@@ -153,7 +153,7 @@ while (have_posts()) : the_post();
                 <!-- Related Stories -->
                 <?php
                 $related_args = array(
-                    'post_type' => 'racconto',
+                    'post_type' => 'storia_sport',
                     'posts_per_page' => 3,
                     'post__not_in' => array(get_the_ID()),
                     'orderby' => 'rand',
@@ -162,7 +162,7 @@ while (have_posts()) : the_post();
                 if ($destination) {
                     $related_args['meta_query'] = array(
                         array(
-                            'key' => 'cdv_destination',
+                            'key' => 'cdv_location',
                             'value' => $destination,
                             'compare' => '=',
                         ),
@@ -174,7 +174,7 @@ while (have_posts()) : the_post();
                 if ($related_stories->have_posts()) :
                 ?>
                     <div class="related-stories" style="margin-top: calc(var(--spacing-unit) * 8); padding-top: calc(var(--spacing-unit) * 4); border-top: 2px solid var(--border-color);">
-                        <h2 style="margin-bottom: calc(var(--spacing-unit) * 4);">Altri Racconti che Potrebbero Piacerti</h2>
+                        <h2 style="margin-bottom: calc(var(--spacing-unit) * 4);">Altri Storie Sport che Potrebbero Piacerti</h2>
                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: calc(var(--spacing-unit) * 3);">
                             <?php
                             while ($related_stories->have_posts()) : $related_stories->the_post();
@@ -192,7 +192,7 @@ while (have_posts()) : the_post();
     <script>
     jQuery(document).ready(function($) {
         $('#delete-story-btn').on('click', function() {
-            if (!confirm('Sei sicuro di voler eliminare questo racconto? Questa azione non può essere annullata.')) {
+            if (!confirm('Sei sicuro di voler eliminare questo storia sport? Questa azione non può essere annullata.')) {
                 return;
             }
 
@@ -215,12 +215,12 @@ while (have_posts()) : the_post();
                         window.location.href = '<?php echo esc_url(home_url('/dashboard')); ?>';
                     } else {
                         alert(response.data.message);
-                        btn.prop('disabled', false).text('🗑️ Elimina Racconto');
+                        btn.prop('disabled', false).text('🗑️ Elimina Storia Sport');
                     }
                 },
                 error: function() {
                     alert('Errore di connessione. Riprova.');
-                    btn.prop('disabled', false).text('🗑️ Elimina Racconto');
+                    btn.prop('disabled', false).text('🗑️ Elimina Storia Sport');
                 }
             });
         });

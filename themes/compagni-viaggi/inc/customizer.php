@@ -265,7 +265,7 @@ function cdv_customize_register($wp_customize) {
 
     // Hero Title
     $wp_customize->add_setting('cdv_hero_title', array(
-        'default'           => 'Trova i Tuoi Compagni di Viaggio',
+        'default'           => 'Trova i Tuoi Compagni di Sport',
         'sanitize_callback' => 'sanitize_text_field',
         'transport'         => 'refresh',
     ));
@@ -307,7 +307,7 @@ function cdv_customize_register($wp_customize) {
 
     // Hero Button URL
     $wp_customize->add_setting('cdv_hero_button_url', array(
-        'default'           => '/crea-viaggio',
+        'default'           => '/crea-attività',
         'sanitize_callback' => 'esc_url_raw',
         'transport'         => 'refresh',
     ));
@@ -369,17 +369,17 @@ function cdv_customize_register($wp_customize) {
     ));
 
     // ========================================
-    // SECTION: Sezione Viaggi
+    // SECTION: Sezione Attività
     // ========================================
     $wp_customize->add_section('cdv_travels_section', array(
-        'title'       => 'Sezione Viaggi (Homepage)',
-        'description' => 'Personalizza la sezione viaggi in evidenza',
+        'title'       => 'Sezione Attività (Homepage)',
+        'description' => 'Personalizza la sezione attività in evidenza',
         'priority'    => 45,
     ));
 
     // Travels Section Title
     $wp_customize->add_setting('cdv_travels_title', array(
-        'default'           => 'Proposte di Viaggi',
+        'default'           => 'Proposte di Attività',
         'sanitize_callback' => 'sanitize_text_field',
         'transport'         => 'refresh',
     ));
@@ -407,7 +407,7 @@ function cdv_customize_register($wp_customize) {
 
     // Travels Button Text
     $wp_customize->add_setting('cdv_travels_button_text', array(
-        'default'           => 'Vedi Tutti i Viaggi',
+        'default'           => 'Vedi Tutti i Attività',
         'sanitize_callback' => 'sanitize_text_field',
         'transport'         => 'refresh',
     ));
@@ -458,7 +458,7 @@ function cdv_customize_register($wp_customize) {
 
     // How it Works Subtitle
     $wp_customize->add_setting('cdv_how_subtitle', array(
-        'default'           => 'In pochi semplici passi puoi trovare i tuoi compagni di viaggio',
+        'default'           => 'In pochi semplici passi puoi trovare i tuoi compagni di sport',
         'sanitize_callback' => 'sanitize_text_field',
         'transport'         => 'refresh',
     ));
@@ -485,7 +485,7 @@ function cdv_customize_register($wp_customize) {
     ));
 
     $wp_customize->add_setting('cdv_step1_text', array(
-        'default'           => 'Registrati e completa il tuo profilo con interessi, lingue parlate e stili di viaggio preferiti.',
+        'default'           => 'Registrati e completa il tuo profilo con interessi, lingue parlate e stili di attività preferiti.',
         'sanitize_callback' => 'sanitize_textarea_field',
         'transport'         => 'refresh',
     ));
@@ -499,7 +499,7 @@ function cdv_customize_register($wp_customize) {
 
     // Step 2
     $wp_customize->add_setting('cdv_step2_title', array(
-        'default'           => '2. Cerca o Crea un Viaggio',
+        'default'           => '2. Cerca o Crea un Attività',
         'sanitize_callback' => 'sanitize_text_field',
         'transport'         => 'refresh',
     ));
@@ -512,7 +512,7 @@ function cdv_customize_register($wp_customize) {
     ));
 
     $wp_customize->add_setting('cdv_step2_text', array(
-        'default'           => 'Cerca tra i viaggi disponibili o crea il tuo e aspetta che altri viaggiatori si uniscano.',
+        'default'           => 'Cerca tra i attività disponibili o crea il tuo e aspetta che altri viaggiatori si uniscano.',
         'sanitize_callback' => 'sanitize_textarea_field',
         'transport'         => 'refresh',
     ));
@@ -539,7 +539,7 @@ function cdv_customize_register($wp_customize) {
     ));
 
     $wp_customize->add_setting('cdv_step3_text', array(
-        'default'           => 'Usa la chat di gruppo per conoscere i compagni di viaggio e organizzare i dettagli insieme.',
+        'default'           => 'Usa la chat di gruppo per conoscere i compagni di sport e organizzare i dettagli insieme.',
         'sanitize_callback' => 'sanitize_textarea_field',
         'transport'         => 'refresh',
     ));
@@ -552,17 +552,17 @@ function cdv_customize_register($wp_customize) {
     ));
 
     // ========================================
-    // SECTION: Sezione Racconti
+    // SECTION: Sezione Storie Sport
     // ========================================
     $wp_customize->add_section('cdv_stories_section', array(
-        'title'       => 'Sezione Racconti (Homepage)',
-        'description' => 'Personalizza la sezione racconti di viaggio',
+        'title'       => 'Sezione Storie Sport (Homepage)',
+        'description' => 'Personalizza la sezione storie sport di attività',
         'priority'    => 55,
     ));
 
     // Stories Section Title
     $wp_customize->add_setting('cdv_stories_title', array(
-        'default'           => 'Racconti di Viaggio',
+        'default'           => 'Storie Sport di Attività',
         'sanitize_callback' => 'sanitize_text_field',
         'transport'         => 'refresh',
     ));
@@ -590,7 +590,7 @@ function cdv_customize_register($wp_customize) {
 
     // Stories Button Text
     $wp_customize->add_setting('cdv_stories_button_text', array(
-        'default'           => 'Vedi Tutti i Racconti',
+        'default'           => 'Vedi Tutti i Storie Sport',
         'sanitize_callback' => 'sanitize_text_field',
         'transport'         => 'refresh',
     ));
@@ -648,7 +648,7 @@ function cdv_customize_register($wp_customize) {
 
     // Footer Copyright Text
     $wp_customize->add_setting('cdv_footer_copyright', array(
-        'default'           => '© ' . date('Y') . ' Compagni di viaggi. Tutti i diritti riservati.',
+        'default'           => '© ' . date('Y') . ' Compagni di attività. Tutti i diritti riservati.',
         'sanitize_callback' => 'wp_kses_post',
         'transport'         => 'refresh',
     ));

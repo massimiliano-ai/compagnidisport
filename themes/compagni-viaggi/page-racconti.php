@@ -1,7 +1,7 @@
 <?php
 /**
- * Template Name: Racconti
- * Description: Pagina archivio racconti di viaggio
+ * Template Name: Storie Sport
+ * Description: Pagina archivio storie sport di attività
  */
 
 get_header();
@@ -11,13 +11,13 @@ get_header();
     <!-- Hero Section -->
     <section class="page-hero" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; padding: calc(var(--spacing-unit) * 8) 0; text-align: center;">
         <div class="container">
-            <h1 style="color: white; margin-bottom: calc(var(--spacing-unit) * 2);">📖 Racconti di Viaggio</h1>
+            <h1 style="color: white; margin-bottom: calc(var(--spacing-unit) * 2);">📖 Storie Sport di Attività</h1>
             <p style="font-size: 1.2rem; max-width: 700px; margin: 0 auto calc(var(--spacing-unit) * 4); opacity: 0.95;">
-                Scopri le avventure dei nostri viaggiatori, leggi i loro consigli e lasciati ispirare per il tuo prossimo viaggio.
+                Scopri le avventure dei nostri viaggiatori, leggi i loro consigli e lasciati ispirare per il tuo prossimo attività.
             </p>
             <?php if (is_user_logged_in()) : ?>
-                <a href="<?php echo esc_url(home_url('/racconta-viaggio')); ?>" class="btn-primary" style="background: white !important; color: var(--primary-color) !important; border: 2px solid white;">
-                    ✍️ Racconta il Tuo Viaggio
+                <a href="<?php echo esc_url(home_url('/racconta-attività')); ?>" class="btn-primary" style="background: white !important; color: var(--primary-color) !important; border: 2px solid white;">
+                    ✍️ Racconta il Tuo Attività
                 </a>
             <?php endif; ?>
         </div>
@@ -66,7 +66,7 @@ get_header();
                 <?php
                 // Build query args
                 $args = array(
-                    'post_type' => 'racconto',
+                    'post_type' => 'storia_sport',
                     'posts_per_page' => 12,
                     'post_status' => 'publish',
                     'paged' => get_query_var('paged') ? get_query_var('paged') : 1,
@@ -110,10 +110,10 @@ get_header();
                 ?>
                     <div class="no-stories" style="grid-column: 1 / -1; text-align: center; padding: calc(var(--spacing-unit) * 8) 0;">
                         <p style="font-size: 1.2rem; color: var(--text-medium);">
-                            Nessun racconto disponibile al momento.
+                            Nessun storia sport disponibile al momento.
                         </p>
                         <?php if (is_user_logged_in()) : ?>
-                            <a href="<?php echo esc_url(home_url('/racconta-viaggio')); ?>" class="btn-primary" style="margin-top: calc(var(--spacing-unit) * 3);">
+                            <a href="<?php echo esc_url(home_url('/racconta-attività')); ?>" class="btn-primary" style="margin-top: calc(var(--spacing-unit) * 3);">
                                 Sii il primo a raccontare!
                             </a>
                         <?php endif; ?>

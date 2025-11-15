@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class CDV_Travel_Moderation {
+class CDV_Activity_Moderation {
 
     /**
      * Initialize
@@ -17,12 +17,12 @@ class CDV_Travel_Moderation {
         add_filter('wp_insert_post_data', array(__CLASS__, 'force_pending_status'), 10, 2);
 
         // Add moderation columns to admin
-        add_filter('manage_viaggio_posts_columns', array(__CLASS__, 'add_moderation_column'));
-        add_action('manage_viaggio_posts_custom_column', array(__CLASS__, 'moderation_column_content'), 10, 2);
+        add_filter('manage_attivitào_posts_columns', array(__CLASS__, 'add_moderation_column'));
+        add_action('manage_attivitào_posts_custom_column', array(__CLASS__, 'moderation_column_content'), 10, 2);
 
         // Bulk actions
-        add_filter('bulk_actions-edit-viaggio', array(__CLASS__, 'add_bulk_actions'));
-        add_filter('handle_bulk_actions-edit-viaggio', array(__CLASS__, 'handle_bulk_actions'), 10, 3);
+        add_filter('bulk_actions-edit-attivitào', array(__CLASS__, 'add_bulk_actions'));
+        add_filter('handle_bulk_actions-edit-attivitào', array(__CLASS__, 'handle_bulk_actions'), 10, 3);
 
         // Quick approve/reject
         add_action('wp_ajax_cdv_approve_travel', array(__CLASS__, 'ajax_approve_travel'));
@@ -36,8 +36,8 @@ class CDV_Travel_Moderation {
      * Force pending status for non-admin users
      */
     public static function force_pending_status($data, $postarr) {
-        // Only for viaggio post type
-        if ($data['post_type'] !== 'viaggio') {
+        // Only for attivitào post type
+        if ($data['post_type'] !== 'attivita') {
             return $data;
         }
 
@@ -64,8 +64,8 @@ class CDV_Travel_Moderation {
             $new_columns[$key] = $value;
 
             if ($key === 'title') {
-                $new_columns['moderation'] = __('Moderazione', 'compagni-di-viaggi');
-                $new_columns['organizer'] = __('Organizzatore', 'compagni-di-viaggi');
+                $new_columns['moderation'] = __('Moderazione', 'compagni-di-sport');
+                $new_columns['organizer'] = __('Organizzatore', 'compagni-di-sport');
             }
         }
 
@@ -108,8 +108,8 @@ class CDV_Travel_Moderation {
      * Add bulk actions
      */
     public static function add_bulk_actions($actions) {
-        $actions['cdv_approve'] = __('Approva Viaggi', 'compagni-di-viaggi');
-        $actions['cdv_reject'] = __('Rifiuta Viaggi', 'compagni-di-viaggi');
+        $actions['cdv_approve'] = __('Approva Attività', 'compagni-di-sport');
+        $actions['cdv_reject'] = __('Rifiuta Attività', 'compagni-di-sport');
         return $actions;
     }
 
@@ -142,14 +142,14 @@ class CDV_Travel_Moderation {
     public static function ajax_approve_travel() {
         check_ajax_referer('cdv_ajax_nonce', 'nonce');
 
-        if (!current_user_can('approve_viaggi')) {
+        if (!current_user_can('approve_attività')) {
             wp_send_json_error(array('message' => 'Permessi insufficienti'));
         }
 
-        $travel_id = intval($_POST['travel_id']);
+        $activity_id = intval($_POST['activity_id']);
 
-        if (self::approve_travel($travel_id)) {
-            wp_send_json_success(array('message' => 'Viaggio approvato'));
+        if (self::approve_travel($activity_id)) {
+            wp_send_json_success(array('message' => 'Attività approvato'));
         } else {
             wp_send_json_error(array('message' => 'Errore durante l\'approvazione'));
         }
@@ -161,15 +161,15 @@ class CDV_Travel_Moderation {
     public static function ajax_reject_travel() {
         check_ajax_referer('cdv_ajax_nonce', 'nonce');
 
-        if (!current_user_can('approve_viaggi')) {
+        if (!current_user_can('approve_attività')) {
             wp_send_json_error(array('message' => 'Permessi insufficienti'));
         }
 
-        $travel_id = intval($_POST['travel_id']);
+        $activity_id = intval($_POST['activity_id']);
         $reason = isset($_POST['reason']) ? sanitize_textarea_field($_POST['reason']) : '';
 
-        if (self::reject_travel($travel_id, $reason)) {
-            wp_send_json_success(array('message' => 'Viaggio rifiutato'));
+        if (self::reject_travel($activity_id, $reason)) {
+            wp_send_json_success(array('message' => 'Attività rifiutato'));
         } else {
             wp_send_json_error(array('message' => 'Errore durante il rifiuto'));
         }
@@ -178,20 +178,20 @@ class CDV_Travel_Moderation {
     /**
      * Approve travel
      */
-    public static function approve_travel($travel_id) {
+    public static function approve_travel($activity_id) {
         $result = wp_update_post(array(
-            'ID' => $travel_id,
+            'ID' => $activity_id,
             'post_status' => 'publish',
         ));
 
         if ($result) {
-            update_post_meta($travel_id, 'cdv_approved_date', current_time('mysql'));
-            update_post_meta($travel_id, 'cdv_travel_status', 'open');
+            update_post_meta($activity_id, 'cdv_approved_date', current_time('mysql'));
+            update_post_meta($activity_id, 'cdv_activity_status', 'open');
 
             // Notify author
-            self::notify_author_approved($travel_id);
+            self::notify_author_approved($activity_id);
 
-            do_action('cdv_travel_approved', $travel_id);
+            do_action('cdv_activity_approved', $activity_id);
         }
 
         return $result;
@@ -200,23 +200,23 @@ class CDV_Travel_Moderation {
     /**
      * Reject travel
      */
-    public static function reject_travel($travel_id, $reason = '') {
+    public static function reject_travel($activity_id, $reason = '') {
         $result = wp_update_post(array(
-            'ID' => $travel_id,
+            'ID' => $activity_id,
             'post_status' => 'draft',
         ));
 
         if ($result) {
-            update_post_meta($travel_id, 'cdv_rejected_date', current_time('mysql'));
+            update_post_meta($activity_id, 'cdv_rejected_date', current_time('mysql'));
 
             if ($reason) {
-                update_post_meta($travel_id, 'cdv_rejection_reason', $reason);
+                update_post_meta($activity_id, 'cdv_rejection_reason', $reason);
             }
 
             // Notify author
-            self::notify_author_rejected($travel_id, $reason);
+            self::notify_author_rejected($activity_id, $reason);
 
-            do_action('cdv_travel_rejected', $travel_id, $reason);
+            do_action('cdv_activity_rejected', $activity_id, $reason);
         }
 
         return $result;
@@ -225,16 +225,16 @@ class CDV_Travel_Moderation {
     /**
      * Notify author of approval
      */
-    private static function notify_author_approved($travel_id) {
-        $post = get_post($travel_id);
+    private static function notify_author_approved($activity_id) {
+        $post = get_post($activity_id);
         $author = get_user_by('id', $post->post_author);
 
-        $subject = 'Il tuo viaggio è stato approvato!';
+        $subject = 'Il tuo attivitào è stato approvato!';
         $message = sprintf(
-            "Ciao %s,\n\nIl tuo viaggio \"%s\" è stato approvato ed è ora visibile sulla piattaforma!\n\nVedi il viaggio: %s\n\nBuona organizzazione!\nIl team di Compagni di Viaggi",
+            "Ciao %s,\n\nIl tuo attivitào \"%s\" è stato approvato ed è ora visibile sulla piattaforma!\n\nVedi il attivitào: %s\n\nBuona organizzazione!\nIl team di Compagni di Attività",
             $author->display_name,
             $post->post_title,
-            get_permalink($travel_id)
+            get_permalink($activity_id)
         );
 
         wp_mail($author->user_email, $subject, $message);
@@ -243,13 +243,13 @@ class CDV_Travel_Moderation {
     /**
      * Notify author of rejection
      */
-    private static function notify_author_rejected($travel_id, $reason) {
-        $post = get_post($travel_id);
+    private static function notify_author_rejected($activity_id, $reason) {
+        $post = get_post($activity_id);
         $author = get_user_by('id', $post->post_author);
 
-        $subject = 'Il tuo viaggio non è stato approvato';
+        $subject = 'Il tuo attivitào non è stato approvato';
         $message = sprintf(
-            "Ciao %s,\n\nPurtroppo il tuo viaggio \"%s\" non è stato approvato.\n\n",
+            "Ciao %s,\n\nPurtroppo il tuo attivitào \"%s\" non è stato approvato.\n\n",
             $author->display_name,
             $post->post_title
         );
@@ -258,7 +258,7 @@ class CDV_Travel_Moderation {
             $message .= "Motivo: $reason\n\n";
         }
 
-        $message .= "Puoi modificare il viaggio e ripubblicarlo per una nuova valutazione.\n\nModifica qui: " . get_edit_post_link($travel_id, '') . "\n\nIl team di Compagni di Viaggi";
+        $message .= "Puoi modificare il attivitào e ripubblicarlo per una nuova valutazione.\n\nModifica qui: " . get_edit_post_link($activity_id, '') . "\n\nIl team di Compagni di Attività";
 
         wp_mail($author->user_email, $subject, $message);
     }
@@ -269,15 +269,15 @@ class CDV_Travel_Moderation {
     public static function pending_travels_notice() {
         $screen = get_current_screen();
 
-        if ($screen->id !== 'edit-viaggio') {
+        if ($screen->id !== 'edit-attivitào') {
             return;
         }
 
-        $pending_count = wp_count_posts('viaggio')->pending;
+        $pending_count = wp_count_posts('attivita')->pending;
 
         if ($pending_count > 0) {
             echo '<div class="notice notice-warning">';
-            echo '<p><strong>' . $pending_count . ' viaggi in attesa di approvazione</strong></p>';
+            echo '<p><strong>' . $pending_count . ' attività in attesa di approvazione</strong></p>';
             echo '</div>';
         }
 
@@ -285,14 +285,14 @@ class CDV_Travel_Moderation {
         if (isset($_GET['cdv_approved'])) {
             $count = intval($_GET['cdv_approved']);
             echo '<div class="notice notice-success is-dismissible">';
-            echo '<p>' . $count . ' viaggio/i approvato/i con successo.</p>';
+            echo '<p>' . $count . ' attivitào/i approvato/i con successo.</p>';
             echo '</div>';
         }
 
         if (isset($_GET['cdv_rejected'])) {
             $count = intval($_GET['cdv_rejected']);
             echo '<div class="notice notice-info is-dismissible">';
-            echo '<p>' . $count . ' viaggio/i rifiutato/i.</p>';
+            echo '<p>' . $count . ' attivitào/i rifiutato/i.</p>';
             echo '</div>';
         }
     }
@@ -301,7 +301,7 @@ class CDV_Travel_Moderation {
      * Get pending travels count
      */
     public static function get_pending_travels_count() {
-        return wp_count_posts('viaggio')->pending;
+        return wp_count_posts('attivita')->pending;
     }
 
     /**

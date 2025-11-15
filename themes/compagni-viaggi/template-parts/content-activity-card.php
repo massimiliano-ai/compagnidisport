@@ -17,8 +17,8 @@
                         Scaduto
                     </span>
                 <?php endif; ?>
-                <?php cdv_travel_type_badges(); ?>
-                <?php if (!$is_expired) echo cdv_get_travel_status_label(); ?>
+                <?php cdv_activity_type_badges(); ?>
+                <?php if (!$is_expired) echo cdv_get_activity_status_label(); ?>
             </div>
 
             <?php if (is_user_logged_in()) : ?>
@@ -34,7 +34,7 @@
             <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
         </h3>
 
-        <?php cdv_travel_meta(); ?>
+        <?php cdv_activity_meta(); ?>
 
         <div class="card-excerpt">
             <?php the_excerpt(); ?>
@@ -244,7 +244,7 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'cdv_toggle_wishlist',
                 nonce: cdvAjax.nonce,
-                travel_id: travelId
+                activity_id: travelId
             },
             beforeSend: function() {
                 $btn.prop('disabled', true);

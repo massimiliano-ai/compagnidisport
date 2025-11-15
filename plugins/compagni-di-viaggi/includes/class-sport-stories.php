@@ -1,15 +1,15 @@
 <?php
 /**
- * Travel Stories (Racconti di Viaggi)
+ * Travel Stories (Racconti di Sport)
  *
- * Gestisce i racconti di viaggio pubblicati dagli utenti
+ * Gestisce i racconti di attivitào pubblicati dagli utenti
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class CDV_Travel_Stories {
+class CDV_Sport_Stories {
 
     /**
      * Initialize
@@ -27,7 +27,7 @@ class CDV_Travel_Stories {
      */
     public static function register_post_type() {
         $labels = array(
-            'name'                  => 'Racconti di Viaggio',
+            'name'                  => 'Racconti di Sport',
             'singular_name'         => 'Racconto',
             'menu_name'             => 'Racconti',
             'add_new'               => 'Aggiungi Racconto',
@@ -99,8 +99,8 @@ class CDV_Travel_Stories {
             'rewrite'           => array('slug' => 'tag-racconto'),
         ));
 
-        // Usa la stessa tassonomia destinazione dei viaggi
-        register_taxonomy_for_object_type('destinazione', 'racconto');
+        // Usa la stessa tassonomia luogo dei attività
+        register_taxonomy_for_object_type('luogo', 'racconto');
     }
 
     /**
@@ -118,9 +118,9 @@ class CDV_Travel_Stories {
             $user_id = get_current_user_id();
             $user = wp_get_current_user();
 
-            // Check if user is viaggiatore
-            if (!in_array('viaggiatore', $user->roles) && !in_array('administrator', $user->roles)) {
-                wp_send_json_error(array('message' => 'Solo i viaggiatori possono pubblicare racconti'));
+            // Check if user is attivitàatore
+            if (!in_array('attivitàatore', $user->roles) && !in_array('administrator', $user->roles)) {
+                wp_send_json_error(array('message' => 'Solo i attivitàatori possono pubblicare racconti'));
             }
 
             // Get data
@@ -175,11 +175,11 @@ class CDV_Travel_Stories {
             if ($destination) {
                 update_post_meta($post_id, 'cdv_destination', $destination);
                 // Also set as taxonomy
-                wp_set_post_terms($post_id, array($destination), 'destinazione');
+                wp_set_post_terms($post_id, array($destination), 'luogo');
             }
 
             if ($travel_date) {
-                update_post_meta($post_id, 'cdv_travel_date', $travel_date);
+                update_post_meta($post_id, 'cdv_activity_date', $travel_date);
             }
 
             if ($duration) {

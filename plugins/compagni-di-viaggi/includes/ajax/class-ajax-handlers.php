@@ -14,7 +14,7 @@ class CDV_Ajax_Handlers {
      */
     public static function init() {
         // For logged-in users
-        add_action('wp_ajax_cdv_join_travel', array(__CLASS__, 'join_travel'));
+        add_action('wp_ajax_cdv_join_activity', array(__CLASS__, 'join_activity'));
         add_action('wp_ajax_cdv_send_message', array(__CLASS__, 'send_message'));
         add_action('wp_ajax_cdv_get_new_messages', array(__CLASS__, 'get_new_messages'));
         add_action('wp_ajax_cdv_add_review', array(__CLASS__, 'add_review'));
@@ -24,8 +24,8 @@ class CDV_Ajax_Handlers {
         add_action('wp_ajax_cdv_accept_participant', array(__CLASS__, 'accept_participant'));
         add_action('wp_ajax_cdv_reject_participant', array(__CLASS__, 'reject_participant'));
         add_action('wp_ajax_cdv_approve_participant', array(__CLASS__, 'accept_participant'));
-        add_action('wp_ajax_cdv_change_travel_status', array(__CLASS__, 'change_travel_status'));
-        add_action('wp_ajax_cdv_delete_travel', array(__CLASS__, 'delete_travel'));
+        add_action('wp_ajax_cdv_change_activity_status', array(__CLASS__, 'change_activity_status'));
+        add_action('wp_ajax_cdv_delete_activity', array(__CLASS__, 'delete_activity'));
         add_action('wp_ajax_cdv_resend_verification', array(__CLASS__, 'resend_verification'));
 
         // Profile management
@@ -36,8 +36,8 @@ class CDV_Ajax_Handlers {
         add_action('wp_ajax_cdv_upload_profile_image', array(__CLASS__, 'upload_profile_image'));
 
         // Travel creation and editing
-        add_action('wp_ajax_cdv_create_travel', array(__CLASS__, 'create_travel'));
-        add_action('wp_ajax_cdv_update_travel', array(__CLASS__, 'update_travel'));
+        add_action('wp_ajax_cdv_create_activity', array(__CLASS__, 'create_activity'));
+        add_action('wp_ajax_cdv_update_activity', array(__CLASS__, 'update_activity'));
         add_action('wp_ajax_cdv_validate_address', array(__CLASS__, 'validate_address'));
 
         // Group Chat
@@ -49,7 +49,7 @@ class CDV_Ajax_Handlers {
 
         // Participant Management
         add_action('wp_ajax_cdv_remove_participant', array(__CLASS__, 'remove_participant'));
-        add_action('wp_ajax_cdv_leave_travel', array(__CLASS__, 'leave_travel'));
+        add_action('wp_ajax_cdv_leave_activity', array(__CLASS__, 'leave_activity'));
 
         // For non-logged-in users (if needed)
         // add_action('wp_ajax_nopriv_action_name', array(__CLASS__, 'method_name'));
@@ -58,28 +58,28 @@ class CDV_Ajax_Handlers {
     /**
      * AJAX: Join travel
      */
-    public static function join_travel() {
+    public static function join_activity() {
         check_ajax_referer('cdv_ajax_nonce', 'nonce');
 
         if (!is_user_logged_in()) {
             wp_send_json_error(array('message' => 'Devi essere autenticato'));
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
         $message = isset($_POST['message']) ? sanitize_textarea_field($_POST['message']) : '';
 
-        if (!$travel_id) {
-            wp_send_json_error(array('message' => 'ID viaggio non valido'));
+        if (!$activity_id) {
+            wp_send_json_error(array('message' => 'ID attivita non valido'));
         }
 
-        $result = CDV_Participants::request_join($travel_id, get_current_user_id(), $message);
+        $result = CDV_Participants::request_join($activity_id, get_current_user_id(), $message);
 
         if (is_wp_error($result)) {
             wp_send_json_error(array('message' => $result->get_error_message()));
         }
 
         // Send notification to organizer
-        CDV_Notifications::notify_join_request($travel_id, get_current_user_id());
+        CDV_Notifications::notify_join_request($activity_id, get_current_user_id());
 
         wp_send_json_success(array(
             'message' => 'Richiesta inviata con successo',
@@ -183,7 +183,7 @@ class CDV_Ajax_Handlers {
             wp_send_json_error(array('message' => 'Devi essere autenticato'));
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
         $reviewed_id = isset($_POST['reviewed_id']) ? intval($_POST['reviewed_id']) : 0;
         $scores = array(
             'punctuality' => isset($_POST['punctuality']) ? intval($_POST['punctuality']) : 0,
@@ -193,11 +193,11 @@ class CDV_Ajax_Handlers {
         );
         $comment = isset($_POST['comment']) ? sanitize_textarea_field($_POST['comment']) : '';
 
-        if (!$travel_id || !$reviewed_id) {
+        if (!$activity_id || !$reviewed_id) {
             wp_send_json_error(array('message' => 'Dati non validi'));
         }
 
-        $result = CDV_Reviews::add_review($travel_id, get_current_user_id(), $reviewed_id, $scores, $comment);
+        $result = CDV_Reviews::add_review($activity_id, get_current_user_id(), $reviewed_id, $scores, $comment);
 
         if (is_wp_error($result)) {
             wp_send_json_error(array('message' => $result->get_error_message()));
@@ -219,27 +219,27 @@ class CDV_Ajax_Handlers {
             wp_send_json_error(array('message' => 'Devi essere autenticato'));
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
         $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
 
-        if (!$travel_id || !$user_id) {
+        if (!$activity_id || !$user_id) {
             wp_send_json_error(array('message' => 'Dati non validi'));
         }
 
         // Check if current user is the organizer
-        $travel = get_post($travel_id);
-        if ($travel->post_author != get_current_user_id()) {
+        $activity = get_post($activity_id);
+        if ($activity->post_author != get_current_user_id()) {
             wp_send_json_error(array('message' => 'Solo l\'organizzatore può accettare partecipanti'));
         }
 
-        $result = CDV_Participants::accept_participant($travel_id, $user_id);
+        $result = CDV_Participants::accept_participant($activity_id, $user_id);
 
         if (is_wp_error($result)) {
             wp_send_json_error(array('message' => $result->get_error_message()));
         }
 
         // Send notification to participant
-        CDV_Notifications::notify_request_accepted($travel_id, $user_id);
+        CDV_Notifications::notify_request_accepted($activity_id, $user_id);
 
         wp_send_json_success(array('message' => 'Partecipante accettato'));
     }
@@ -254,27 +254,27 @@ class CDV_Ajax_Handlers {
             wp_send_json_error(array('message' => 'Devi essere autenticato'));
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
         $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
 
-        if (!$travel_id || !$user_id) {
+        if (!$activity_id || !$user_id) {
             wp_send_json_error(array('message' => 'Dati non validi'));
         }
 
         // Check if current user is the organizer
-        $travel = get_post($travel_id);
-        if ($travel->post_author != get_current_user_id()) {
+        $activity = get_post($activity_id);
+        if ($activity->post_author != get_current_user_id()) {
             wp_send_json_error(array('message' => 'Solo l\'organizzatore può rifiutare partecipanti'));
         }
 
-        $result = CDV_Participants::reject_participant($travel_id, $user_id);
+        $result = CDV_Participants::reject_participant($activity_id, $user_id);
 
         if (is_wp_error($result)) {
             wp_send_json_error(array('message' => $result->get_error_message()));
         }
 
         // Send notification to participant
-        CDV_Notifications::notify_request_rejected($travel_id, $user_id);
+        CDV_Notifications::notify_request_rejected($activity_id, $user_id);
 
         wp_send_json_success(array('message' => 'Partecipante rifiutato'));
     }
@@ -282,24 +282,24 @@ class CDV_Ajax_Handlers {
     /**
      * AJAX: Change travel status
      */
-    public static function change_travel_status() {
+    public static function change_activity_status() {
         check_ajax_referer('cdv_ajax_nonce', 'nonce');
 
         if (!is_user_logged_in()) {
             wp_send_json_error('Devi essere autenticato');
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
         $status = isset($_POST['status']) ? sanitize_text_field($_POST['status']) : '';
 
-        if (!$travel_id || !$status) {
+        if (!$activity_id || !$status) {
             wp_send_json_error('Dati non validi');
         }
 
         // Check if current user is the author
-        $travel = get_post($travel_id);
-        if (!$travel || $travel->post_author != get_current_user_id()) {
-            wp_send_json_error('Non hai i permessi per modificare questo viaggio');
+        $activity = get_post($activity_id);
+        if (!$activity || $activity->post_author != get_current_user_id()) {
+            wp_send_json_error('Non hai i permessi per modificare questo attivita');
         }
 
         // Validate status
@@ -308,7 +308,7 @@ class CDV_Ajax_Handlers {
             wp_send_json_error('Stato non valido');
         }
 
-        update_post_meta($travel_id, 'cdv_travel_status', $status);
+        update_post_meta($activity_id, 'cdv_activity_status', $status);
 
         wp_send_json_success('Stato aggiornato con successo');
     }
@@ -316,33 +316,33 @@ class CDV_Ajax_Handlers {
     /**
      * AJAX: Delete travel
      */
-    public static function delete_travel() {
+    public static function delete_activity() {
         check_ajax_referer('cdv_ajax_nonce', 'nonce');
 
         if (!is_user_logged_in()) {
             wp_send_json_error('Devi essere autenticato');
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
 
-        if (!$travel_id) {
-            wp_send_json_error('ID viaggio non valido');
+        if (!$activity_id) {
+            wp_send_json_error('ID attivita non valido');
         }
 
         // Check if current user is the author
-        $travel = get_post($travel_id);
-        if (!$travel || $travel->post_author != get_current_user_id()) {
-            wp_send_json_error('Non hai i permessi per eliminare questo viaggio');
+        $activity = get_post($activity_id);
+        if (!$activity || $activity->post_author != get_current_user_id()) {
+            wp_send_json_error('Non hai i permessi per eliminare questo attivita');
         }
 
         // Delete the post (moves to trash)
-        $result = wp_trash_post($travel_id);
+        $result = wp_trash_post($activity_id);
 
         if (!$result) {
-            wp_send_json_error('Errore durante l\'eliminazione del viaggio');
+            wp_send_json_error('Errore durante l\'eliminazione del attivita');
         }
 
-        wp_send_json_success('Viaggio eliminato con successo');
+        wp_send_json_success('Attività eliminato con successo');
     }
 
     /**
@@ -456,15 +456,15 @@ class CDV_Ajax_Handlers {
         }
 
         // Delete user's travels
-        $travels = get_posts(array(
-            'post_type' => 'viaggio',
+        $activities = get_posts(array(
+            'post_type' => 'attivita',
             'author' => $user_id,
             'posts_per_page' => -1,
             'fields' => 'ids',
         ));
 
-        foreach ($travels as $travel_id) {
-            wp_delete_post($travel_id, true);
+        foreach ($activities as $activity_id) {
+            wp_delete_post($activity_id, true);
         }
 
         // Delete user
@@ -480,7 +480,7 @@ class CDV_Ajax_Handlers {
     /**
      * AJAX: Create Travel
      */
-    public static function create_travel() {
+    public static function create_activity() {
         check_ajax_referer('cdv_ajax_nonce', 'nonce');
 
         if (!is_user_logged_in()) {
@@ -490,8 +490,8 @@ class CDV_Ajax_Handlers {
         $user_id = get_current_user_id();
 
         // Check if user has capability
-        if (!current_user_can('create_viaggi')) {
-            wp_send_json_error(array('message' => 'Non hai i permessi per creare viaggi'));
+        if (!current_user_can('create_attivita')) {
+            wp_send_json_error(array('message' => 'Non hai i permessi per creare attivita'));
         }
 
         // Validate required fields
@@ -518,7 +518,7 @@ class CDV_Ajax_Handlers {
             $travel_month = isset($_POST['travel_month']) ? sanitize_text_field($_POST['travel_month']) : '';
 
             if (empty($travel_month)) {
-                wp_send_json_error(array('message' => 'Seleziona il mese del viaggio'));
+                wp_send_json_error(array('message' => 'Seleziona il mese del attivita'));
             }
 
             // Validate month format
@@ -540,7 +540,7 @@ class CDV_Ajax_Handlers {
             $end_date = isset($_POST['end_date']) ? sanitize_text_field($_POST['end_date']) : '';
 
             if (empty($start_date) || empty($end_date)) {
-                wp_send_json_error(array('message' => 'Inserisci le date del viaggio'));
+                wp_send_json_error(array('message' => 'Inserisci le date del attivita'));
             }
 
             if (strtotime($start_date) < strtotime('today')) {
@@ -554,82 +554,82 @@ class CDV_Ajax_Handlers {
 
         // Create travel post
         $post_data = array(
-            'post_type' => 'viaggio',
+            'post_type' => 'attivita',
             'post_title' => $title,
             'post_content' => $description,
             'post_status' => 'pending', // Pending approval
             'post_author' => $user_id,
         );
 
-        $travel_id = wp_insert_post($post_data);
+        $activity_id = wp_insert_post($post_data);
 
-        if (is_wp_error($travel_id)) {
-            wp_send_json_error(array('message' => 'Errore durante la creazione del viaggio'));
+        if (is_wp_error($activity_id)) {
+            wp_send_json_error(array('message' => 'Errore durante la creazione del attivita'));
         }
 
         // Save meta data
-        update_post_meta($travel_id, 'cdv_destination', $destination);
-        update_post_meta($travel_id, 'cdv_country', $country);
-        update_post_meta($travel_id, 'cdv_start_date', $start_date);
-        update_post_meta($travel_id, 'cdv_end_date', $end_date);
-        update_post_meta($travel_id, 'cdv_date_type', $date_type);
+        update_post_meta($activity_id, 'cdv_destination', $destination);
+        update_post_meta($activity_id, 'cdv_country', $country);
+        update_post_meta($activity_id, 'cdv_start_date', $start_date);
+        update_post_meta($activity_id, 'cdv_end_date', $end_date);
+        update_post_meta($activity_id, 'cdv_date_type', $date_type);
         if ($date_type === 'month') {
-            update_post_meta($travel_id, 'cdv_travel_month', $travel_month);
+            update_post_meta($activity_id, 'cdv_activity_month', $travel_month);
         }
-        update_post_meta($travel_id, 'cdv_budget', $budget);
-        update_post_meta($travel_id, 'cdv_max_participants', $max_participants);
-        update_post_meta($travel_id, 'cdv_travel_status', 'open');
+        update_post_meta($activity_id, 'cdv_budget', $budget);
+        update_post_meta($activity_id, 'cdv_max_participants', $max_participants);
+        update_post_meta($activity_id, 'cdv_activity_status', 'open');
 
         // Save optional travel details
         if (isset($_POST['travel_transport']) && is_array($_POST['travel_transport'])) {
             $transport = array_map('sanitize_text_field', $_POST['travel_transport']);
-            update_post_meta($travel_id, 'cdv_travel_transport', $transport);
+            update_post_meta($activity_id, 'cdv_activity_transport', $transport);
         }
 
         if (!empty($_POST['travel_accommodation'])) {
-            update_post_meta($travel_id, 'cdv_travel_accommodation', sanitize_text_field($_POST['travel_accommodation']));
+            update_post_meta($activity_id, 'cdv_activity_accommodation', sanitize_text_field($_POST['travel_accommodation']));
         }
 
         if (!empty($_POST['travel_difficulty'])) {
-            update_post_meta($travel_id, 'cdv_travel_difficulty', sanitize_text_field($_POST['travel_difficulty']));
+            update_post_meta($activity_id, 'cdv_activity_difficulty', sanitize_text_field($_POST['travel_difficulty']));
         }
 
         if (!empty($_POST['travel_meals'])) {
-            update_post_meta($travel_id, 'cdv_travel_meals', sanitize_text_field($_POST['travel_meals']));
+            update_post_meta($activity_id, 'cdv_activity_meals', sanitize_text_field($_POST['travel_meals']));
         }
 
         if (!empty($_POST['travel_guide_type'])) {
-            update_post_meta($travel_id, 'cdv_travel_guide_type', sanitize_text_field($_POST['travel_guide_type']));
+            update_post_meta($activity_id, 'cdv_activity_guide_type', sanitize_text_field($_POST['travel_guide_type']));
         }
 
         if (!empty($_POST['travel_requirements'])) {
-            update_post_meta($travel_id, 'cdv_travel_requirements', sanitize_textarea_field($_POST['travel_requirements']));
+            update_post_meta($activity_id, 'cdv_activity_requirements', sanitize_textarea_field($_POST['travel_requirements']));
         }
 
         // Set travel types
         if (isset($_POST['travel_types']) && is_array($_POST['travel_types'])) {
             $travel_types = array_map('intval', $_POST['travel_types']);
-            wp_set_post_terms($travel_id, $travel_types, 'tipo_viaggio');
+            wp_set_post_terms($activity_id, $travel_types, 'tipo_sport');
         }
 
         // Geocode and save map coordinates
         if ($destination && $country) {
             $address = $destination . ', ' . $country;
-            $geocoded = CDV_Travel_Maps::geocode($address);
+            $geocoded = CDV_Activity_Maps::geocode($address);
 
             if ($geocoded && isset($geocoded['lat']) && isset($geocoded['lon'])) {
-                CDV_Travel_Maps::save_travel_coordinates($travel_id, $geocoded['lat'], $geocoded['lon']);
+                CDV_Activity_Maps::save_activity_coordinates($activity_id, $geocoded['lat'], $geocoded['lon']);
             }
         }
 
         // Add organizer as first participant
         global $wpdb;
-        $table_name = $wpdb->prefix . 'cdv_travel_participants';
+        $table_name = $wpdb->prefix . 'cdv_activity_participants';
 
         $wpdb->insert(
             $table_name,
             array(
-                'travel_id' => $travel_id,
+                'activity_id' => $activity_id,
                 'user_id' => $user_id,
                 'status' => 'accepted',
                 'is_organizer' => 1,
@@ -639,7 +639,7 @@ class CDV_Ajax_Handlers {
         );
 
         wp_send_json_success(array(
-            'message' => 'Viaggio creato con successo! In attesa di approvazione da parte degli amministratori.',
+            'message' => 'Attività creato con successo! In attesa di approvazione da parte degli amministratori.',
             'redirect_url' => home_url('/dashboard'),
         ));
     }
@@ -647,7 +647,7 @@ class CDV_Ajax_Handlers {
     /**
      * AJAX: Update Travel
      */
-    public static function update_travel() {
+    public static function update_activity() {
         check_ajax_referer('cdv_ajax_nonce', 'nonce');
 
         if (!is_user_logged_in()) {
@@ -655,20 +655,20 @@ class CDV_Ajax_Handlers {
         }
 
         $user_id = get_current_user_id();
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
 
-        if (!$travel_id) {
-            wp_send_json_error(array('message' => 'ID viaggio non valido'));
+        if (!$activity_id) {
+            wp_send_json_error(array('message' => 'ID attivita non valido'));
         }
 
         // Check if travel exists and user is the organizer
-        $travel = get_post($travel_id);
-        if (!$travel || $travel->post_type !== 'viaggio') {
-            wp_send_json_error(array('message' => 'Viaggio non trovato'));
+        $activity = get_post($activity_id);
+        if (!$activity || $activity->post_type !== 'attivita') {
+            wp_send_json_error(array('message' => 'Attività non trovato'));
         }
 
-        if ($travel->post_author != $user_id) {
-            wp_send_json_error(array('message' => 'Non sei l\'organizzatore di questo viaggio'));
+        if ($activity->post_author != $user_id) {
+            wp_send_json_error(array('message' => 'Non sei l\'organizzatore di questo attivita'));
         }
 
         // Validate required fields
@@ -695,7 +695,7 @@ class CDV_Ajax_Handlers {
             $travel_month = isset($_POST['travel_month']) ? sanitize_text_field($_POST['travel_month']) : '';
 
             if (empty($travel_month)) {
-                wp_send_json_error(array('message' => 'Seleziona il mese del viaggio'));
+                wp_send_json_error(array('message' => 'Seleziona il mese del attivita'));
             }
 
             // Validate month format
@@ -717,7 +717,7 @@ class CDV_Ajax_Handlers {
             $end_date = isset($_POST['end_date']) ? sanitize_text_field($_POST['end_date']) : '';
 
             if (empty($start_date) || empty($end_date)) {
-                wp_send_json_error(array('message' => 'Inserisci le date del viaggio'));
+                wp_send_json_error(array('message' => 'Inserisci le date del attivita'));
             }
 
             if (strtotime($start_date) < strtotime('today')) {
@@ -731,7 +731,7 @@ class CDV_Ajax_Handlers {
 
         // Update travel post
         $post_data = array(
-            'ID' => $travel_id,
+            'ID' => $activity_id,
             'post_title' => $title,
             'post_content' => $description,
         );
@@ -739,95 +739,95 @@ class CDV_Ajax_Handlers {
         $result = wp_update_post($post_data);
 
         if (is_wp_error($result)) {
-            wp_send_json_error(array('message' => 'Errore durante l\'aggiornamento del viaggio'));
+            wp_send_json_error(array('message' => 'Errore durante l\'aggiornamento del attivita'));
         }
 
         // Clean post cache to ensure permalink is regenerated correctly
-        clean_post_cache($travel_id);
+        clean_post_cache($activity_id);
 
         // Update meta data
-        update_post_meta($travel_id, 'cdv_destination', $destination);
-        update_post_meta($travel_id, 'cdv_country', $country);
-        update_post_meta($travel_id, 'cdv_start_date', $start_date);
-        update_post_meta($travel_id, 'cdv_end_date', $end_date);
-        update_post_meta($travel_id, 'cdv_date_type', $date_type);
+        update_post_meta($activity_id, 'cdv_destination', $destination);
+        update_post_meta($activity_id, 'cdv_country', $country);
+        update_post_meta($activity_id, 'cdv_start_date', $start_date);
+        update_post_meta($activity_id, 'cdv_end_date', $end_date);
+        update_post_meta($activity_id, 'cdv_date_type', $date_type);
         if ($date_type === 'month') {
-            update_post_meta($travel_id, 'cdv_travel_month', $travel_month);
+            update_post_meta($activity_id, 'cdv_activity_month', $travel_month);
         } else {
-            delete_post_meta($travel_id, 'cdv_travel_month');
+            delete_post_meta($activity_id, 'cdv_activity_month');
         }
-        update_post_meta($travel_id, 'cdv_budget', $budget);
-        update_post_meta($travel_id, 'cdv_max_participants', $max_participants);
+        update_post_meta($activity_id, 'cdv_budget', $budget);
+        update_post_meta($activity_id, 'cdv_max_participants', $max_participants);
 
         // Update optional travel details
         if (isset($_POST['travel_transport']) && is_array($_POST['travel_transport'])) {
             $transport = array_map('sanitize_text_field', $_POST['travel_transport']);
-            update_post_meta($travel_id, 'cdv_travel_transport', $transport);
+            update_post_meta($activity_id, 'cdv_activity_transport', $transport);
         } else {
-            delete_post_meta($travel_id, 'cdv_travel_transport');
+            delete_post_meta($activity_id, 'cdv_activity_transport');
         }
 
         if (!empty($_POST['travel_accommodation'])) {
-            update_post_meta($travel_id, 'cdv_travel_accommodation', sanitize_text_field($_POST['travel_accommodation']));
+            update_post_meta($activity_id, 'cdv_activity_accommodation', sanitize_text_field($_POST['travel_accommodation']));
         } else {
-            delete_post_meta($travel_id, 'cdv_travel_accommodation');
+            delete_post_meta($activity_id, 'cdv_activity_accommodation');
         }
 
         if (!empty($_POST['travel_difficulty'])) {
-            update_post_meta($travel_id, 'cdv_travel_difficulty', sanitize_text_field($_POST['travel_difficulty']));
+            update_post_meta($activity_id, 'cdv_activity_difficulty', sanitize_text_field($_POST['travel_difficulty']));
         } else {
-            delete_post_meta($travel_id, 'cdv_travel_difficulty');
+            delete_post_meta($activity_id, 'cdv_activity_difficulty');
         }
 
         if (!empty($_POST['travel_meals'])) {
-            update_post_meta($travel_id, 'cdv_travel_meals', sanitize_text_field($_POST['travel_meals']));
+            update_post_meta($activity_id, 'cdv_activity_meals', sanitize_text_field($_POST['travel_meals']));
         } else {
-            delete_post_meta($travel_id, 'cdv_travel_meals');
+            delete_post_meta($activity_id, 'cdv_activity_meals');
         }
 
         if (!empty($_POST['travel_guide_type'])) {
-            update_post_meta($travel_id, 'cdv_travel_guide_type', sanitize_text_field($_POST['travel_guide_type']));
+            update_post_meta($activity_id, 'cdv_activity_guide_type', sanitize_text_field($_POST['travel_guide_type']));
         } else {
-            delete_post_meta($travel_id, 'cdv_travel_guide_type');
+            delete_post_meta($activity_id, 'cdv_activity_guide_type');
         }
 
         if (!empty($_POST['travel_requirements'])) {
-            update_post_meta($travel_id, 'cdv_travel_requirements', sanitize_textarea_field($_POST['travel_requirements']));
+            update_post_meta($activity_id, 'cdv_activity_requirements', sanitize_textarea_field($_POST['travel_requirements']));
         } else {
-            delete_post_meta($travel_id, 'cdv_travel_requirements');
+            delete_post_meta($activity_id, 'cdv_activity_requirements');
         }
 
         // Update travel types
         if (isset($_POST['travel_types']) && is_array($_POST['travel_types'])) {
             $travel_types = array_map('intval', $_POST['travel_types']);
-            wp_set_post_terms($travel_id, $travel_types, 'tipo_viaggio');
+            wp_set_post_terms($activity_id, $travel_types, 'tipo_sport');
         } else {
-            wp_set_post_terms($travel_id, array(), 'tipo_viaggio');
+            wp_set_post_terms($activity_id, array(), 'tipo_sport');
         }
 
         // Update geocoding if destination/country changed
         if ($destination && $country) {
             $address = $destination . ', ' . $country;
-            $geocoded = CDV_Travel_Maps::geocode($address);
+            $geocoded = CDV_Activity_Maps::geocode($address);
 
             if ($geocoded && isset($geocoded['lat']) && isset($geocoded['lon'])) {
-                CDV_Travel_Maps::save_travel_coordinates($travel_id, $geocoded['lat'], $geocoded['lon']);
+                CDV_Activity_Maps::save_activity_coordinates($activity_id, $geocoded['lat'], $geocoded['lon']);
             }
         }
 
         // Get the permalink - force refresh
-        $permalink = get_permalink($travel_id);
+        $permalink = get_permalink($activity_id);
 
         // If permalink still has query string parameters, build it manually using the post slug
         if (strpos($permalink, '?') !== false) {
-            $updated_post = get_post($travel_id);
+            $updated_post = get_post($activity_id);
             if ($updated_post && !empty($updated_post->post_name)) {
-                $permalink = home_url('/viaggio/' . $updated_post->post_name . '/');
+                $permalink = home_url('/attivita/' . $updated_post->post_name . '/');
             }
         }
 
         wp_send_json_success(array(
-            'message' => 'Viaggio aggiornato con successo!',
+            'message' => 'Attività aggiornato con successo!',
             'redirect_url' => $permalink,
         ));
     }
@@ -946,16 +946,16 @@ class CDV_Ajax_Handlers {
             wp_send_json_error(array('message' => 'Devi essere autenticato'));
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
         $message = isset($_POST['message']) ? sanitize_textarea_field($_POST['message']) : '';
         $user_id = get_current_user_id();
 
-        if (empty($travel_id) || empty($message)) {
+        if (empty($activity_id) || empty($message)) {
             wp_send_json_error(array('message' => 'Parametri mancanti'));
         }
 
         // Send message
-        $result = CDV_Group_Chat::send_message($travel_id, $user_id, $message);
+        $result = CDV_Group_Chat::send_message($activity_id, $user_id, $message);
 
         if (is_wp_error($result)) {
             wp_send_json_error(array('message' => $result->get_error_message()));
@@ -977,24 +977,24 @@ class CDV_Ajax_Handlers {
             wp_send_json_error(array('message' => 'Devi essere autenticato'));
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
         $user_id = get_current_user_id();
 
-        if (empty($travel_id)) {
+        if (empty($activity_id)) {
             wp_send_json_error(array('message' => 'Travel ID mancante'));
         }
 
         // Check if user is participant
-        if (!CDV_Group_Chat::is_participant($travel_id, $user_id)) {
-            wp_send_json_error(array('message' => 'Non sei un partecipante di questo viaggio'));
+        if (!CDV_Group_Chat::is_participant($activity_id, $user_id)) {
+            wp_send_json_error(array('message' => 'Non sei un partecipante di questo attivita'));
         }
 
         // Get messages
-        $messages = CDV_Group_Chat::get_messages($travel_id, 100);
+        $messages = CDV_Group_Chat::get_messages($activity_id, 100);
         $formatted = CDV_Group_Chat::format_messages($messages, $user_id);
 
         // Get participants
-        $participants = CDV_Group_Chat::get_participants($travel_id);
+        $participants = CDV_Group_Chat::get_participants($activity_id);
 
         wp_send_json_success(array(
             'messages' => $formatted,
@@ -1022,7 +1022,7 @@ class CDV_Ajax_Handlers {
 
         // Try to geocode the address
         $address = $destination . ', ' . $country;
-        $geocoded = CDV_Travel_Maps::geocode($address);
+        $geocoded = CDV_Activity_Maps::geocode($address);
 
         if ($geocoded && isset($geocoded['lat']) && isset($geocoded['lon'])) {
             wp_send_json_success(array(
@@ -1125,13 +1125,13 @@ class CDV_Ajax_Handlers {
             wp_send_json_error(array('message' => 'Devi essere autenticato'));
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
         $organizer_id = isset($_POST['organizer_id']) ? intval($_POST['organizer_id']) : 0;
         $message = isset($_POST['message']) ? sanitize_textarea_field($_POST['message']) : '';
         $sender_id = get_current_user_id();
 
         // Validate inputs
-        if (!$travel_id || !$organizer_id) {
+        if (!$activity_id || !$organizer_id) {
             wp_send_json_error(array('message' => 'Dati non validi'));
         }
 
@@ -1145,9 +1145,9 @@ class CDV_Ajax_Handlers {
         }
 
         // Get travel and organizer info
-        $travel = get_post($travel_id);
-        if (!$travel || $travel->post_type !== 'viaggio') {
-            wp_send_json_error(array('message' => 'Viaggio non trovato'));
+        $activity = get_post($activity_id);
+        if (!$activity || $activity->post_type !== 'attivita') {
+            wp_send_json_error(array('message' => 'Attività non trovato'));
         }
 
         $sender = get_userdata($sender_id);
@@ -1166,23 +1166,23 @@ class CDV_Ajax_Handlers {
                 sprintf(
                     '%s ti ha inviato un messaggio riguardo "%s": %s',
                     $sender->user_login,
-                    $travel->post_title,
+                    $activity->post_title,
                     wp_trim_words($message, 15)
                 ),
-                get_permalink($travel_id),
-                $travel_id
+                get_permalink($activity_id),
+                $activity_id
             );
         }
 
         // Send email to organizer
         $organizer_email = $organizer->user_email;
-        $subject = sprintf('[Compagni di Viaggi] Messaggio da %s riguardo "%s"', $sender->user_login, $travel->post_title);
+        $subject = sprintf('[Compagni di Sport] Messaggio da %s riguardo "%s"', $sender->user_login, $activity->post_title);
 
         $email_message = sprintf(
-            "Ciao %s,\n\n%s ti ha inviato un messaggio riguardo il viaggio \"%s\":\n\n%s\n\nPuoi rispondere accedendo al tuo account:\n%s\n\nGrazie,\nIl team di Compagni di Viaggi",
+            "Ciao %s,\n\n%s ti ha inviato un messaggio riguardo il attivita \"%s\":\n\n%s\n\nPuoi rispondere accedendo al tuo account:\n%s\n\nGrazie,\nIl team di Compagni di Sport",
             $organizer->user_login,
             $sender->user_login,
-            $travel->post_title,
+            $activity->post_title,
             $message,
             home_url('/dashboard')
         );
@@ -1210,22 +1210,22 @@ class CDV_Ajax_Handlers {
             wp_send_json_error(array('message' => 'Devi essere autenticato'));
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
         $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
         $current_user_id = get_current_user_id();
 
         // Validate inputs
-        if (!$travel_id || !$user_id) {
+        if (!$activity_id || !$user_id) {
             wp_send_json_error(array('message' => 'Dati non validi'));
         }
 
         // Check if current user is the organizer
-        $travel = get_post($travel_id);
-        if (!$travel || $travel->post_type !== 'viaggio') {
-            wp_send_json_error(array('message' => 'Viaggio non trovato'));
+        $activity = get_post($activity_id);
+        if (!$activity || $activity->post_type !== 'attivita') {
+            wp_send_json_error(array('message' => 'Attività non trovato'));
         }
 
-        if ($travel->post_author != $current_user_id) {
+        if ($activity->post_author != $current_user_id) {
             wp_send_json_error(array('message' => 'Solo l\'organizzatore può rimuovere partecipanti'));
         }
 
@@ -1236,7 +1236,7 @@ class CDV_Ajax_Handlers {
 
         // Remove participant
         if (class_exists('CDV_Participants')) {
-            $result = CDV_Participants::remove_participant($travel_id, $user_id);
+            $result = CDV_Participants::remove_participant($activity_id, $user_id);
 
             if (is_wp_error($result)) {
                 wp_send_json_error(array('message' => $result->get_error_message()));
@@ -1249,21 +1249,21 @@ class CDV_Ajax_Handlers {
                     $user_id,
                     'travel_update',
                     sprintf(
-                        'Sei stato rimosso dal viaggio "%s"',
-                        $travel->post_title
+                        'Sei stato rimosso dal attivita "%s"',
+                        $activity->post_title
                     ),
-                    get_permalink($travel_id)
+                    get_permalink($activity_id)
                 );
             }
 
             // Send email notification
             if ($removed_user) {
-                $subject = sprintf('[Compagni di Viaggi] Rimosso dal viaggio "%s"', $travel->post_title);
+                $subject = sprintf('[Compagni di Sport] Rimosso dal attivita "%s"', $activity->post_title);
                 $message = sprintf(
-                    "Ciao %s,\n\nSei stato rimosso dal viaggio \"%s\" dall'organizzatore.\n\nPuoi visualizzare altri viaggi qui:\n%s\n\nGrazie,\nIl team di Compagni di Viaggi",
+                    "Ciao %s,\n\nSei stato rimosso dal attivita \"%s\" dall'organizzatore.\n\nPuoi visualizzare altri attivita qui:\n%s\n\nGrazie,\nIl team di Compagni di Sport",
                     $removed_user->user_login,
-                    $travel->post_title,
-                    get_post_type_archive_link('viaggio')
+                    $activity->post_title,
+                    get_post_type_archive_link('attivita')
                 );
                 wp_mail($removed_user->user_email, $subject, $message);
             }
@@ -1277,47 +1277,47 @@ class CDV_Ajax_Handlers {
     /**
      * AJAX: Leave travel (participant action)
      */
-    public static function leave_travel() {
+    public static function leave_activity() {
         check_ajax_referer('cdv_ajax_nonce', 'nonce');
 
         if (!is_user_logged_in()) {
             wp_send_json_error(array('message' => 'Devi essere autenticato'));
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
         $user_id = get_current_user_id();
 
         // Validate inputs
-        if (!$travel_id) {
-            wp_send_json_error(array('message' => 'ID viaggio non valido'));
+        if (!$activity_id) {
+            wp_send_json_error(array('message' => 'ID attivita non valido'));
         }
 
         // Check if travel exists
-        $travel = get_post($travel_id);
-        if (!$travel || $travel->post_type !== 'viaggio') {
-            wp_send_json_error(array('message' => 'Viaggio non trovato'));
+        $activity = get_post($activity_id);
+        if (!$activity || $activity->post_type !== 'attivita') {
+            wp_send_json_error(array('message' => 'Attività non trovato'));
         }
 
         // Don't allow organizer to leave their own travel
-        if ($travel->post_author == $user_id) {
-            wp_send_json_error(array('message' => 'L\'organizzatore non può lasciare il proprio viaggio'));
+        if ($activity->post_author == $user_id) {
+            wp_send_json_error(array('message' => 'L\'organizzatore non può lasciare il proprio attivita'));
         }
 
         // Check if user is actually a participant
-        if (class_exists('CDV_Participants') && !CDV_Participants::is_participant($travel_id, $user_id, 'accepted')) {
-            wp_send_json_error(array('message' => 'Non sei un partecipante di questo viaggio'));
+        if (class_exists('CDV_Participants') && !CDV_Participants::is_participant($activity_id, $user_id, 'accepted')) {
+            wp_send_json_error(array('message' => 'Non sei un partecipante di questo attivita'));
         }
 
         // Remove participant
         if (class_exists('CDV_Participants')) {
-            $result = CDV_Participants::remove_participant($travel_id, $user_id);
+            $result = CDV_Participants::remove_participant($activity_id, $user_id);
 
             if (is_wp_error($result)) {
                 wp_send_json_error(array('message' => $result->get_error_message()));
             }
 
             // Create notification for organizer
-            $organizer_id = $travel->post_author;
+            $organizer_id = $activity->post_author;
             $user = get_userdata($user_id);
 
             if (class_exists('CDV_Notifications')) {
@@ -1325,31 +1325,31 @@ class CDV_Ajax_Handlers {
                     $organizer_id,
                     'travel_update',
                     sprintf(
-                        '%s ha lasciato il viaggio "%s"',
+                        '%s ha lasciato il attivita "%s"',
                         $user->user_login,
-                        $travel->post_title
+                        $activity->post_title
                     ),
-                    get_permalink($travel_id)
+                    get_permalink($activity_id)
                 );
             }
 
             // Send email to organizer
             $organizer = get_userdata($organizer_id);
             if ($organizer) {
-                $subject = sprintf('[Compagni di Viaggi] Un partecipante ha lasciato "%s"', $travel->post_title);
+                $subject = sprintf('[Compagni di Sport] Un partecipante ha lasciato "%s"', $activity->post_title);
                 $message = sprintf(
-                    "Ciao %s,\n\n%s ha lasciato il viaggio \"%s\".\n\nPuoi visualizzare il viaggio qui:\n%s\n\nGrazie,\nIl team di Compagni di Viaggi",
+                    "Ciao %s,\n\n%s ha lasciato il attivita \"%s\".\n\nPuoi visualizzare il attivita qui:\n%s\n\nGrazie,\nIl team di Compagni di Sport",
                     $organizer->user_login,
                     $user->user_login,
-                    $travel->post_title,
-                    get_permalink($travel_id)
+                    $activity->post_title,
+                    get_permalink($activity_id)
                 );
                 wp_mail($organizer->user_email, $subject, $message);
             }
 
-            wp_send_json_success(array('message' => 'Hai lasciato il viaggio con successo'));
+            wp_send_json_success(array('message' => 'Hai lasciato il attivita con successo'));
         }
 
-        wp_send_json_error(array('message' => 'Errore durante l\'uscita dal viaggio'));
+        wp_send_json_error(array('message' => 'Errore durante l\'uscita dal attivita'));
     }
 }

@@ -15,7 +15,7 @@ class CDV_Admin {
     public static function init() {
         add_action('admin_menu', array(__CLASS__, 'add_menu'));
         add_action('add_meta_boxes', array(__CLASS__, 'add_meta_boxes'));
-        add_action('save_post_viaggio', array(__CLASS__, 'save_meta_boxes'));
+        add_action('save_post_attivitào', array(__CLASS__, 'save_meta_boxes'));
         add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_scripts'));
     }
 
@@ -24,8 +24,8 @@ class CDV_Admin {
      */
     public static function add_menu() {
         add_menu_page(
-            'Compagni di Viaggi',
-            'Compagni di Viaggi',
+            'Compagni di Attività',
+            'Compagni di Attività',
             'manage_options',
             'cdv-dashboard',
             array(__CLASS__, 'dashboard_page'),
@@ -47,14 +47,14 @@ class CDV_Admin {
         );
 
         // Pending travels submenu
-        $pending_travels = CDV_Travel_Moderation::get_pending_travels_count();
+        $pending_travels = CDV_Activity_Moderation::get_pending_travels_count();
         $travels_badge = $pending_travels > 0 ? ' <span class="awaiting-mod">' . $pending_travels . '</span>' : '';
 
         add_submenu_page(
             'cdv-dashboard',
-            'Viaggi in Attesa',
-            'Viaggi in Attesa' . $travels_badge,
-            'approve_viaggi',
+            'Attività in Attesa',
+            'Attività in Attesa' . $travels_badge,
+            'approve_attività',
             'cdv-pending-travels',
             array(__CLASS__, 'pending_travels_page')
         );
@@ -98,19 +98,19 @@ class CDV_Admin {
         global $wpdb;
 
         $stats = array(
-            'total_travels' => wp_count_posts('viaggio')->publish,
+            'total_travels' => wp_count_posts('attivita')->publish,
             'total_users' => count_users()['total_users'],
-            'total_participants' => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}cdv_travel_participants WHERE status = 'accepted'"),
+            'total_participants' => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}cdv_activity_participants WHERE status = 'accepted'"),
             'total_reviews' => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}cdv_reviews"),
         );
 
         ?>
         <div class="wrap">
-            <h1>Dashboard Compagni di Viaggi</h1>
+            <h1>Dashboard Compagni di Attività</h1>
 
             <div class="cdv-stats">
                 <div class="cdv-stat-box">
-                    <h3>Viaggi Pubblicati</h3>
+                    <h3>Attività Pubblicati</h3>
                     <p class="cdv-stat-number"><?php echo $stats['total_travels']; ?></p>
                 </div>
                 <div class="cdv-stat-box">
@@ -167,8 +167,8 @@ class CDV_Admin {
                 $test_email = get_option('admin_email');
             }
 
-            $subject = '[Compagni di Viaggi] Test Email';
-            $message = "Questa è un'email di test inviata da Compagni di Viaggi.\n\n";
+            $subject = '[Compagni di Attività] Test Email';
+            $message = "Questa è un'email di test inviata da Compagni di Attività.\n\n";
             $message .= "Se ricevi questo messaggio, la configurazione email funziona correttamente!\n\n";
             $message .= "Data invio: " . current_time('d/m/Y H:i:s') . "\n";
             $message .= "Inviato a: " . $test_email . "\n";
@@ -204,7 +204,7 @@ class CDV_Admin {
 
         ?>
         <div class="wrap">
-            <h1>Impostazioni Compagni di Viaggi</h1>
+            <h1>Impostazioni Compagni di Attività</h1>
 
             <form method="post" action="">
                 <?php wp_nonce_field('cdv_settings_nonce'); ?>
@@ -216,7 +216,7 @@ class CDV_Admin {
                         </th>
                         <td>
                             <input type="number" name="cdv_max_participants" id="cdv_max_participants" value="<?php echo esc_attr($max_participants); ?>" class="regular-text" />
-                            <p class="description">Numero massimo di partecipanti per viaggio (può essere sovrascritto per singolo viaggio)</p>
+                            <p class="description">Numero massimo di partecipanti per attivitào (può essere sovrascritto per singolo attivitào)</p>
                         </td>
                     </tr>
                     <tr>
@@ -320,7 +320,7 @@ class CDV_Admin {
                 <ul>
                     <li>✉️ <strong>Verifica email</strong> - Inviata agli utenti al momento della registrazione</li>
                     <li>✉️ <strong>Notifica admin</strong> - Inviata all'amministratore quando un nuovo utente si registra</li>
-                    <li>✉️ <strong>Notifiche viaggi</strong> - Per richieste di partecipazione, approvazioni, ecc.</li>
+                    <li>✉️ <strong>Notifiche attività</strong> - Per richieste di partecipazione, approvazioni, ecc.</li>
                 </ul>
 
                 <p><strong>Nota:</strong> Le email di verifica sono opzionali. Gli utenti possono comunque accedere anche senza verificare l'email. L'invio email è stato configurato per non bloccare le registrazioni in caso di problemi.</p>
@@ -334,19 +334,19 @@ class CDV_Admin {
      */
     public static function add_meta_boxes() {
         add_meta_box(
-            'cdv_travel_details',
-            'Dettagli Viaggio',
+            'cdv_activity_details',
+            'Dettagli Attività',
             array(__CLASS__, 'travel_details_meta_box'),
-            'viaggio',
+            'attivita',
             'normal',
             'high'
         );
 
         add_meta_box(
-            'cdv_travel_participants',
+            'cdv_activity_participants',
             'Partecipanti',
             array(__CLASS__, 'travel_participants_meta_box'),
-            'viaggio',
+            'attivita',
             'side',
             'default'
         );
@@ -364,7 +364,7 @@ class CDV_Admin {
         $country = get_post_meta($post->ID, 'cdv_country', true);
         $budget = get_post_meta($post->ID, 'cdv_budget', true);
         $max_participants = get_post_meta($post->ID, 'cdv_max_participants', true);
-        $status = get_post_meta($post->ID, 'cdv_travel_status', true);
+        $status = get_post_meta($post->ID, 'cdv_activity_status', true);
 
         ?>
         <table class="form-table">
@@ -393,9 +393,9 @@ class CDV_Admin {
                 <td><input type="number" name="cdv_max_participants" id="cdv_max_participants" value="<?php echo esc_attr($max_participants); ?>" class="regular-text" /></td>
             </tr>
             <tr>
-                <th><label for="cdv_travel_status">Stato Viaggio</label></th>
+                <th><label for="cdv_activity_status">Stato Attività</label></th>
                 <td>
-                    <select name="cdv_travel_status" id="cdv_travel_status">
+                    <select name="cdv_activity_status" id="cdv_activity_status">
                         <option value="open" <?php selected($status, 'open'); ?>>Aperto</option>
                         <option value="full" <?php selected($status, 'full'); ?>>Completo</option>
                         <option value="in_progress" <?php selected($status, 'in_progress'); ?>>In Corso</option>
@@ -458,7 +458,7 @@ class CDV_Admin {
             'cdv_country',
             'cdv_budget',
             'cdv_max_participants',
-            'cdv_travel_status',
+            'cdv_activity_status',
         );
 
         foreach ($fields as $field) {
@@ -576,26 +576,26 @@ class CDV_Admin {
      */
     public static function pending_travels_page() {
         // Handle form submissions FIRST, before any output
-        if (isset($_POST['approve_travel']) && isset($_POST['travel_id'])) {
-            $travel_id = intval($_POST['travel_id']);
-            check_admin_referer('cdv_approve_travel_' . $travel_id);
+        if (isset($_POST['approve_travel']) && isset($_POST['activity_id'])) {
+            $activity_id = intval($_POST['activity_id']);
+            check_admin_referer('cdv_approve_travel_' . $activity_id);
 
-            CDV_Travel_Moderation::approve_travel($travel_id);
+            CDV_Activity_Moderation::approve_travel($activity_id);
             wp_redirect(add_query_arg('approved', '1', admin_url('admin.php?page=cdv-pending-travels')));
             exit;
         }
 
-        if (isset($_POST['reject_travel']) && isset($_POST['travel_id'])) {
-            $travel_id = intval($_POST['travel_id']);
-            check_admin_referer('cdv_approve_travel_' . $travel_id);
+        if (isset($_POST['reject_travel']) && isset($_POST['activity_id'])) {
+            $activity_id = intval($_POST['activity_id']);
+            check_admin_referer('cdv_approve_travel_' . $activity_id);
 
-            CDV_Travel_Moderation::reject_travel($travel_id, 'Contenuto non conforme alle linee guida');
+            CDV_Activity_Moderation::reject_travel($activity_id, 'Contenuto non conforme alle linee guida');
             wp_redirect(add_query_arg('rejected', '1', admin_url('admin.php?page=cdv-pending-travels')));
             exit;
         }
 
         $args = array(
-            'post_type' => 'viaggio',
+            'post_type' => 'attivita',
             'post_status' => 'pending',
             'posts_per_page' => -1,
         );
@@ -604,27 +604,27 @@ class CDV_Admin {
 
         ?>
         <div class="wrap">
-            <h1>Viaggi in Attesa di Approvazione</h1>
+            <h1>Attività in Attesa di Approvazione</h1>
 
             <?php if (isset($_GET['approved'])) : ?>
                 <div class="notice notice-success is-dismissible">
-                    <p>Viaggio approvato con successo!</p>
+                    <p>Attività approvato con successo!</p>
                 </div>
             <?php endif; ?>
 
             <?php if (isset($_GET['rejected'])) : ?>
                 <div class="notice notice-info is-dismissible">
-                    <p>Viaggio rifiutato.</p>
+                    <p>Attività rifiutato.</p>
                 </div>
             <?php endif; ?>
 
             <?php if (empty($pending_travels)) : ?>
-                <p>Nessun viaggio in attesa di approvazione.</p>
+                <p>Nessun attivitào in attesa di approvazione.</p>
             <?php else : ?>
                 <table class="wp-list-table widefat fixed striped">
                     <thead>
                         <tr>
-                            <th>Viaggio</th>
+                            <th>Attività</th>
                             <th>Organizzatore</th>
                             <th>Destinazione</th>
                             <th>Date</th>
@@ -633,18 +633,18 @@ class CDV_Admin {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($pending_travels as $travel) :
-                            $author = get_user_by('id', $travel->post_author);
-                            $destination = get_post_meta($travel->ID, 'cdv_destination', true);
-                            $country = get_post_meta($travel->ID, 'cdv_country', true);
-                            $start_date = get_post_meta($travel->ID, 'cdv_start_date', true);
-                            $end_date = get_post_meta($travel->ID, 'cdv_end_date', true);
-                            $budget = get_post_meta($travel->ID, 'cdv_budget', true);
+                        <?php foreach ($pending_travels as $activity) :
+                            $author = get_user_by('id', $activity->post_author);
+                            $destination = get_post_meta($activity->ID, 'cdv_destination', true);
+                            $country = get_post_meta($activity->ID, 'cdv_country', true);
+                            $start_date = get_post_meta($activity->ID, 'cdv_start_date', true);
+                            $end_date = get_post_meta($activity->ID, 'cdv_end_date', true);
+                            $budget = get_post_meta($activity->ID, 'cdv_budget', true);
                             ?>
                             <tr>
                                 <td>
-                                    <strong><?php echo esc_html($travel->post_title); ?></strong><br>
-                                    <small><?php echo esc_html(wp_trim_words($travel->post_content, 20)); ?></small>
+                                    <strong><?php echo esc_html($activity->post_title); ?></strong><br>
+                                    <small><?php echo esc_html(wp_trim_words($activity->post_content, 20)); ?></small>
                                 </td>
                                 <td>
                                     <?php echo get_avatar($author->ID, 40); ?>
@@ -662,12 +662,12 @@ class CDV_Admin {
                                 </td>
                                 <td><?php echo $budget ? '€' . number_format($budget, 0, ',', '.') : '-'; ?></td>
                                 <td>
-                                    <a href="<?php echo get_edit_post_link($travel->ID); ?>" class="button" target="_blank">Vedi/Modifica</a>
+                                    <a href="<?php echo get_edit_post_link($activity->ID); ?>" class="button" target="_blank">Vedi/Modifica</a>
                                     <form method="post" style="display: inline;">
-                                        <?php wp_nonce_field('cdv_approve_travel_' . $travel->ID); ?>
-                                        <input type="hidden" name="travel_id" value="<?php echo $travel->ID; ?>">
+                                        <?php wp_nonce_field('cdv_approve_travel_' . $activity->ID); ?>
+                                        <input type="hidden" name="activity_id" value="<?php echo $activity->ID; ?>">
                                         <button type="submit" name="approve_travel" class="button button-primary">✓ Approva</button>
-                                        <button type="submit" name="reject_travel" class="button button-link-delete" onclick="return confirm('Sei sicuro di voler rifiutare questo viaggio?');">✗ Rifiuta</button>
+                                        <button type="submit" name="reject_travel" class="button button-link-delete" onclick="return confirm('Sei sicuro di voler rifiutare questo attivitào?');">✗ Rifiuta</button>
                                     </form>
                                 </td>
                             </tr>
@@ -742,7 +742,7 @@ class CDV_Admin {
                             <th>Racconto</th>
                             <th>Autore</th>
                             <th>Destinazione</th>
-                            <th>Data Viaggio</th>
+                            <th>Data Attività</th>
                             <th>Data Invio</th>
                             <th>Azioni</th>
                         </tr>
@@ -751,7 +751,7 @@ class CDV_Admin {
                         <?php foreach ($pending_stories as $story) :
                             $author = get_user_by('id', $story->post_author);
                             $destination = get_post_meta($story->ID, 'cdv_destination', true);
-                            $travel_date = get_post_meta($story->ID, 'cdv_travel_date', true);
+                            $travel_date = get_post_meta($story->ID, 'cdv_activity_date', true);
                             $categories = get_the_terms($story->ID, 'categoria_racconto');
                             ?>
                             <tr>

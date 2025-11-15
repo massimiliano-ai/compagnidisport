@@ -1,6 +1,6 @@
 <?php
 /**
- * Compagni di Viaggi Theme Functions
+ * Compagni di Attività Theme Functions
  */
 
 if (!defined('ABSPATH')) {
@@ -28,9 +28,9 @@ function cdv_theme_setup() {
 
     // Register navigation menus
     register_nav_menus(array(
-        'primary' => __('Menu Principale', 'compagni-viaggi'),
-        'mobile' => __('Menu Mobile', 'compagni-viaggi'),
-        'footer' => __('Menu Footer', 'compagni-viaggi'),
+        'primary' => __('Menu Principale', 'compagni-attività'),
+        'mobile' => __('Menu Mobile', 'compagni-attività'),
+        'footer' => __('Menu Footer', 'compagni-attività'),
     ));
 
     // Switch default core markup to output valid HTML5
@@ -91,9 +91,9 @@ add_action('wp_enqueue_scripts', 'cdv_enqueue_scripts');
  */
 function cdv_widgets_init() {
     register_sidebar(array(
-        'name'          => __('Sidebar', 'compagni-viaggi'),
+        'name'          => __('Sidebar', 'compagni-attività'),
         'id'            => 'sidebar-1',
-        'description'   => __('Aggiungi widget qui per apparire nella sidebar.', 'compagni-viaggi'),
+        'description'   => __('Aggiungi widget qui per apparire nella sidebar.', 'compagni-attività'),
         'before_widget' => '<section id="%1$s" class="widget %2$s">',
         'after_widget'  => '</section>',
         'before_title'  => '<h3 class="widget-title">',
@@ -101,9 +101,9 @@ function cdv_widgets_init() {
     ));
 
     register_sidebar(array(
-        'name'          => __('Footer 1', 'compagni-viaggi'),
+        'name'          => __('Footer 1', 'compagni-attività'),
         'id'            => 'footer-1',
-        'description'   => __('Prima colonna del footer.', 'compagni-viaggi'),
+        'description'   => __('Prima colonna del footer.', 'compagni-attività'),
         'before_widget' => '<div class="footer-widget">',
         'after_widget'  => '</div>',
         'before_title'  => '<h3>',
@@ -111,9 +111,9 @@ function cdv_widgets_init() {
     ));
 
     register_sidebar(array(
-        'name'          => __('Footer 2', 'compagni-viaggi'),
+        'name'          => __('Footer 2', 'compagni-attività'),
         'id'            => 'footer-2',
-        'description'   => __('Seconda colonna del footer.', 'compagni-viaggi'),
+        'description'   => __('Seconda colonna del footer.', 'compagni-attività'),
         'before_widget' => '<div class="footer-widget">',
         'after_widget'  => '</div>',
         'before_title'  => '<h3>',
@@ -121,9 +121,9 @@ function cdv_widgets_init() {
     ));
 
     register_sidebar(array(
-        'name'          => __('Footer 3', 'compagni-viaggi'),
+        'name'          => __('Footer 3', 'compagni-attività'),
         'id'            => 'footer-3',
-        'description'   => __('Terza colonna del footer.', 'compagni-viaggi'),
+        'description'   => __('Terza colonna del footer.', 'compagni-attività'),
         'before_widget' => '<div class="footer-widget">',
         'after_widget'  => '</div>',
         'before_title'  => '<h3>',
@@ -139,7 +139,7 @@ add_action('widgets_init', 'cdv_widgets_init');
 /**
  * Display travel meta information
  */
-function cdv_travel_meta($post_id = null) {
+function cdv_activity_meta($post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
@@ -147,7 +147,7 @@ function cdv_travel_meta($post_id = null) {
     $start_date = get_post_meta($post_id, 'cdv_start_date', true);
     $end_date = get_post_meta($post_id, 'cdv_end_date', true);
     $date_type = get_post_meta($post_id, 'cdv_date_type', true);
-    $destination = get_post_meta($post_id, 'cdv_destination', true);
+    $destination = get_post_meta($post_id, 'cdv_location', true);
     $country = get_post_meta($post_id, 'cdv_country', true);
     $budget = get_post_meta($post_id, 'cdv_budget', true);
     $max_participants = get_post_meta($post_id, 'cdv_max_participants', true);
@@ -258,12 +258,12 @@ function cdv_display_stars($rating, $max = 5) {
 /**
  * Display travel type badges
  */
-function cdv_travel_type_badges($post_id = null) {
+function cdv_activity_type_badges($post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
 
-    $types = wp_get_post_terms($post_id, 'tipo_viaggio');
+    $types = wp_get_post_terms($post_id, 'tipo_sport');
 
     if (empty($types) || is_wp_error($types)) {
         return;
@@ -279,12 +279,12 @@ function cdv_travel_type_badges($post_id = null) {
 /**
  * Get travel status label
  */
-function cdv_get_travel_status_label($post_id = null) {
+function cdv_get_activity_status_label($post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
 
-    $status = get_post_meta($post_id, 'cdv_travel_status', true);
+    $status = get_post_meta($post_id, 'cdv_activity_status', true);
 
     $labels = array(
         'open' => array('label' => 'Aperto', 'class' => 'success'),
@@ -344,8 +344,8 @@ function cdv_body_classes($classes) {
         $classes[] = 'logged-out';
     }
 
-    if (is_post_type_archive('viaggio') || is_singular('viaggio')) {
-        $classes[] = 'viaggio-page';
+    if (is_post_type_archive('attivita') || is_singular('attivita')) {
+        $classes[] = 'attività-page';
     }
 
     return $classes;
@@ -380,7 +380,7 @@ function cdv_add_custom_css_meta_box() {
         'cdv_custom_css',
         'CSS Personalizzato',
         'cdv_custom_css_meta_box_callback',
-        array('page', 'post', 'viaggio'),
+        array('page', 'post', 'attivita'),
         'normal',
         'low'
     );
@@ -445,18 +445,18 @@ function cdv_output_page_custom_css() {
 add_action('wp_head', 'cdv_output_page_custom_css', 100);
 
 /**
- * Advanced Search and Filters for Viaggi Archive
+ * Advanced Search and Filters for Attività Archive
  */
 function cdv_filter_viaggi_archive($query) {
-    // Only modify main query on viaggio archive pages OR search with post_type=viaggio
-    $is_viaggio_query = is_post_type_archive('viaggio') ||
-                        (is_search() && isset($_GET['post_type']) && $_GET['post_type'] === 'viaggio');
+    // Only modify main query on attività archive pages OR search with post_type=attività
+    $is_attivita_query = is_post_type_archive('attivita') ||
+                        (is_search() && isset($_GET['post_type']) && $_GET['post_type'] === 'attivita');
 
-    if (!is_admin() && $query->is_main_query() && $is_viaggio_query) {
+    if (!is_admin() && $query->is_main_query() && $is_attivita_query) {
 
-        // Force post_type to viaggio for search queries
-        if (is_search() && isset($_GET['post_type']) && $_GET['post_type'] === 'viaggio') {
-            $query->set('post_type', 'viaggio');
+        // Force post_type to attività for search queries
+        if (is_search() && isset($_GET['post_type']) && $_GET['post_type'] === 'attivita') {
+            $query->set('post_type', 'attivita');
         }
 
         // Meta query array
@@ -533,10 +533,10 @@ function cdv_filter_viaggi_archive($query) {
         }
 
         // Filter by travel status
-        if (!empty($_GET['travel_status'])) {
+        if (!empty($_GET['activity_status'])) {
             $meta_query[] = array(
-                'key' => 'cdv_travel_status',
-                'value' => sanitize_text_field($_GET['travel_status']),
+                'key' => 'cdv_activity_status',
+                'value' => sanitize_text_field($_GET['activity_status']),
                 'compare' => '='
             );
         }
@@ -661,11 +661,11 @@ function cdv_filter_viaggi_archive($query) {
                     FROM {$wpdb->posts} p
                     LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = 'cdv_max_participants'
                     LEFT JOIN (
-                        SELECT travel_id, COUNT(*) as participant_count
+                        SELECT activity_id, COUNT(*) as participant_count
                         FROM {$participants_table}
                         WHERE status = 'accepted'
-                        GROUP BY travel_id
-                    ) pt ON p.ID = pt.travel_id
+                        GROUP BY activity_id
+                    ) pt ON p.ID = pt.activity_id
                     WHERE CAST(pm.meta_value AS UNSIGNED) > COALESCE(pt.participant_count, 0)
                 )";
 
@@ -679,12 +679,12 @@ function cdv_filter_viaggi_archive($query) {
         }
 
         // Taxonomy filters (already handled by WordPress, but we make them explicit)
-        if (!empty($_GET['tipo_viaggio'])) {
+        if (!empty($_GET['tipo_sport'])) {
             $query->set('tax_query', array(
                 array(
-                    'taxonomy' => 'tipo_viaggio',
+                    'taxonomy' => 'tipo_sport',
                     'field' => 'slug',
-                    'terms' => sanitize_text_field($_GET['tipo_viaggio'])
+                    'terms' => sanitize_text_field($_GET['tipo_sport'])
                 )
             ));
         }
@@ -742,15 +742,15 @@ function cdv_filter_viaggi_archive($query) {
 add_action('pre_get_posts', 'cdv_filter_viaggi_archive');
 
 /**
- * Force use of archive-viaggio.php template for viaggio searches
+ * Force use of archive-attività.php template for attività searches
  * This ensures searches from hero section and travels page show results
  * in the travels archive page instead of the generic search page
  */
-function cdv_force_viaggio_archive_template($template) {
-    // Check if this is a search with post_type=viaggio
-    if (is_search() && isset($_GET['post_type']) && $_GET['post_type'] === 'viaggio') {
-        // Get the archive-viaggio.php template
-        $archive_template = locate_template('archive-viaggio.php');
+function cdv_force_attivita_archive_template($template) {
+    // Check if this is a search with post_type=attività
+    if (is_search() && isset($_GET['post_type']) && $_GET['post_type'] === 'attivita') {
+        // Get the archive-attività.php template
+        $archive_template = locate_template('archive-attività.php');
         if ($archive_template) {
             return $archive_template;
         }
@@ -758,4 +758,4 @@ function cdv_force_viaggio_archive_template($template) {
 
     return $template;
 }
-add_filter('template_include', 'cdv_force_viaggio_archive_template');
+add_filter('template_include', 'cdv_force_attivita_archive_template');

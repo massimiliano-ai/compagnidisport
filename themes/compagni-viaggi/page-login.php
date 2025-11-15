@@ -19,7 +19,7 @@ get_header();
             <div class="login-header" style="text-align: center; margin-bottom: calc(var(--spacing-unit) * 5);">
                 <h1 style="margin-bottom: calc(var(--spacing-unit) * 2);">Bentornato!</h1>
                 <p style="color: var(--text-medium); font-size: 1.1rem;">
-                    Accedi al tuo account per gestire i tuoi viaggi
+                    Accedi al tuo account per gestire i tuoi attività
                 </p>
             </div>
 

@@ -82,7 +82,7 @@ $cookie_consent = get_user_meta($user_id, 'cdv_cookie_consent', true);
                 <h3>Richiedi una Copia dei Tuoi Dati</h3>
                 <p>
                     Ai sensi del GDPR, hai il diritto di ricevere una copia di tutti i dati personali che conserviamo su di te.
-                    Questo include il tuo profilo, viaggi, messaggi, recensioni e altro ancora.
+                    Questo include il tuo profilo, attività, messaggi, recensioni e altro ancora.
                 </p>
                 <p>
                     I dati saranno forniti in formato JSON, facilmente leggibile e portabile.
@@ -105,7 +105,7 @@ $cookie_consent = get_user_meta($user_id, 'cdv_cookie_consent', true);
                 </p>
                 <ul style="margin: 15px 0; padding-left: 25px; line-height: 1.8;">
                     <li><strong>Profilo utente:</strong> Fino alla cancellazione dell'account</li>
-                    <li><strong>Viaggi pubblicati:</strong> Fino alla loro eliminazione manuale</li>
+                    <li><strong>Attività pubblicati:</strong> Fino alla loro eliminazione manuale</li>
                     <li><strong>Messaggi:</strong> 2 anni dalla data di invio (poi eliminati automaticamente)</li>
                     <li><strong>Recensioni:</strong> Permanenti (anonimizzate alla cancellazione account)</li>
                     <li><strong>Log di sicurezza:</strong> 90 giorni</li>
@@ -120,11 +120,11 @@ $cookie_consent = get_user_meta($user_id, 'cdv_cookie_consent', true);
                 <h3>Finalità del Trattamento</h3>
                 <p>Trattiamo i tuoi dati personali per le seguenti finalità:</p>
                 <ul style="margin: 15px 0; padding-left: 25px; line-height: 1.8;">
-                    <li>✓ Fornire e gestire il servizio di ricerca compagni di viaggio</li>
+                    <li>✓ Fornire e gestire il servizio di ricerca compagni di sport</li>
                     <li>✓ Facilitare la comunicazione tra utenti</li>
                     <li>✓ Garantire la sicurezza della piattaforma</li>
                     <li>✓ Migliorare la qualità del servizio</li>
-                    <li>✓ Inviare notifiche relative ai tuoi viaggi</li>
+                    <li>✓ Inviare notifiche relative ai tuoi attività</li>
                     <li>✓ Rispettare obblighi legali</li>
                 </ul>
                 <p style="margin-top: 15px;">
@@ -148,7 +148,7 @@ $cookie_consent = get_user_meta($user_id, 'cdv_cookie_consent', true);
                     <li>Riceverai una conferma via email</li>
                     <li>Il tuo account verrà disattivato immediatamente</li>
                     <li>I tuoi dati personali verranno eliminati o anonimizzati entro 30 giorni</li>
-                    <li>I viaggi pubblicati verranno rimossi</li>
+                    <li>I attività pubblicati verranno rimossi</li>
                     <li>Le recensioni verranno anonimizzate (mantenute per trasparenza della community)</li>
                 </ul>
 

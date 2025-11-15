@@ -20,9 +20,9 @@ $user_approved = get_user_meta($current_user->ID, 'cdv_user_approved', true);
 //     exit;
 // }
 
-// Query viaggi organizzati dall'utente
+// Query attività organizzati dall'utente
 $my_travels = new WP_Query(array(
-    'post_type' => 'viaggio',
+    'post_type' => 'attivita',
     'author' => $current_user->ID,
     'post_status' => array('publish', 'pending', 'draft'),
     'posts_per_page' => -1,
@@ -33,18 +33,18 @@ $my_travels = new WP_Query(array(
 // Count user's travels for statistics tab visibility
 $user_travels_count = $my_travels->post_count;
 
-// Query viaggi a cui partecipo
+// Query attività a cui partecipo
 global $wpdb;
-$participants_table = $wpdb->prefix . 'cdv_travel_participants';
+$participants_table = $wpdb->prefix . 'cdv_activity_participants';
 $participated_ids = $wpdb->get_col($wpdb->prepare(
-    "SELECT travel_id FROM $participants_table WHERE user_id = %d AND status = 'accepted'",
+    "SELECT activity_id FROM $participants_table WHERE user_id = %d AND status = 'accepted'",
     $current_user->ID
 ));
 
 $participated_travels = null;
 if (!empty($participated_ids)) {
     $participated_travels = new WP_Query(array(
-        'post_type' => 'viaggio',
+        'post_type' => 'attivita',
         'post__in' => $participated_ids,
         'post_status' => 'publish',
         'posts_per_page' => -1,
@@ -55,7 +55,7 @@ if (!empty($participated_ids)) {
 $pending_requests = $wpdb->get_results($wpdb->prepare(
     "SELECT p.*, t.post_title, u.display_name, u.user_login
     FROM $participants_table p
-    LEFT JOIN {$wpdb->posts} t ON p.travel_id = t.ID
+    LEFT JOIN {$wpdb->posts} t ON p.activity_id = t.ID
     LEFT JOIN {$wpdb->users} u ON p.user_id = u.ID
     WHERE t.post_author = %d AND p.status = 'pending' AND t.post_status = 'publish'
     ORDER BY p.requested_at DESC",
@@ -66,16 +66,16 @@ $pending_requests = $wpdb->get_results($wpdb->prepare(
 $my_pending_requests = $wpdb->get_results($wpdb->prepare(
     "SELECT p.*, t.post_title, t.post_author, u.display_name as organizer_name
     FROM $participants_table p
-    LEFT JOIN {$wpdb->posts} t ON p.travel_id = t.ID
+    LEFT JOIN {$wpdb->posts} t ON p.activity_id = t.ID
     LEFT JOIN {$wpdb->users} u ON t.post_author = u.ID
     WHERE p.user_id = %d AND p.status = 'pending' AND t.post_status = 'publish'
     ORDER BY p.requested_at DESC",
     $current_user->ID
 ));
 
-// Query racconti dell'utente
+// Query storie sport dell'utente
 $my_stories = new WP_Query(array(
-    'post_type' => 'racconto',
+    'post_type' => 'storia_sport',
     'author' => $current_user->ID,
     'post_status' => 'publish',
     'posts_per_page' => -1,
@@ -99,7 +99,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
         <div class="dashboard-header">
             <div>
                 <h1>Benvenuto, <?php echo esc_html($current_user->user_login); ?>!</h1>
-                <p>Gestisci i tuoi viaggi e le richieste di partecipazione</p>
+                <p>Gestisci i tuoi attività e le richieste di partecipazione</p>
             </div>
             <a href="<?php echo CDV_User_Profiles::get_profile_url($current_user->ID); ?>" class="btn btn-secondary">
                 Vedi Profilo Pubblico
@@ -114,13 +114,13 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                 <span></span>
                 <span></span>
             </span>
-            <span class="current-tab-label">I Miei Viaggi</span>
+            <span class="current-tab-label">I Miei Attività</span>
             <span class="dropdown-arrow">▼</span>
         </button>
 
         <div class="dashboard-tabs" id="dashboard-tabs">
             <button class="tab-button active" data-tab="my-travels">
-                I Miei Viaggi (<?php echo $my_travels->post_count; ?>)
+                I Miei Attività (<?php echo $my_travels->post_count; ?>)
             </button>
             <button class="tab-button" data-tab="requests">
                 Richieste di Partecipazione
@@ -131,13 +131,13 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                 <?php endif; ?>
             </button>
             <button class="tab-button" data-tab="participating">
-                Viaggi a cui Partecipo
+                Attività a cui Partecipo
                 <?php if ($participated_travels) : ?>
                     (<?php echo $participated_travels->post_count; ?>)
                 <?php endif; ?>
             </button>
             <button class="tab-button" data-tab="my-stories">
-                I Miei Racconti (<?php echo $my_stories->post_count; ?>)
+                I Miei Storie Sport (<?php echo $my_stories->post_count; ?>)
             </button>
             <button class="tab-button" data-tab="messages">
                 Messaggi
@@ -181,12 +181,12 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
             <button class="tab-button" data-tab="settings">Impostazioni</button>
         </div>
 
-        <!-- Tab: I Miei Viaggi -->
+        <!-- Tab: I Miei Attività -->
         <div class="tab-content active" id="tab-my-travels">
             <div class="section-header">
-                <h2>I Miei Viaggi</h2>
-                <a href="<?php echo esc_url(home_url('/crea-viaggio')); ?>" class="btn btn-primary" id="btn-new-travel">
-                    <i class="icon-plus"></i> Nuovo Viaggio
+                <h2>I Miei Attività</h2>
+                <a href="<?php echo esc_url(home_url('/crea-attività')); ?>" class="btn btn-primary" id="btn-new-travel">
+                    <i class="icon-plus"></i> Nuovo Attività
                 </a>
             </div>
 
@@ -194,14 +194,14 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                 <div class="travels-list">
                     <?php while ($my_travels->have_posts()) : $my_travels->the_post(); ?>
                         <?php
-                        $travel_id = get_the_ID();
-                        $participants = CDV_Participants::get_participants($travel_id, 'accepted');
-                        $pending = CDV_Participants::get_participants($travel_id, 'pending');
-                        $max_participants = get_post_meta($travel_id, 'cdv_max_participants', true);
-                        $travel_status = get_post_meta($travel_id, 'cdv_travel_status', true);
+                        $activity_id = get_the_ID();
+                        $participants = CDV_Participants::get_participants($activity_id, 'accepted');
+                        $pending = CDV_Participants::get_participants($activity_id, 'pending');
+                        $max_participants = get_post_meta($activity_id, 'cdv_max_participants', true);
+                        $activity_status = get_post_meta($activity_id, 'cdv_activity_status', true);
                         $post_status = get_post_status();
                         ?>
-                        <div class="travel-item" data-travel-id="<?php echo $travel_id; ?>">
+                        <div class="travel-item" data-travel-id="<?php echo $activity_id; ?>">
                             <div class="travel-item-header">
                                 <?php if (has_post_thumbnail()) : ?>
                                     <div class="travel-thumb">
@@ -223,8 +223,8 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                                             ?>
                                         </span>
                                         <?php if ($post_status === 'publish') : ?>
-                                            <span class="travel-status-badge travel-<?php echo $travel_status; ?>">
-                                                <?php echo ucfirst($travel_status); ?>
+                                            <span class="travel-status-badge travel-<?php echo $activity_status; ?>">
+                                                <?php echo ucfirst($activity_status); ?>
                                             </span>
                                         <?php endif; ?>
                                         <span><i class="icon-users"></i> <?php echo count($participants); ?>/<?php echo $max_participants; ?> partecipanti</span>
@@ -243,15 +243,15 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                                 </a>
 
                                 <?php if ($post_status === 'publish') : ?>
-                                    <select class="travel-status-select" data-travel-id="<?php echo $travel_id; ?>">
-                                        <option value="open" <?php selected($travel_status, 'open'); ?>>Aperto</option>
-                                        <option value="full" <?php selected($travel_status, 'full'); ?>>Completo</option>
-                                        <option value="closed" <?php selected($travel_status, 'closed'); ?>>Chiuso</option>
-                                        <option value="completed" <?php selected($travel_status, 'completed'); ?>>Completato</option>
+                                    <select class="travel-status-select" data-travel-id="<?php echo $activity_id; ?>">
+                                        <option value="open" <?php selected($activity_status, 'open'); ?>>Aperto</option>
+                                        <option value="full" <?php selected($activity_status, 'full'); ?>>Completo</option>
+                                        <option value="closed" <?php selected($activity_status, 'closed'); ?>>Chiuso</option>
+                                        <option value="completed" <?php selected($activity_status, 'completed'); ?>>Completato</option>
                                     </select>
                                 <?php endif; ?>
 
-                                <button class="btn btn-sm btn-danger delete-travel" data-travel-id="<?php echo $travel_id; ?>">
+                                <button class="btn btn-sm btn-danger delete-travel" data-travel-id="<?php echo $activity_id; ?>">
                                     <i class="icon-trash"></i> Elimina
                                 </button>
                             </div>
@@ -260,7 +260,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                     <?php wp_reset_postdata(); ?>
                 </div>
             <?php else : ?>
-                <p class="no-content">Non hai ancora creato nessun viaggio. <a href="<?php echo esc_url(home_url('/crea-viaggio')); ?>" id="link-new-travel">Crea il tuo primo viaggio!</a></p>
+                <p class="no-content">Non hai ancora creato nessun attività. <a href="<?php echo esc_url(home_url('/crea-attività')); ?>" id="link-new-travel">Crea il tuo primo attività!</a></p>
             <?php endif; ?>
         </div>
 
@@ -284,7 +284,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                                                 <?php echo esc_html($request->organizer_name); ?>
                                             </a>
                                         </h4>
-                                        <p class="request-travel">Viaggio: <strong><?php echo esc_html($request->post_title); ?></strong></p>
+                                        <p class="request-travel">Attività: <strong><?php echo esc_html($request->post_title); ?></strong></p>
                                         <p class="request-date">
                                             <i class="icon-clock"></i>
                                             Inviata <?php echo human_time_diff(strtotime($request->requested_at), current_time('timestamp')); ?> fa
@@ -299,7 +299,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                                 </div>
 
                                 <div class="request-actions">
-                                    <a href="<?php echo home_url('/dashboard?tab=messages&user_id=' . $request->post_author . '&travel_id=' . $request->travel_id); ?>" class="btn btn-secondary">
+                                    <a href="<?php echo home_url('/dashboard?tab=messages&user_id=' . $request->post_author . '&activity_id=' . $request->activity_id); ?>" class="btn btn-secondary">
                                         <i class="icon-message"></i> Messaggia
                                     </a>
                                 </div>
@@ -324,7 +324,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                                                 <?php echo esc_html($request->user_login); ?>
                                             </a>
                                         </h4>
-                                        <p class="request-travel">Viaggio: <strong><?php echo esc_html($request->post_title); ?></strong></p>
+                                        <p class="request-travel">Attività: <strong><?php echo esc_html($request->post_title); ?></strong></p>
                                         <p class="request-date">
                                             <i class="icon-clock"></i>
                                             <?php echo human_time_diff(strtotime($request->requested_at), current_time('timestamp')); ?> fa
@@ -336,13 +336,13 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                                 </div>
 
                                 <div class="request-actions">
-                                    <a href="<?php echo home_url('/dashboard?tab=messages&user_id=' . $request->user_id . '&travel_id=' . $request->travel_id); ?>" class="btn btn-sm btn-secondary">
+                                    <a href="<?php echo home_url('/dashboard?tab=messages&user_id=' . $request->user_id . '&activity_id=' . $request->activity_id); ?>" class="btn btn-sm btn-secondary">
                                         <i class="icon-message"></i> Rispondi
                                     </a>
-                                    <button class="btn btn-success approve-request" data-request-id="<?php echo $request->id; ?>" data-travel-id="<?php echo $request->travel_id; ?>" data-user-id="<?php echo $request->user_id; ?>">
+                                    <button class="btn btn-success approve-request" data-request-id="<?php echo $request->id; ?>" data-travel-id="<?php echo $request->activity_id; ?>" data-user-id="<?php echo $request->user_id; ?>">
                                         <i class="icon-check"></i> Approva
                                     </button>
-                                    <button class="btn btn-danger reject-request" data-request-id="<?php echo $request->id; ?>" data-travel-id="<?php echo $request->travel_id; ?>" data-user-id="<?php echo $request->user_id; ?>">
+                                    <button class="btn btn-danger reject-request" data-request-id="<?php echo $request->id; ?>" data-travel-id="<?php echo $request->activity_id; ?>" data-user-id="<?php echo $request->user_id; ?>">
                                         <i class="icon-x"></i> Rifiuta
                                     </button>
                                 </div>
@@ -358,9 +358,9 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
             <?php endif; ?>
         </div>
 
-        <!-- Tab: Viaggi a cui Partecipo -->
+        <!-- Tab: Attività a cui Partecipo -->
         <div class="tab-content" id="tab-participating">
-            <h2>Viaggi a cui Partecipo</h2>
+            <h2>Attività a cui Partecipo</h2>
 
             <?php if ($participated_travels && $participated_travels->have_posts()) : ?>
                 <div class="travels-grid">
@@ -370,16 +370,16 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                     <?php wp_reset_postdata(); ?>
                 </div>
             <?php else : ?>
-                <p class="no-content">Non stai partecipando a nessun viaggio. <a href="<?php echo get_post_type_archive_link('viaggio'); ?>">Cerca un viaggio!</a></p>
+                <p class="no-content">Non stai partecipando a nessun attività. <a href="<?php echo get_post_type_archive_link('attivita'); ?>">Cerca un attività!</a></p>
             <?php endif; ?>
         </div>
 
-        <!-- Tab: I Miei Racconti -->
+        <!-- Tab: I Miei Storie Sport -->
         <div class="tab-content" id="tab-my-stories">
             <div class="section-header">
-                <h2>I Miei Racconti</h2>
-                <a href="<?php echo esc_url(home_url('/racconta-viaggio')); ?>" class="btn btn-primary">
-                    <i class="icon-plus"></i> Nuovo Racconto
+                <h2>I Miei Storie Sport</h2>
+                <a href="<?php echo esc_url(home_url('/racconta-attività')); ?>" class="btn btn-primary">
+                    <i class="icon-plus"></i> Nuovo Storia Sport
                 </a>
             </div>
 
@@ -413,7 +413,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                                 </div>
 
                                 <div class="story-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                                    <a href="<?php echo esc_url(add_query_arg('story_id', get_the_ID(), home_url('/racconta-viaggio'))); ?>" class="btn btn-secondary btn-sm">
+                                    <a href="<?php echo esc_url(add_query_arg('story_id', get_the_ID(), home_url('/racconta-attività'))); ?>" class="btn btn-secondary btn-sm">
                                         Modifica
                                     </a>
                                     <a href="<?php the_permalink(); ?>" class="btn btn-secondary btn-sm" target="_blank">
@@ -427,9 +427,9 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                 </div>
             <?php else : ?>
                 <div class="no-content">
-                    <p>Non hai ancora pubblicato nessun racconto.</p>
-                    <a href="<?php echo esc_url(home_url('/racconta-viaggio')); ?>" class="btn btn-primary" style="margin-top: 1rem;">
-                        Racconta il Tuo Primo Viaggio
+                    <p>Non hai ancora pubblicato nessun storia sport.</p>
+                    <a href="<?php echo esc_url(home_url('/racconta-attività')); ?>" class="btn btn-primary" style="margin-top: 1rem;">
+                        Racconta il Tuo Primo Attività
                     </a>
                 </div>
             <?php endif; ?>
@@ -487,12 +487,12 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                 <div class="reviews-section">
                     <div class="section-header">
                         <h3>Recensioni da Lasciare (<?php echo $pending_reviews_count; ?>)</h3>
-                        <p style="color: #6c757d; margin: 10px 0;">Lascia una recensione per i compagni di viaggio dei tuoi viaggi completati.</p>
+                        <p style="color: #6c757d; margin: 10px 0;">Lascia una recensione per i compagni di sport dei tuoi attività completati.</p>
                     </div>
 
                     <div class="pending-reviews-list">
                         <?php foreach ($pending_reviews as $pending_review) :
-                            $travel = get_post($pending_review['travel_id']);
+                            $travel = get_post($pending_review['activity_id']);
                             $reviewed_user = get_userdata($pending_review['user_id']);
                             if (!$travel || !$reviewed_user) continue;
                         ?>
@@ -522,7 +522,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                                 </div>
                                 <div class="review-item-actions">
                                     <button class="btn btn-primary btn-write-review"
-                                            data-travel-id="<?php echo $pending_review['travel_id']; ?>"
+                                            data-travel-id="<?php echo $pending_review['activity_id']; ?>"
                                             data-user-id="<?php echo $pending_review['user_id']; ?>"
                                             data-user-name="<?php echo esc_attr($reviewed_user->display_name); ?>"
                                             data-travel-title="<?php echo esc_attr($travel->post_title); ?>">
@@ -536,7 +536,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
             <?php else : ?>
                 <div class="empty-state">
                     <p>✅ Non hai recensioni in sospeso!</p>
-                    <p style="color: #6c757d;">Le recensioni da lasciare appariranno qui dopo aver completato un viaggio.</p>
+                    <p style="color: #6c757d;">Le recensioni da lasciare appariranno qui dopo aver completato un attività.</p>
                 </div>
             <?php endif; ?>
 
@@ -550,7 +550,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                     <div class="received-reviews-list">
                         <?php foreach ($received_reviews as $review) :
                             $reviewer = get_userdata($review->reviewer_id);
-                            $travel = get_post($review->travel_id);
+                            $travel = get_post($review->activity_id);
                             if (!$reviewer || !$travel) continue;
 
                             $avg_score = round(($review->punctuality + $review->group_spirit + $review->respect + $review->adaptability) / 4, 1);
@@ -646,7 +646,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
         <div class="tab-content" id="tab-wishlist">
             <div class="section-header">
                 <h2>💝 La Mia Wishlist</h2>
-                <p>I viaggi che hai salvato per dopo</p>
+                <p>I attività che hai salvato per dopo</p>
             </div>
 
             <?php
@@ -655,14 +655,14 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
             if ($wishlist_travels && $wishlist_travels->have_posts()) : ?>
                 <div class="wishlist-grid">
                     <?php while ($wishlist_travels->have_posts()) : $wishlist_travels->the_post();
-                        $travel_id = get_the_ID();
+                        $activity_id = get_the_ID();
                         $author_id = get_the_author_meta('ID');
-                        $destination = get_post_meta($travel_id, 'cdv_destination', true);
-                        $country = get_post_meta($travel_id, 'cdv_country', true);
-                        $start_date = get_post_meta($travel_id, 'cdv_start_date', true);
-                        $budget = get_post_meta($travel_id, 'cdv_budget', true);
-                        $max_participants = get_post_meta($travel_id, 'cdv_max_participants', true);
-                        $participants_count = CDV_Participants::get_participant_count($travel_id, 'accepted');
+                        $destination = get_post_meta($activity_id, 'cdv_location', true);
+                        $country = get_post_meta($activity_id, 'cdv_country', true);
+                        $start_date = get_post_meta($activity_id, 'cdv_start_date', true);
+                        $budget = get_post_meta($activity_id, 'cdv_budget', true);
+                        $max_participants = get_post_meta($activity_id, 'cdv_max_participants', true);
+                        $participants_count = CDV_Participants::get_participant_count($activity_id, 'accepted');
                     ?>
                         <div class="wishlist-card">
                             <?php if (has_post_thumbnail()) : ?>
@@ -670,7 +670,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                                     <a href="<?php the_permalink(); ?>">
                                         <?php the_post_thumbnail('medium'); ?>
                                     </a>
-                                    <button class="wishlist-remove-btn" data-travel-id="<?php echo $travel_id; ?>" title="Rimuovi dalla wishlist">
+                                    <button class="wishlist-remove-btn" data-travel-id="<?php echo $activity_id; ?>" title="Rimuovi dalla wishlist">
                                         ❤️
                                     </button>
                                 </div>
@@ -678,8 +678,8 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
 
                             <div class="wishlist-card-content">
                                 <div class="wishlist-card-badges">
-                                    <?php cdv_travel_type_badges(); ?>
-                                    <?php echo cdv_get_travel_status_label(); ?>
+                                    <?php cdv_activity_type_badges(); ?>
+                                    <?php echo cdv_get_activity_status_label(); ?>
                                 </div>
 
                                 <h3 class="wishlist-card-title">
@@ -725,10 +725,10 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                 <div class="empty-state">
                     <span class="empty-icon">💝</span>
                     <h3>La tua wishlist è vuota</h3>
-                    <p>Non hai ancora salvato nessun viaggio nella tua wishlist.</p>
-                    <p>Esplora i viaggi disponibili e salva quelli che ti interessano per trovarli facilmente!</p>
-                    <a href="<?php echo get_post_type_archive_link('viaggio'); ?>" class="btn btn-primary">
-                        Esplora Viaggi
+                    <p>Non hai ancora salvato nessun attività nella tua wishlist.</p>
+                    <p>Esplora i attività disponibili e salva quelli che ti interessano per trovarli facilmente!</p>
+                    <a href="<?php echo get_post_type_archive_link('attivita'); ?>" class="btn btn-primary">
+                        Esplora Attività
                     </a>
                 </div>
             <?php endif; ?>
@@ -797,7 +797,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                     <div class="reward-item">
                         <span class="reward-icon">🎁</span>
                         <div class="reward-details">
-                            <h4>L'Amico Partecipa a un Viaggio</h4>
+                            <h4>L'Amico Partecipa a un Attività</h4>
                             <p>Quando completa la sua prima partecipazione, guadagni altri 30 punti!</p>
                         </div>
                     </div>
@@ -824,7 +824,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
         <div class="tab-content" id="tab-statistics">
             <div class="section-header">
                 <h2>📊 Le Tue Statistiche</h2>
-                <p>Analisi dettagliata delle performance dei tuoi viaggi</p>
+                <p>Analisi dettagliata delle performance dei tuoi attività</p>
             </div>
 
             <div class="stats-loading-container">
@@ -935,7 +935,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
             <!-- Delete Account -->
             <div class="settings-section danger-zone">
                 <h3>Zona Pericolosa</h3>
-                <p><strong>Elimina Account</strong> - Questa azione è irreversibile. Tutti i tuoi dati, viaggi e messaggi saranno eliminati permanentemente.</p>
+                <p><strong>Elimina Account</strong> - Questa azione è irreversibile. Tutti i tuoi dati, attività e messaggi saranno eliminati permanentemente.</p>
                 <button type="button" class="btn btn-danger" id="delete-account-btn">Elimina Account</button>
             </div>
         </div>
@@ -949,7 +949,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
             <p id="review-modal-subtitle" style="color: #6c757d; margin-bottom: 20px;"></p>
 
             <form id="review-form">
-                <input type="hidden" id="review-travel-id" name="travel_id">
+                <input type="hidden" id="review-travel-id" name="activity_id">
                 <input type="hidden" id="review-user-id" name="reviewed_id">
 
                 <div class="disclaimer-box" style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 25px; border-radius: 4px;">
@@ -957,7 +957,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                 </div>
 
                 <div class="form-group">
-                    <label>Valuta il Compagno di Viaggio</label>
+                    <label>Valuta il Compagno di Attività</label>
                     <p style="font-size: 14px; color: #6c757d; margin-bottom: 15px;">Assegna un punteggio da 1 a 5 per ciascuna categoria</p>
 
                     <div class="rating-group">
@@ -1011,7 +1011,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
 
                 <div class="form-group">
                     <label for="review-comment">Commento (opzionale)</label>
-                    <textarea id="review-comment" name="comment" rows="4" placeholder="Condividi la tua esperienza con questo compagno di viaggio..."></textarea>
+                    <textarea id="review-comment" name="comment" rows="4" placeholder="Condividi la tua esperienza con questo compagno di attività..."></textarea>
                 </div>
 
                 <div class="form-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
@@ -2690,7 +2690,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const travelId = this.dataset.travelId;
             const newStatus = this.value;
 
-            if (!confirm('Vuoi davvero cambiare lo stato di questo viaggio?')) {
+            if (!confirm('Vuoi davvero cambiare lo stato di questo attività?')) {
                 return;
             }
 
@@ -2698,14 +2698,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 url: cdvAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'cdv_change_travel_status',
-                    travel_id: travelId,
+                    action: 'cdv_change_activity_status',
+                    activity_id: travelId,
                     status: newStatus,
                     nonce: cdvAjax.nonce
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert('Stato del viaggio aggiornato con successo!');
+                        alert('Stato dell'attività aggiornato con successo!');
                         location.reload();
                     } else {
                         alert('Errore: ' + response.data);
@@ -2720,7 +2720,7 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const travelId = this.dataset.travelId;
 
-            if (!confirm('Sei sicuro di voler eliminare questo viaggio? Questa azione non può essere annullata.')) {
+            if (!confirm('Sei sicuro di voler eliminare questo attività? Questa azione non può essere annullata.')) {
                 return;
             }
 
@@ -2729,12 +2729,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 type: 'POST',
                 data: {
                     action: 'cdv_delete_travel',
-                    travel_id: travelId,
+                    activity_id: travelId,
                     nonce: cdvAjax.nonce
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert('Viaggio eliminato con successo!');
+                        alert('Attività eliminato con successo!');
                         location.reload();
                     } else {
                         alert('Errore: ' + response.data);
@@ -2756,7 +2756,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 type: 'POST',
                 data: {
                     action: 'cdv_approve_participant',
-                    travel_id: travelId,
+                    activity_id: travelId,
                     user_id: userId,
                     nonce: cdvAjax.nonce
                 },
@@ -2788,7 +2788,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 type: 'POST',
                 data: {
                     action: 'cdv_reject_participant',
-                    travel_id: travelId,
+                    activity_id: travelId,
                     user_id: userId,
                     nonce: cdvAjax.nonce
                 },
@@ -2999,7 +2999,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const urlTab = urlParams.get('tab');
     const urlUserId = urlParams.get('user_id');
-    const urlTravelId = urlParams.get('travel_id');
+    const urlTravelId = urlParams.get('activity_id');
 
     if (urlTab === 'messages' && urlUserId && urlTravelId) {
         // Switch to messages tab
@@ -3062,11 +3062,11 @@ document.addEventListener('DOMContentLoaded', function() {
             html += `
                 <div class="conversation-item ${unreadClass}"
                      data-user-id="${conv.other_user_id}"
-                     data-travel-id="${conv.travel_id}">
+                     data-travel-id="${conv.activity_id}">
                     ${conv.avatar}
                     <div class="conversation-item-info">
                         <h4>${conv.other_user_name}</h4>
-                        <p>${conv.travel_title}</p>
+                        <p>${conv.activity_title}</p>
                         <span class="conversation-item-meta">${conv.last_message_time}</span>
                     </div>
                     ${unreadBadge}
@@ -3092,7 +3092,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function loadConversation(otherUserId, travelId) {
-        currentConversation = { user_id: otherUserId, travel_id: travelId };
+        currentConversation = { user_id: otherUserId, activity_id: travelId };
 
         // Clear any existing refresh interval
         if (messagesRefreshInterval) {
@@ -3105,7 +3105,7 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 action: 'cdv_get_conversation',
                 other_user_id: otherUserId,
-                travel_id: travelId,
+                activity_id: travelId,
                 nonce: cdvAjax.nonce
             },
             success: function(response) {
@@ -3133,7 +3133,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Update header
         document.getElementById('conversation-user-name').textContent = data.other_user_name;
-        document.getElementById('conversation-travel-title').textContent = 'Viaggio: ' + data.travel_title;
+        document.getElementById('conversation-travel-title').textContent = 'Attività: ' + data.activity_title;
 
         // Update block button
         const blockBtn = document.getElementById('block-conversation-btn');
@@ -3186,7 +3186,7 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 action: 'cdv_get_conversation',
                 other_user_id: otherUserId,
-                travel_id: travelId,
+                activity_id: travelId,
                 nonce: cdvAjax.nonce
             },
             success: function(response) {
@@ -3226,14 +3226,14 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 action: 'cdv_send_message',
                 receiver_id: currentConversation.user_id,
-                travel_id: currentConversation.travel_id,
+                activity_id: currentConversation.activity_id,
                 message: message,
                 nonce: cdvAjax.nonce
             },
             success: function(response) {
                 if (response.success) {
                     messageInput.value = '';
-                    loadConversation(currentConversation.user_id, currentConversation.travel_id);
+                    loadConversation(currentConversation.user_id, currentConversation.activity_id);
                 } else {
                     alert('Errore nell\'invio del messaggio: ' + (response.data?.message || 'Sconosciuto'));
                 }
@@ -3261,13 +3261,13 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 action: 'cdv_block_conversation',
                 other_user_id: currentConversation.user_id,
-                travel_id: currentConversation.travel_id,
+                activity_id: currentConversation.activity_id,
                 nonce: cdvAjax.nonce
             },
             success: function(response) {
                 if (response.success) {
                     alert(isBlocking ? 'Conversazione bloccata' : 'Conversazione sbloccata');
-                    loadConversation(currentConversation.user_id, currentConversation.travel_id);
+                    loadConversation(currentConversation.user_id, currentConversation.activity_id);
                     loadConversations(); // Refresh conversation list
                 } else {
                     alert('Errore: ' + (response.data?.message || 'Sconosciuto'));
@@ -3295,7 +3295,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('review-travel-id').value = travelId;
             document.getElementById('review-user-id').value = userId;
             document.getElementById('review-modal-subtitle').textContent =
-                `Recensisci ${userName} per il viaggio: ${travelTitle}`;
+                `Recensisci ${userName} per l'attività: ${travelTitle}`;
 
             // Reset form
             reviewForm.reset();
@@ -3401,7 +3401,7 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 action: 'cdv_add_review',
                 nonce: cdvAjax.nonce,
-                travel_id: travelId,
+                activity_id: travelId,
                 reviewed_id: reviewedId,
                 punctuality: punctuality,
                 group_spirit: groupSpirit,
@@ -3430,7 +3430,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Wishlist remove button handler
-    const travelsArchiveUrl = '<?php echo esc_js(get_post_type_archive_link('viaggio')); ?>';
+    const travelsArchiveUrl = '<?php echo esc_js(get_post_type_archive_link('attivita')); ?>';
 
     document.addEventListener('click', function(e) {
         if (e.target.closest('.wishlist-remove-btn')) {
@@ -3441,7 +3441,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const travelId = btn.dataset.travelId;
             const card = btn.closest('.wishlist-card');
 
-            if (!confirm('Rimuovere questo viaggio dalla wishlist?')) {
+            if (!confirm('Rimuovere questo attività dalla wishlist?')) {
                 return;
             }
 
@@ -3451,7 +3451,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 data: {
                     action: 'cdv_toggle_wishlist',
                     nonce: cdvAjax.nonce,
-                    travel_id: travelId
+                    activity_id: travelId
                 },
                 beforeSend: function() {
                     btn.disabled = true;
@@ -3491,14 +3491,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                 wishlistContent.innerHTML = `
                                     <div class="section-header">
                                         <h2>💝 La Mia Wishlist</h2>
-                                        <p>I viaggi che hai salvato per dopo</p>
+                                        <p>I attività che hai salvato per dopo</p>
                                     </div>
                                     <div class="empty-state">
                                         <span class="empty-icon">💝</span>
                                         <h3>La tua wishlist è vuota</h3>
-                                        <p>Non hai ancora salvato nessun viaggio nella tua wishlist.</p>
-                                        <p>Esplora i viaggi disponibili e salva quelli che ti interessano per trovarli facilmente!</p>
-                                        <a href="${travelsArchiveUrl}" class="btn btn-primary">Esplora Viaggi</a>
+                                        <p>Non hai ancora salvato nessun attività nella tua wishlist.</p>
+                                        <p>Esplora i attività disponibili e salva quelli che ti interessano per trovarli facilmente!</p>
+                                        <a href="${travelsArchiveUrl}" class="btn btn-primary">Esplora Attività</a>
                                     </div>
                                 `;
                             }
@@ -3754,15 +3754,15 @@ document.addEventListener('DOMContentLoaded', function() {
                            target="_blank" class="btn btn-sm" style="background: #1877f2; color: white;">
                             Facebook
                         </a>
-                        <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(stats.link)}&text=${encodeURIComponent('Unisciti a Compagni di Viaggi!')}"
+                        <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(stats.link)}&text=${encodeURIComponent('Unisciti a Compagni di Attività!')}"
                            target="_blank" class="btn btn-sm" style="background: #1da1f2; color: white;">
                             Twitter
                         </a>
-                        <a href="https://wa.me/?text=${encodeURIComponent('Unisciti a Compagni di Viaggi! ' + stats.link)}"
+                        <a href="https://wa.me/?text=${encodeURIComponent('Unisciti a Compagni di Attività! ' + stats.link)}"
                            target="_blank" class="btn btn-sm" style="background: #25d366; color: white;">
                             WhatsApp
                         </a>
-                        <a href="mailto:?subject=${encodeURIComponent('Unisciti a Compagni di Viaggi!')}&body=${encodeURIComponent('Ho trovato questa fantastica piattaforma per trovare compagni di viaggio! Iscriviti usando il mio link: ' + stats.link)}"
+                        <a href="mailto:?subject=${encodeURIComponent('Unisciti a Compagni di Attività!')}&body=${encodeURIComponent('Ho trovato questa fantastica piattaforma per trovare compagni di sport! Iscriviti usando il mio link: ' + stats.link)}"
                            class="btn btn-sm" style="background: #ea4335; color: white;">
                             Email
                         </a>
@@ -3801,8 +3801,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (navigator.share) {
             navigator.share({
-                title: 'Unisciti a Compagni di Viaggi!',
-                text: 'Ho trovato questa fantastica piattaforma per trovare compagni di viaggio!',
+                title: 'Unisciti a Compagni di Attività!',
+                text: 'Ho trovato questa fantastica piattaforma per trovare compagni di sport!',
                 url: link
             });
         } else {
@@ -3839,12 +3839,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="stat-overview-card">
                                 <div class="stat-icon">🗺️</div>
                                 <div class="stat-number">${stats.overview.total_travels}</div>
-                                <div class="stat-label">Viaggi Creati</div>
+                                <div class="stat-label">Attività Creati</div>
                             </div>
                             <div class="stat-overview-card">
                                 <div class="stat-icon">✅</div>
                                 <div class="stat-number">${stats.overview.active_travels}</div>
-                                <div class="stat-label">Viaggi Attivi</div>
+                                <div class="stat-label">Attività Attivi</div>
                             </div>
                             <div class="stat-overview-card">
                                 <div class="stat-icon">👥</div>
@@ -3881,9 +3881,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('overview-stats-container').innerHTML = overviewHTML;
 
                     // Travel performance
-                    if (stats.travel_performance && stats.travel_performance.length > 0) {
-                        let perfHTML = '<h3>🎯 Performance Viaggi</h3><div class="travel-perf-list">';
-                        stats.travel_performance.forEach(travel => {
+                    if (stats.activity_performance && stats.activity_performance.length > 0) {
+                        let perfHTML = '<h3>🎯 Performance Attività</h3><div class="travel-perf-list">';
+                        stats.activity_performance.forEach(travel => {
                             perfHTML += `
                                 <div class="travel-perf-item">
                                     <div class="travel-perf-title">${travel.post_title}</div>
@@ -3908,7 +3908,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="destination-item">
                                     <div class="dest-name">${dest.destination}</div>
                                     <div class="dest-stats">
-                                        <span>${dest.travel_count} viagg${dest.travel_count === 1 ? 'io' : 'i'}</span>
+                                        <span>${dest.activity_count} viagg${dest.activity_count === 1 ? 'io' : 'i'}</span>
                                         <span>•</span>
                                         <span>${dest.total_participants} partecipanti</span>
                                     </div>

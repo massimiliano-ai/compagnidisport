@@ -65,7 +65,7 @@ class CDV_User_Profiles {
             return;
         }
 
-        // Controlla che sia un viaggiatore approvato
+        // Controlla che sia un attivitàatore approvato
         // Administrators and users without the meta are allowed (for compatibility)
         $approved = get_user_meta($user->ID, 'cdv_user_approved', true);
         $is_admin = in_array('administrator', $user->roles);
@@ -104,7 +104,7 @@ class CDV_User_Profiles {
             'city' => get_user_meta($user->ID, 'cdv_city', true),
             'country' => get_user_meta($user->ID, 'cdv_country', true),
             'languages' => get_user_meta($user->ID, 'cdv_languages', true),
-            'travel_styles' => get_user_meta($user->ID, 'cdv_travel_styles', true),
+            'travel_styles' => get_user_meta($user->ID, 'cdv_activity_styles', true),
             'interests' => get_user_meta($user->ID, 'cdv_interests', true),
             'member_since' => $user->user_registered,
             'badges' => CDV_Badges::get_user_badges($user->ID),
@@ -148,11 +148,11 @@ class CDV_User_Profiles {
     }
 
     /**
-     * Ottiene i viaggi dell'utente (organizzati)
+     * Ottiene i attività dell'utente (organizzati)
      */
-    public static function get_user_travels($user_id, $status = 'publish') {
+    public static function get_user_activities($user_id, $status = 'publish') {
         $args = array(
-            'post_type' => 'viaggio',
+            'post_type' => 'attivita',
             'author' => $user_id,
             'post_status' => $status,
             'posts_per_page' => -1,
@@ -169,8 +169,8 @@ class CDV_User_Profiles {
     public static function get_user_stats($user_id) {
         global $wpdb;
 
-        // Conta viaggi organizzati
-        $organized_count = count_user_posts($user_id, 'viaggio');
+        // Conta attività organizzati
+        $organized_count = count_user_posts($user_id, 'attivita');
 
         // Conta partecipazioni
         $table_name = $wpdb->prefix . 'cdv_participants';

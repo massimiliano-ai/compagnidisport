@@ -16,7 +16,7 @@ $approved = CDV_User_Roles::is_user_approved($user_id);
 
 // Redirect if already approved
 if ($approved) {
-    wp_redirect(home_url('/viaggi'));
+    wp_redirect(home_url('/attività'));
     exit;
 }
 
@@ -34,7 +34,7 @@ get_header();
 
             <h1>Il tuo profilo è in attesa di approvazione</h1>
 
-            <p class="subtitle">Grazie per esserti registrato su Compagni di Viaggi!</p>
+            <p class="subtitle">Grazie per esserti registrato su Compagni di Attività!</p>
 
             <div class="status-box">
                 <div class="status-header">
@@ -110,7 +110,7 @@ get_header();
                         <div class="step-number">3</div>
                         <div class="step-content">
                             <h4>Potrai iniziare a viaggiare!</h4>
-                            <p>Dopo l'approvazione potrai cercare viaggi, creare annunci, unirti a gruppi e molto altro!</p>
+                            <p>Dopo l'approvazione potrai cercare attività, creare annunci, unirti a gruppi e molto altro!</p>
                         </div>
                     </div>
                 </div>

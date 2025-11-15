@@ -19,7 +19,7 @@ if (isset($_POST['action']) && check_admin_referer('cdv_performance_action')) {
     switch ($action) {
         case 'refresh_caches':
             $count = CDV_Performance::refresh_all_travel_caches();
-            $message = "Cache aggiornate per {$count} viaggi";
+            $message = "Cache aggiornate per {$count} attività";
             break;
 
         case 'cleanup_transients':
@@ -93,11 +93,11 @@ $stats = CDV_Performance::get_site_statistics();
         <div class="cdv-performance-card">
             <h2>📊 Contenuti</h2>
             <div class="metric">
-                <span class="metric-label">Viaggi Pubblicati:</span>
+                <span class="metric-label">Attività Pubblicati:</span>
                 <span class="metric-value"><?php echo number_format($stats['total_travels']); ?></span>
             </div>
             <div class="metric">
-                <span class="metric-label">Viaggi Attivi:</span>
+                <span class="metric-label">Attività Attivi:</span>
                 <span class="metric-value"><?php echo number_format($stats['active_travels']); ?></span>
             </div>
             <div class="metric">
@@ -139,7 +139,7 @@ $stats = CDV_Performance::get_site_statistics();
                 <form method="post">
                     <?php wp_nonce_field('cdv_performance_action'); ?>
                     <input type="hidden" name="action" value="refresh_caches">
-                    <button type="submit" class="button button-primary">Aggiorna Cache Viaggi</button>
+                    <button type="submit" class="button button-primary">Aggiorna Cache Attività</button>
                 </form>
             </div>
             <div style="margin-top: 15px;">

@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class CDV_Travel_Maps {
+class CDV_Activity_Maps {
 
     /**
      * Initialize
@@ -27,7 +27,7 @@ class CDV_Travel_Maps {
      */
     public static function enqueue_scripts() {
         // Enqueue on single travel pages, travel creation pages, and calendar
-        if (is_singular('viaggio') || is_page(array('crea-viaggio', 'registrazione', 'dashboard', 'calendario-viaggi')) || is_post_type_archive('viaggio')) {
+        if (is_singular('attivita') || is_page(array('crea-attivitào', 'registrazione', 'dashboard', 'calendario-attività')) || is_post_type_archive('attivita')) {
             // Leaflet CSS
             wp_enqueue_style(
                 'leaflet',
@@ -100,7 +100,7 @@ class CDV_Travel_Maps {
         $response = wp_remote_get($url, array(
             'timeout' => 10,
             'headers' => array(
-                'User-Agent' => 'Compagni di Viaggi WordPress Plugin'
+                'User-Agent' => 'Compagni di Attività WordPress Plugin'
             )
         ));
 
@@ -152,7 +152,7 @@ class CDV_Travel_Maps {
         $response = wp_remote_get($url, array(
             'timeout' => 10,
             'headers' => array(
-                'User-Agent' => 'Compagni di Viaggi WordPress Plugin'
+                'User-Agent' => 'Compagni di Attività WordPress Plugin'
             )
         ));
 
@@ -181,17 +181,17 @@ class CDV_Travel_Maps {
     /**
      * Save map coordinates for travel
      */
-    public static function save_travel_coordinates($travel_id, $lat, $lon) {
-        update_post_meta($travel_id, 'cdv_map_lat', floatval($lat));
-        update_post_meta($travel_id, 'cdv_map_lon', floatval($lon));
+    public static function save_travel_coordinates($activity_id, $lat, $lon) {
+        update_post_meta($activity_id, 'cdv_map_lat', floatval($lat));
+        update_post_meta($activity_id, 'cdv_map_lon', floatval($lon));
     }
 
     /**
      * Get travel coordinates
      */
-    public static function get_travel_coordinates($travel_id) {
-        $lat = get_post_meta($travel_id, 'cdv_map_lat', true);
-        $lon = get_post_meta($travel_id, 'cdv_map_lon', true);
+    public static function get_activity_coordinates($activity_id) {
+        $lat = get_post_meta($activity_id, 'cdv_map_lat', true);
+        $lon = get_post_meta($activity_id, 'cdv_map_lon', true);
 
         if (empty($lat) || empty($lon)) {
             return false;
@@ -206,13 +206,13 @@ class CDV_Travel_Maps {
     /**
      * Generate map HTML for a travel
      */
-    public static function get_map_html($travel_id, $height = '400px') {
-        $coords = self::get_travel_coordinates($travel_id);
+    public static function get_map_html($activity_id, $height = '400px') {
+        $coords = self::get_activity_coordinates($activity_id);
 
         if (!$coords) {
             // Try to geocode the destination
-            $destination = get_post_meta($travel_id, 'cdv_destination', true);
-            $country = get_post_meta($travel_id, 'cdv_country', true);
+            $destination = get_post_meta($activity_id, 'cdv_destination', true);
+            $country = get_post_meta($activity_id, 'cdv_country', true);
 
             if ($destination && $country) {
                 $address = $destination . ', ' . $country;
@@ -223,7 +223,7 @@ class CDV_Travel_Maps {
                         'lat' => $geocoded['lat'],
                         'lon' => $geocoded['lon']
                     );
-                    self::save_travel_coordinates($travel_id, $coords['lat'], $coords['lon']);
+                    self::save_travel_coordinates($activity_id, $coords['lat'], $coords['lon']);
                 }
             }
         }
@@ -234,7 +234,7 @@ class CDV_Travel_Maps {
             </div>';
         }
 
-        $map_id = 'travel-map-' . $travel_id;
+        $map_id = 'travel-map-' . $activity_id;
 
         ob_start();
         ?>
@@ -258,7 +258,7 @@ class CDV_Travel_Maps {
                     }).addTo(map);
 
                     const marker = L.marker([<?php echo $coords['lat']; ?>, <?php echo $coords['lon']; ?>]).addTo(map);
-                    marker.bindPopup('<strong><?php echo esc_js(get_the_title($travel_id)); ?></strong><br><?php echo esc_js(get_post_meta($travel_id, 'cdv_destination', true)); ?>').openPopup();
+                    marker.bindPopup('<strong><?php echo esc_js(get_the_title($activity_id)); ?></strong><br><?php echo esc_js(get_post_meta($activity_id, 'cdv_destination', true)); ?>').openPopup();
                 } catch (error) {
                     console.error('Error initializing map:', error);
                     document.getElementById('<?php echo $map_id; ?>').innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">📍 Errore nel caricamento della mappa</div>';

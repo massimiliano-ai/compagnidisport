@@ -1,28 +1,28 @@
 <?php
 /**
- * Single Viaggio Template
+ * Single Attività Template
  */
 
 get_header();
 
 while (have_posts()) : the_post();
-    $travel_id = get_the_ID();
+    $activity_id = get_the_ID();
     $author_id = get_the_author_meta('ID');
     $is_organizer = is_user_logged_in() && get_current_user_id() == $author_id;
-    $is_participant = is_user_logged_in() && CDV_Participants::is_participant($travel_id, get_current_user_id(), 'accepted');
-    $has_requested = is_user_logged_in() && CDV_Participants::is_participant($travel_id, get_current_user_id(), 'pending');
-    $participants = CDV_Participants::get_participants($travel_id, 'accepted');
-    $pending_requests = CDV_Participants::get_participants($travel_id, 'pending');
+    $is_participant = is_user_logged_in() && CDV_Participants::is_participant($activity_id, get_current_user_id(), 'accepted');
+    $has_requested = is_user_logged_in() && CDV_Participants::is_participant($activity_id, get_current_user_id(), 'pending');
+    $participants = CDV_Participants::get_participants($activity_id, 'accepted');
+    $pending_requests = CDV_Participants::get_participants($activity_id, 'pending');
     ?>
 
     <main class="site-main single-travel">
-        <!-- Hero Image - Priorità alle immagini della tassonomia tipo_viaggio -->
+        <!-- Hero Image - Priorità alle immagini della tassonomia tipo_sport -->
         <?php
         $taxonomy_hero_url = false;
         if (class_exists('CDV_Taxonomy_Images')) {
-            $travel_types = wp_get_post_terms($travel_id, 'tipo_viaggio', array('fields' => 'ids'));
-            if (!empty($travel_types)) {
-                $taxonomy_hero_url = CDV_Taxonomy_Images::get_random_term_image($travel_types, 'travel-hero');
+            $activity_types = wp_get_post_terms($activity_id, 'tipo_sport', array('fields' => 'ids'));
+            if (!empty($activity_types)) {
+                $taxonomy_hero_url = CDV_Taxonomy_Images::get_random_term_image($activity_types, 'travel-hero');
             }
         }
         ?>
@@ -43,37 +43,37 @@ while (have_posts()) : the_post();
                 <article class="travel-content">
                     <header class="travel-header">
                         <div class="travel-badges">
-                            <?php cdv_travel_type_badges(); ?>
-                            <?php echo cdv_get_travel_status_label(); ?>
+                            <?php cdv_activity_type_badges(); ?>
+                            <?php echo cdv_get_activity_status_label(); ?>
                         </div>
 
                         <h1><?php the_title(); ?></h1>
 
-                        <?php cdv_travel_meta(); ?>
+                        <?php cdv_activity_meta(); ?>
                     </header>
 
                     <!-- Travel Details Box - Prominent placement -->
                     <div class="travel-details-box-top">
-                        <h3>📋 Dettagli Viaggio</h3>
+                        <h3>📋 Dettagli Attività</h3>
                         <div class="travel-details-grid">
                             <?php
                             // Core fields
-                            $start_date = get_post_meta($travel_id, 'cdv_start_date', true);
-                            $end_date = get_post_meta($travel_id, 'cdv_end_date', true);
-                            $date_type = get_post_meta($travel_id, 'cdv_date_type', true);
-                            $travel_month = get_post_meta($travel_id, 'cdv_travel_month', true);
-                            $destination = get_post_meta($travel_id, 'cdv_destination', true);
-                            $country = get_post_meta($travel_id, 'cdv_country', true);
-                            $budget = get_post_meta($travel_id, 'cdv_budget', true);
-                            $max_participants = get_post_meta($travel_id, 'cdv_max_participants', true);
+                            $start_date = get_post_meta($activity_id, 'cdv_start_date', true);
+                            $end_date = get_post_meta($activity_id, 'cdv_end_date', true);
+                            $date_type = get_post_meta($activity_id, 'cdv_date_type', true);
+                            $activity_month = get_post_meta($activity_id, 'cdv_activity_month', true);
+                            $destination = get_post_meta($activity_id, 'cdv_location', true);
+                            $country = get_post_meta($activity_id, 'cdv_country', true);
+                            $budget = get_post_meta($activity_id, 'cdv_budget', true);
+                            $max_participants = get_post_meta($activity_id, 'cdv_max_participants', true);
 
                             // Optional fields
-                            $transport = get_post_meta($travel_id, 'cdv_travel_transport', true);
-                            $accommodation = get_post_meta($travel_id, 'cdv_travel_accommodation', true);
-                            $difficulty = get_post_meta($travel_id, 'cdv_travel_difficulty', true);
-                            $meals = get_post_meta($travel_id, 'cdv_travel_meals', true);
-                            $guide_type = get_post_meta($travel_id, 'cdv_travel_guide_type', true);
-                            $requirements = get_post_meta($travel_id, 'cdv_travel_requirements', true);
+                            $transport = get_post_meta($activity_id, 'cdv_activity_transport', true);
+                            $accommodation = get_post_meta($activity_id, 'cdv_activity_accommodation', true);
+                            $difficulty = get_post_meta($activity_id, 'cdv_activity_difficulty', true);
+                            $meals = get_post_meta($activity_id, 'cdv_activity_meals', true);
+                            $guide_type = get_post_meta($activity_id, 'cdv_activity_guide_type', true);
+                            $requirements = get_post_meta($activity_id, 'cdv_activity_requirements', true);
 
                             // Transport labels with emoji
                             $transport_labels = array(
@@ -115,16 +115,16 @@ while (have_posts()) : the_post();
 
                             // Guide type labels
                             $guide_labels = array(
-                                'autonomo' => 'Viaggio autonomo',
+                                'autonomo' => 'Attività autonomo',
                                 'guida_locale' => 'Con guida locale',
                                 'tour_organizzato' => 'Tour organizzato'
                             );
                             ?>
 
-                            <?php if ($date_type === 'month' && $travel_month) : ?>
+                            <?php if ($date_type === 'month' && $activity_month) : ?>
                                 <div class="detail-item">
                                     <strong>📅 Periodo:</strong>
-                                    <span><?php echo date_i18n('F Y', strtotime($travel_month . '-01')); ?> (flessibile)</span>
+                                    <span><?php echo date_i18n('F Y', strtotime($activity_month . '-01')); ?> (flessibile)</span>
                                 </div>
                             <?php else : ?>
                                 <?php if ($start_date) : ?>
@@ -144,7 +144,7 @@ while (have_posts()) : the_post();
 
                             <?php if ($destination) : ?>
                                 <div class="detail-item">
-                                    <strong>📍 Destinazione:</strong>
+                                    <strong>📍 Luogo:</strong>
                                     <span><?php echo esc_html($destination); ?></span>
                                 </div>
                             <?php endif; ?>
@@ -229,7 +229,7 @@ while (have_posts()) : the_post();
                     <!-- Featured Image caricata dall'utente - Mostrata dopo la descrizione -->
                     <?php if (has_post_thumbnail() && $taxonomy_hero_url) : ?>
                         <div class="travel-user-image">
-                            <h3>📸 Immagine del Viaggio</h3>
+                            <h3>📸 Immagine del Attività</h3>
                             <div class="user-image-wrapper">
                                 <?php the_post_thumbnail('large'); ?>
                             </div>
@@ -238,17 +238,17 @@ while (have_posts()) : the_post();
 
                     <!-- Social Sharing -->
                     <div class="travel-share-section">
-                        <h3>💬 Condividi questo viaggio</h3>
+                        <h3>💬 Condividi questo attività</h3>
                         <?php
                         if (class_exists('CDV_Social_Sharing')) {
-                            echo CDV_Social_Sharing::render_share_buttons($travel_id);
+                            echo CDV_Social_Sharing::render_share_buttons($activity_id);
                         }
                         ?>
                     </div>
 
                     <!-- Photo Gallery -->
                     <?php
-                    $gallery_images = CDV_Travel_Gallery::get_gallery_images($travel_id);
+                    $gallery_images = CDV_Travel_Gallery::get_gallery_images($activity_id);
                     if (!empty($gallery_images)) :
                     ?>
                         <div class="travel-gallery-section">
@@ -257,7 +257,7 @@ while (have_posts()) : the_post();
                                 <?php foreach ($gallery_images as $image) : ?>
                                     <div class="gallery-item" data-image-id="<?php echo $image['id']; ?>">
                                         <img src="<?php echo esc_url($image['medium']); ?>"
-                                             alt="<?php echo esc_attr($image['alt'] ?: 'Foto di viaggio'); ?>"
+                                             alt="<?php echo esc_attr($image['alt'] ?: 'Foto di attività'); ?>"
                                              data-full="<?php echo esc_url($image['full']); ?>">
                                         <div class="gallery-item-overlay">
                                             <button class="gallery-view-btn" data-full-url="<?php echo esc_url($image['full']); ?>">
@@ -279,7 +279,7 @@ while (have_posts()) : the_post();
                     <?php elseif ($is_organizer) : ?>
                         <div class="travel-gallery-section empty">
                             <div class="gallery-empty-state">
-                                <p>📷 Nessuna foto ancora. Aggiungi foto per far vedere la bellezza di questo viaggio!</p>
+                                <p>📷 Nessuna foto ancora. Aggiungi foto per far vedere la bellezza di questo attività!</p>
                                 <a href="#" id="add-first-photo-btn" class="btn btn-primary">
                                     Aggiungi Prime Foto
                                 </a>
@@ -290,19 +290,19 @@ while (have_posts()) : the_post();
                     <!-- Travel Map -->
                     <?php
                     // Only show map section if coordinates exist
-                    $map_coords = CDV_Travel_Maps::get_travel_coordinates($travel_id);
+                    $map_coords = CDV_Travel_Maps::get_activity_coordinates($activity_id);
                     if ($map_coords && isset($map_coords['lat']) && isset($map_coords['lon'])) :
                     ?>
                         <div class="travel-map-section">
                             <h3>📍 Posizione</h3>
-                            <?php echo CDV_Travel_Maps::get_map_html($travel_id, '450px'); ?>
+                            <?php echo CDV_Travel_Maps::get_map_html($activity_id, '450px'); ?>
                             <?php
-                            $destination = get_post_meta($travel_id, 'cdv_destination', true);
-                            $country = get_post_meta($travel_id, 'cdv_country', true);
+                            $destination = get_post_meta($activity_id, 'cdv_location', true);
+                            $country = get_post_meta($activity_id, 'cdv_country', true);
                             if ($destination || $country) :
                             ?>
                                 <p class="map-location-text">
-                                    <strong>Destinazione:</strong> <?php echo esc_html($destination); ?><?php echo $country ? ', ' . esc_html($country) : ''; ?>
+                                    <strong>Luogo:</strong> <?php echo esc_html($destination); ?><?php echo $country ? ', ' . esc_html($country) : ''; ?>
                                 </p>
                             <?php endif; ?>
                         </div>
@@ -331,7 +331,7 @@ while (have_posts()) : the_post();
                                         </div>
                                     </a>
                                     <?php if (is_user_logged_in() && get_current_user_id() != $author_id && ($is_participant || $is_organizer)) : ?>
-                                        <a href="<?php echo home_url('/dashboard?tab=messages&user_id=' . $author_id . '&travel_id=' . $travel_id); ?>" class="btn btn-sm btn-primary participant-message-btn">
+                                        <a href="<?php echo home_url('/dashboard?tab=messages&user_id=' . $author_id . '&activity_id=' . $activity_id); ?>" class="btn btn-sm btn-primary participant-message-btn">
                                             Invia Messaggio
                                         </a>
                                     <?php endif; ?>
@@ -354,14 +354,14 @@ while (have_posts()) : the_post();
                                         </a>
                                         <div class="participant-actions">
                                             <?php if (is_user_logged_in() && get_current_user_id() != $user->ID && ($is_participant || $is_organizer)) : ?>
-                                                <a href="<?php echo home_url('/dashboard?tab=messages&user_id=' . $user->ID . '&travel_id=' . $travel_id); ?>" class="btn btn-sm btn-primary participant-message-btn">
+                                                <a href="<?php echo home_url('/dashboard?tab=messages&user_id=' . $user->ID . '&activity_id=' . $activity_id); ?>" class="btn btn-sm btn-primary participant-message-btn">
                                                     Invia Messaggio
                                                 </a>
                                             <?php endif; ?>
 
                                             <?php if ($is_organizer) : ?>
                                                 <button class="btn btn-sm btn-danger btn-remove-participant"
-                                                        data-travel-id="<?php echo $travel_id; ?>"
+                                                        data-travel-id="<?php echo $activity_id; ?>"
                                                         data-user-id="<?php echo $user->ID; ?>"
                                                         data-user-name="<?php echo esc_attr($user->user_login); ?>">
                                                     Rimuovi
@@ -421,10 +421,10 @@ while (have_posts()) : the_post();
                                             <?php endif; ?>
                                         </div>
                                         <div class="request-actions">
-                                            <button class="btn-success btn-accept" data-travel-id="<?php echo $travel_id; ?>" data-user-id="<?php echo $user->ID; ?>">
+                                            <button class="btn-success btn-accept" data-travel-id="<?php echo $activity_id; ?>" data-user-id="<?php echo $user->ID; ?>">
                                                 Accetta
                                             </button>
-                                            <button class="btn-danger btn-reject" data-travel-id="<?php echo $travel_id; ?>" data-user-id="<?php echo $user->ID; ?>">
+                                            <button class="btn-danger btn-reject" data-travel-id="<?php echo $activity_id; ?>" data-user-id="<?php echo $user->ID; ?>">
                                                 Rifiuta
                                             </button>
                                         </div>
@@ -464,17 +464,17 @@ while (have_posts()) : the_post();
 
                     <!-- Wishlist Card -->
                     <div class="sidebar-card wishlist-card">
-                        <?php echo CDV_Wishlist::get_wishlist_button_html($travel_id, 'btn btn-secondary wishlist-toggle-btn'); ?>
-                        <p class="wishlist-help-text">Salva questo viaggio per dopo</p>
+                        <?php echo CDV_Wishlist::get_wishlist_button_html($activity_id, 'btn btn-secondary wishlist-toggle-btn'); ?>
+                        <p class="wishlist-help-text">Salva questo attività per dopo</p>
                     </div>
 
                     <!-- Join Card -->
                     <?php if (is_user_logged_in()) : ?>
                         <?php if ($is_organizer) : ?>
                             <div class="sidebar-card">
-                                <p><strong>Questo è il tuo viaggio!</strong></p>
-                                <a href="<?php echo home_url('/modifica-viaggio/?travel_id=' . $travel_id); ?>" class="btn-primary" style="width: 100%; text-align: center;">
-                                    Modifica Viaggio
+                                <p><strong>Questo è il tua attività!</strong></p>
+                                <a href="<?php echo home_url('/modifica-attività/?activity_id=' . $activity_id); ?>" class="btn-primary" style="width: 100%; text-align: center;">
+                                    Modifica Attività
                                 </a>
                             </div>
                         <?php elseif ($is_participant) : ?>
@@ -482,8 +482,8 @@ while (have_posts()) : the_post();
                                 <p><strong>✓ Sei un partecipante</strong></p>
                                 <p>Hai accesso alla chat di gruppo</p>
                                 <button id="leave-travel-btn" class="btn-danger" style="width: 100%; margin-top: 1rem;"
-                                        data-travel-id="<?php echo $travel_id; ?>">
-                                    Lascia il Viaggio
+                                        data-travel-id="<?php echo $activity_id; ?>">
+                                    Lascia il Attività
                                 </button>
                             </div>
                         <?php elseif ($has_requested) : ?>
@@ -493,7 +493,7 @@ while (have_posts()) : the_post();
                             </div>
                         <?php else : ?>
                             <div class="sidebar-card join-card">
-                                <h3>Partecipa al Viaggio</h3>
+                                <h3>Partecipa al Attività</h3>
                                 <form id="join-travel-form">
                                     <div class="form-group">
                                         <label for="join-message">Messaggio per l'organizzatore</label>
@@ -525,7 +525,7 @@ while (have_posts()) : the_post();
                     <?php else : ?>
                         <div class="sidebar-card">
                             <h3>Vuoi partecipare?</h3>
-                            <p>Accedi o registrati per unirti a questo viaggio</p>
+                            <p>Accedi o registrati per unirti a questo attività</p>
                             <a href="<?php echo wp_login_url(get_permalink()); ?>" class="btn-primary" style="width: 100%; text-align: center; margin-bottom: 10px;">
                                 Accedi
                             </a>
@@ -1184,7 +1184,7 @@ while (have_posts()) : the_post();
                 data: {
                     action: 'cdv_join_travel',
                     nonce: cdvAjax.nonce,
-                    travel_id: <?php echo $travel_id; ?>,
+                    activity_id: <?php echo $activity_id; ?>,
                     message: message
                 },
                 success: function(response) {
@@ -1223,7 +1223,7 @@ while (have_posts()) : the_post();
 
             console.log('Sending contact message...', {
                 url: cdvAjax.ajaxurl,
-                travel_id: <?php echo $travel_id; ?>,
+                activity_id: <?php echo $activity_id; ?>,
                 organizer_id: <?php echo $author_id; ?>
             });
 
@@ -1233,7 +1233,7 @@ while (have_posts()) : the_post();
                 data: {
                     action: 'cdv_contact_organizer',
                     nonce: cdvAjax.nonce,
-                    travel_id: <?php echo $travel_id; ?>,
+                    activity_id: <?php echo $activity_id; ?>,
                     organizer_id: <?php echo $author_id; ?>,
                     message: message
                 },
@@ -1292,7 +1292,7 @@ while (have_posts()) : the_post();
                 data: {
                     action: 'cdv_accept_participant',
                     nonce: cdvAjax.nonce,
-                    travel_id: travelId,
+                    activity_id: travelId,
                     user_id: userId
                 },
                 success: function(response) {
@@ -1321,7 +1321,7 @@ while (have_posts()) : the_post();
                 data: {
                     action: 'cdv_reject_participant',
                     nonce: cdvAjax.nonce,
-                    travel_id: travelId,
+                    activity_id: travelId,
                     user_id: userId
                 },
                 success: function(response) {
@@ -1341,7 +1341,7 @@ while (have_posts()) : the_post();
             var userId = btn.data('user-id');
             var userName = btn.data('user-name');
 
-            if (!confirm('Sei sicuro di voler rimuovere ' + userName + ' dal viaggio?')) {
+            if (!confirm('Sei sicuro di voler rimuovere ' + userName + ' dal attività?')) {
                 return;
             }
 
@@ -1353,7 +1353,7 @@ while (have_posts()) : the_post();
                 data: {
                     action: 'cdv_remove_participant',
                     nonce: cdvAjax.nonce,
-                    travel_id: travelId,
+                    activity_id: travelId,
                     user_id: userId
                 },
                 success: function(response) {
@@ -1377,7 +1377,7 @@ while (have_posts()) : the_post();
             var btn = $(this);
             var travelId = btn.data('travel-id');
 
-            if (!confirm('Sei sicuro di voler lasciare questo viaggio? Questa azione non può essere annullata.')) {
+            if (!confirm('Sei sicuro di voler lasciare questo attività? Questa azione non può essere annullata.')) {
                 return;
             }
 
@@ -1389,20 +1389,20 @@ while (have_posts()) : the_post();
                 data: {
                     action: 'cdv_leave_travel',
                     nonce: cdvAjax.nonce,
-                    travel_id: travelId
+                    activity_id: travelId
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert('Hai lasciato il viaggio con successo');
+                        alert('Hai lasciato l'attività con successo');
                         location.reload();
                     } else {
-                        alert(response.data.message || 'Errore durante l\'uscita dal viaggio');
-                        btn.prop('disabled', false).text('Lascia il Viaggio');
+                        alert(response.data.message || 'Errore durante l\'uscita dal attività');
+                        btn.prop('disabled', false).text('Lascia il Attività');
                     }
                 },
                 error: function() {
                     alert('Errore di connessione');
-                    btn.prop('disabled', false).text('Lascia il Viaggio');
+                    btn.prop('disabled', false).text('Lascia il Attività');
                 }
             });
         });
@@ -1411,7 +1411,7 @@ while (have_posts()) : the_post();
         const $groupChatMessages = $('#group-chat-messages');
         const $groupMessageInput = $('#group-message-input');
         const $sendGroupMessageBtn = $('#send-group-message');
-        const travelId = <?php echo $travel_id; ?>;
+        const travelId = <?php echo $activity_id; ?>;
         let chatRefreshInterval = null;
 
         // Load group chat messages on page load
@@ -1448,7 +1448,7 @@ while (have_posts()) : the_post();
                 data: {
                     action: 'cdv_get_group_messages',
                     nonce: cdvAjax.nonce,
-                    travel_id: travelId
+                    activity_id: travelId
                 },
                 success: function(response) {
                     if (response.success) {
@@ -1523,7 +1523,7 @@ while (have_posts()) : the_post();
                 data: {
                     action: 'cdv_send_group_message',
                     nonce: cdvAjax.nonce,
-                    travel_id: travelId,
+                    activity_id: travelId,
                     message: message
                 },
                 success: function(response) {
@@ -1604,7 +1604,7 @@ while (have_posts()) : the_post();
                 data: {
                     action: 'cdv_toggle_wishlist',
                     nonce: cdvAjax.nonce,
-                    travel_id: travelId
+                    activity_id: travelId
                 },
                 success: function(response) {
                     if (response.success) {

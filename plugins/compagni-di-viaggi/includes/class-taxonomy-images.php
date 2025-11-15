@@ -15,20 +15,20 @@ class CDV_Taxonomy_Images {
      * Initialize
      */
     public static function init() {
-        // Add image field to tipo_viaggio taxonomy
-        add_action('tipo_viaggio_add_form_fields', array(__CLASS__, 'add_image_field'));
-        add_action('tipo_viaggio_edit_form_fields', array(__CLASS__, 'edit_image_field'));
+        // Add image field to tipo_sport taxonomy
+        add_action('tipo_sport_add_form_fields', array(__CLASS__, 'add_image_field'));
+        add_action('tipo_sport_edit_form_fields', array(__CLASS__, 'edit_image_field'));
 
         // Save image field
-        add_action('created_tipo_viaggio', array(__CLASS__, 'save_image_field'));
-        add_action('edited_tipo_viaggio', array(__CLASS__, 'save_image_field'));
+        add_action('created_tipo_sport', array(__CLASS__, 'save_image_field'));
+        add_action('edited_tipo_sport', array(__CLASS__, 'save_image_field'));
 
         // Enqueue media uploader
         add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media'));
 
         // Add column in admin
-        add_filter('manage_edit-tipo_viaggio_columns', array(__CLASS__, 'add_image_column'));
-        add_filter('manage_tipo_viaggio_custom_column', array(__CLASS__, 'display_image_column'), 10, 3);
+        add_filter('manage_edit-tipo_sport_columns', array(__CLASS__, 'add_image_column'));
+        add_filter('manage_tipo_sport_custom_column', array(__CLASS__, 'display_image_column'), 10, 3);
     }
 
     /**
@@ -48,21 +48,21 @@ class CDV_Taxonomy_Images {
         wp_nonce_field('cdv_taxonomy_image_nonce', 'cdv_taxonomy_image_nonce_field');
         ?>
         <div class="form-field term-image-wrap">
-            <label><?php _e('Immagine in Evidenza', 'compagni-di-viaggi'); ?></label>
+            <label><?php _e('Immagine in Evidenza', 'compagni-di-sport'); ?></label>
             <div class="cdv-taxonomy-image-wrapper">
                 <img src="" style="max-width: 150px; height: auto; display: none;" class="cdv-taxonomy-image-preview" />
                 <input type="hidden" name="cdv_taxonomy_image" class="cdv-taxonomy-image-id" value="" />
             </div>
             <p>
                 <button type="button" class="button cdv-upload-taxonomy-image">
-                    <?php _e('Carica Immagine', 'compagni-di-viaggi'); ?>
+                    <?php _e('Carica Immagine', 'compagni-di-sport'); ?>
                 </button>
                 <button type="button" class="button cdv-remove-taxonomy-image" style="display: none;">
-                    <?php _e('Rimuovi Immagine', 'compagni-di-viaggi'); ?>
+                    <?php _e('Rimuovi Immagine', 'compagni-di-sport'); ?>
                 </button>
             </p>
             <p class="description">
-                <?php _e('Immagine utilizzata come placeholder quando un viaggio di questo tipo non ha un\'immagine in evidenza.', 'compagni-di-viaggi'); ?>
+                <?php _e('Immagine utilizzata come placeholder quando un attivitào di questo tipo non ha un\'immagine in evidenza.', 'compagni-di-sport'); ?>
             </p>
         </div>
         <?php
@@ -78,7 +78,7 @@ class CDV_Taxonomy_Images {
         ?>
         <tr class="form-field term-image-wrap">
             <th scope="row">
-                <label><?php _e('Immagine in Evidenza', 'compagni-di-viaggi'); ?></label>
+                <label><?php _e('Immagine in Evidenza', 'compagni-di-sport'); ?></label>
             </th>
             <td>
                 <div class="cdv-taxonomy-image-wrapper">
@@ -89,14 +89,14 @@ class CDV_Taxonomy_Images {
                 </div>
                 <p>
                     <button type="button" class="button cdv-upload-taxonomy-image">
-                        <?php _e('Carica Immagine', 'compagni-di-viaggi'); ?>
+                        <?php _e('Carica Immagine', 'compagni-di-sport'); ?>
                     </button>
                     <button type="button" class="button cdv-remove-taxonomy-image" style="<?php echo $image_url ? '' : 'display: none;'; ?>">
-                        <?php _e('Rimuovi Immagine', 'compagni-di-viaggi'); ?>
+                        <?php _e('Rimuovi Immagine', 'compagni-di-sport'); ?>
                     </button>
                 </p>
                 <p class="description">
-                    <?php _e('Immagine utilizzata come placeholder quando un viaggio di questo tipo non ha un\'immagine in evidenza.', 'compagni-di-viaggi'); ?>
+                    <?php _e('Immagine utilizzata come placeholder quando un attivitào di questo tipo non ha un\'immagine in evidenza.', 'compagni-di-sport'); ?>
                 </p>
             </td>
         </tr>
@@ -143,7 +143,7 @@ class CDV_Taxonomy_Images {
     public static function add_image_column($columns) {
         $new_columns = array();
         $new_columns['cb'] = $columns['cb'];
-        $new_columns['image'] = __('Immagine', 'compagni-di-viaggi');
+        $new_columns['image'] = __('Immagine', 'compagni-di-sport');
 
         return array_merge($new_columns, $columns);
     }
@@ -167,7 +167,7 @@ class CDV_Taxonomy_Images {
     /**
      * Get image URL for a term
      */
-    public static function get_term_image_url($term_id, $size = 'travel-card') {
+    public static function get_term_image_url($term_id, $size = 'activity-card') {
         $image_id = get_term_meta($term_id, 'cdv_taxonomy_image', true);
         if ($image_id) {
             return wp_get_attachment_image_url($image_id, $size);
@@ -178,7 +178,7 @@ class CDV_Taxonomy_Images {
     /**
      * Get random term image URL from multiple terms
      */
-    public static function get_random_term_image($term_ids, $size = 'travel-card') {
+    public static function get_random_term_image($term_ids, $size = 'activity-card') {
         if (empty($term_ids) || !is_array($term_ids)) {
             return false;
         }

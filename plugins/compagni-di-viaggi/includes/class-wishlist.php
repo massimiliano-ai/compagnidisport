@@ -23,23 +23,23 @@ class CDV_Wishlist {
     /**
      * Add travel to wishlist
      */
-    public static function add_to_wishlist($user_id, $travel_id) {
+    public static function add_to_wishlist($user_id, $activity_id) {
         $wishlist = self::get_user_wishlist($user_id);
 
-        if (in_array($travel_id, $wishlist)) {
+        if (in_array($activity_id, $wishlist)) {
             return false; // Already in wishlist
         }
 
-        $wishlist[] = $travel_id;
+        $wishlist[] = $activity_id;
         return update_user_meta($user_id, 'cdv_wishlist', $wishlist);
     }
 
     /**
      * Remove travel from wishlist
      */
-    public static function remove_from_wishlist($user_id, $travel_id) {
+    public static function remove_from_wishlist($user_id, $activity_id) {
         $wishlist = self::get_user_wishlist($user_id);
-        $wishlist = array_diff($wishlist, array($travel_id));
+        $wishlist = array_diff($wishlist, array($activity_id));
         $wishlist = array_values($wishlist); // Re-index
 
         return update_user_meta($user_id, 'cdv_wishlist', $wishlist);
@@ -48,9 +48,9 @@ class CDV_Wishlist {
     /**
      * Check if travel is in wishlist
      */
-    public static function is_in_wishlist($user_id, $travel_id) {
+    public static function is_in_wishlist($user_id, $activity_id) {
         $wishlist = self::get_user_wishlist($user_id);
-        return in_array($travel_id, $wishlist);
+        return in_array($activity_id, $wishlist);
     }
 
     /**
@@ -76,22 +76,22 @@ class CDV_Wishlist {
     /**
      * Get wishlist travels with details
      */
-    public static function get_wishlist_travels($user_id) {
+    public static function get_wishlist_activities($user_id) {
         $wishlist_ids = self::get_user_wishlist($user_id);
 
         if (empty($wishlist_ids)) {
             return array();
         }
 
-        $travels = new WP_Query(array(
-            'post_type' => 'viaggio',
+        $activities = new WP_Query(array(
+            'post_type' => 'attivita',
             'post__in' => $wishlist_ids,
             'post_status' => 'publish',
             'posts_per_page' => -1,
             'orderby' => 'post__in',
         ));
 
-        return $travels;
+        return $activities;
     }
 
     /**
@@ -104,23 +104,23 @@ class CDV_Wishlist {
             wp_send_json_error(array('message' => 'Devi essere autenticato'));
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
 
-        if (!$travel_id) {
-            wp_send_json_error(array('message' => 'ID viaggio non valido'));
+        if (!$activity_id) {
+            wp_send_json_error(array('message' => 'ID attivitào non valido'));
         }
 
         $user_id = get_current_user_id();
-        $is_in_wishlist = self::is_in_wishlist($user_id, $travel_id);
+        $is_in_wishlist = self::is_in_wishlist($user_id, $activity_id);
 
         if ($is_in_wishlist) {
             // Remove from wishlist
-            $result = self::remove_from_wishlist($user_id, $travel_id);
+            $result = self::remove_from_wishlist($user_id, $activity_id);
             $action = 'removed';
             $message = 'Rimosso dalla wishlist';
         } else {
             // Add to wishlist
-            $result = self::add_to_wishlist($user_id, $travel_id);
+            $result = self::add_to_wishlist($user_id, $activity_id);
             $action = 'added';
             $message = 'Aggiunto alla wishlist';
         }
@@ -148,25 +148,25 @@ class CDV_Wishlist {
         }
 
         $user_id = get_current_user_id();
-        $travels = self::get_wishlist_travels($user_id);
+        $activities = self::get_wishlist_activities($user_id);
 
         $result = array();
 
-        if ($travels->have_posts()) {
-            while ($travels->have_posts()) {
-                $travels->the_post();
-                $travel_id = get_the_ID();
+        if ($activities->have_posts()) {
+            while ($activities->have_posts()) {
+                $activities->the_post();
+                $activity_id = get_the_ID();
 
                 $result[] = array(
-                    'id' => $travel_id,
+                    'id' => $activity_id,
                     'title' => get_the_title(),
                     'url' => get_permalink(),
-                    'thumbnail' => get_the_post_thumbnail_url($travel_id, 'medium'),
-                    'destination' => get_post_meta($travel_id, 'cdv_destination', true),
-                    'start_date' => get_post_meta($travel_id, 'cdv_start_date', true),
-                    'end_date' => get_post_meta($travel_id, 'cdv_end_date', true),
-                    'budget' => get_post_meta($travel_id, 'cdv_budget', true),
-                    'status' => get_post_meta($travel_id, 'cdv_travel_status', true)
+                    'thumbnail' => get_the_post_thumbnail_url($activity_id, 'medium'),
+                    'destination' => get_post_meta($activity_id, 'cdv_destination', true),
+                    'start_date' => get_post_meta($activity_id, 'cdv_start_date', true),
+                    'end_date' => get_post_meta($activity_id, 'cdv_end_date', true),
+                    'budget' => get_post_meta($activity_id, 'cdv_budget', true),
+                    'status' => get_post_meta($activity_id, 'cdv_activity_status', true)
                 );
             }
             wp_reset_postdata();
@@ -181,21 +181,21 @@ class CDV_Wishlist {
     /**
      * Get wishlist button HTML
      */
-    public static function get_wishlist_button_html($travel_id, $class = 'btn btn-secondary') {
+    public static function get_wishlist_button_html($activity_id, $class = 'btn btn-secondary') {
         if (!is_user_logged_in()) {
-            return '<a href="' . wp_login_url(get_permalink($travel_id)) . '" class="' . esc_attr($class) . '">
+            return '<a href="' . wp_login_url(get_permalink($activity_id)) . '" class="' . esc_attr($class) . '">
                 ♡ Salva
             </a>';
         }
 
         $user_id = get_current_user_id();
-        $in_wishlist = self::is_in_wishlist($user_id, $travel_id);
+        $in_wishlist = self::is_in_wishlist($user_id, $activity_id);
 
         $icon = $in_wishlist ? '♥' : '♡';
         $text = $in_wishlist ? 'Salvato' : 'Salva';
         $active_class = $in_wishlist ? ' wishlist-active' : '';
 
-        return '<button class="' . esc_attr($class . $active_class) . ' wishlist-btn" data-travel-id="' . $travel_id . '">
+        return '<button class="' . esc_attr($class . $active_class) . ' wishlist-btn" data-travel-id="' . $activity_id . '">
             <span class="wishlist-icon">' . $icon . '</span> <span class="wishlist-text">' . $text . '</span>
         </button>';
     }

@@ -1,8 +1,8 @@
 <?php
 /**
- * Template Name: Racconta il Tuo Viaggio
+ * Template Name: Racconta il Tuo Attività
  *
- * Form per creare/modificare racconti di viaggio
+ * Form per creare/modificare storie sport di attività
  */
 
 get_header();
@@ -14,7 +14,7 @@ if (!is_user_logged_in()) {
         <div class="container">
             <div class="section text-center">
                 <h1>Accesso Richiesto</h1>
-                <p>Devi essere registrato e aver effettuato l'accesso per raccontare il tuo viaggio.</p>
+                <p>Devi essere registrato e aver effettuato l'accesso per raccontare il tua attività.</p>
                 <a href="<?php echo esc_url(wp_login_url(get_permalink())); ?>" class="btn-primary">Accedi</a>
                 <a href="<?php echo esc_url(wp_registration_url()); ?>" class="btn-secondary">Registrati</a>
             </div>
@@ -34,7 +34,7 @@ if (!$is_viaggiatore) {
         <div class="container">
             <div class="section text-center">
                 <h1>Accesso Negato</h1>
-                <p>Solo i viaggiatori possono pubblicare racconti.</p>
+                <p>Solo i viaggiatori possono pubblicare storie sport.</p>
                 <a href="<?php echo esc_url(home_url('/')); ?>" class="btn-primary">Torna alla Home</a>
             </div>
         </div>
@@ -51,7 +51,7 @@ $story = null;
 
 if ($story_id > 0) {
     $story = get_post($story_id);
-    if ($story && $story->post_type === 'racconto' && ($story->post_author == get_current_user_id() || current_user_can('edit_others_posts'))) {
+    if ($story && $story->post_type === 'storia_sport' && ($story->post_author == get_current_user_id() || current_user_can('edit_others_posts'))) {
         $editing = true;
     } else {
         $story_id = 0;
@@ -69,7 +69,7 @@ $categories = get_terms(array(
     <div class="container" style="max-width: 900px;">
         <div class="section">
             <div class="page-header" style="text-align: center; margin-bottom: calc(var(--spacing-unit) * 5);">
-                <h1><?php echo $editing ? 'Modifica il Tuo Racconto' : 'Racconta il Tuo Viaggio'; ?></h1>
+                <h1><?php echo $editing ? 'Modifica il Tuo Storia Sport' : 'Racconta il Tuo Attività'; ?></h1>
                 <p style="font-size: 1.1rem; color: var(--text-medium);">
                     Condividi la tua esperienza, dai consigli e ispira altri viaggiatori
                 </p>
@@ -81,7 +81,7 @@ $categories = get_terms(array(
 
                 <!-- Titolo -->
                 <div class="form-group">
-                    <label for="story_title">Titolo del Racconto *</label>
+                    <label for="story_title">Titolo del Storia Sport *</label>
                     <input
                         type="text"
                         id="story_title"
@@ -115,7 +115,7 @@ $categories = get_terms(array(
 
                 <!-- Contenuto -->
                 <div class="form-group">
-                    <label for="story_content">Il Tuo Racconto *</label>
+                    <label for="story_content">Il Tuo Storia Sport *</label>
                     <textarea
                         id="story_content"
                         name="content"
@@ -128,23 +128,23 @@ $categories = get_terms(array(
                 </div>
 
                 <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: calc(var(--spacing-unit) * 3);">
-                    <!-- Destinazione -->
+                    <!-- Luogo -->
                     <div class="form-group">
-                        <label for="story_destination">Destinazione *</label>
+                        <label for="story_destination">Luogo *</label>
                         <input
                             type="text"
                             id="story_destination"
                             name="destination"
                             class="form-control"
                             placeholder="Es: Maldive"
-                            value="<?php echo $editing ? esc_attr(get_post_meta($story_id, 'cdv_destination', true)) : ''; ?>"
+                            value="<?php echo $editing ? esc_attr(get_post_meta($story_id, 'cdv_location', true)) : ''; ?>"
                             required
                         >
                     </div>
 
                     <!-- Categoria -->
                     <div class="form-group">
-                        <label for="story_category">Tipo di Racconto</label>
+                        <label for="story_category">Tipo di Storia Sport</label>
                         <select id="story_category" name="category" class="form-control">
                             <option value="">Seleziona categoria</option>
                             <?php
@@ -162,21 +162,21 @@ $categories = get_terms(array(
                 </div>
 
                 <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: calc(var(--spacing-unit) * 3);">
-                    <!-- Data viaggio -->
+                    <!-- Data attività -->
                     <div class="form-group">
-                        <label for="story_travel_date">Quando hai viaggiato?</label>
+                        <label for="story_activity_date">Quando hai viaggiato?</label>
                         <input
                             type="month"
-                            id="story_travel_date"
-                            name="travel_date"
+                            id="story_activity_date"
+                            name="activity_date"
                             class="form-control"
-                            value="<?php echo $editing ? esc_attr(get_post_meta($story_id, 'cdv_travel_date', true)) : ''; ?>"
+                            value="<?php echo $editing ? esc_attr(get_post_meta($story_id, 'cdv_activity_date', true)) : ''; ?>"
                         >
                     </div>
 
                     <!-- Durata -->
                     <div class="form-group">
-                        <label for="story_duration">Durata del viaggio</label>
+                        <label for="story_duration">Durata dell'attività</label>
                         <input
                             type="text"
                             id="story_duration"
@@ -204,7 +204,7 @@ $categories = get_terms(array(
                         }
                         ?>"
                     >
-                    <p class="description">Aiuta gli altri a trovare il tuo racconto</p>
+                    <p class="description">Aiuta gli altri a trovare il tuo storia sport</p>
                 </div>
 
                 <!-- Form Messages -->
@@ -213,7 +213,7 @@ $categories = get_terms(array(
                 <!-- Submit Button -->
                 <div class="form-actions" style="display: flex; gap: calc(var(--spacing-unit) * 2); margin-top: calc(var(--spacing-unit) * 4);">
                     <button type="submit" id="submit-story-btn" class="btn-primary" style="flex: 1;">
-                        <?php echo $editing ? 'Aggiorna Racconto' : 'Pubblica Racconto'; ?>
+                        <?php echo $editing ? 'Aggiorna Storia Sport' : 'Pubblica Storia Sport'; ?>
                     </button>
                     <a href="<?php echo esc_url(home_url('/dashboard')); ?>" class="btn-secondary">Annulla</a>
                 </div>
@@ -260,7 +260,7 @@ jQuery(document).ready(function($) {
         formData.append('destination', $('#story_destination').val());
         formData.append('category', $('#story_category').val());
         formData.append('tags', $('#story_tags').val());
-        formData.append('travel_date', $('#story_travel_date').val());
+        formData.append('activity_date', $('#story_activity_date').val());
         formData.append('duration', $('#story_duration').val());
 
         submitBtn.prop('disabled', true).text('Pubblicazione...');
@@ -287,12 +287,12 @@ jQuery(document).ready(function($) {
                     }
                 } else {
                     messageDiv.html('<div class="alert alert-error">' + response.data.message + '</div>').show();
-                    submitBtn.prop('disabled', false).text('<?php echo $editing ? 'Aggiorna Racconto' : 'Pubblica Racconto'; ?>');
+                    submitBtn.prop('disabled', false).text('<?php echo $editing ? 'Aggiorna Storia Sport' : 'Pubblica Storia Sport'; ?>');
                 }
             },
             error: function() {
                 messageDiv.html('<div class="alert alert-error">Errore di connessione. Riprova.</div>').show();
-                submitBtn.prop('disabled', false).text('<?php echo $editing ? 'Aggiorna Racconto' : 'Pubblica Racconto'; ?>');
+                submitBtn.prop('disabled', false).text('<?php echo $editing ? 'Aggiorna Storia Sport' : 'Pubblica Storia Sport'; ?>');
             }
         });
     });
@@ -312,20 +312,20 @@ jQuery(document).ready(function($) {
             contentType: false,
             success: function(response) {
                 if (response.success) {
-                    messageDiv.html('<div class="alert alert-success">Racconto pubblicato con successo!</div>').show();
+                    messageDiv.html('<div class="alert alert-success">Storia Sport pubblicato con successo!</div>').show();
                     setTimeout(function() {
                         window.location.href = redirectUrl;
                     }, 1500);
                 } else {
                     // Story saved but image upload failed
-                    messageDiv.html('<div class="alert alert-warning">Racconto salvato ma errore caricamento immagine: ' + response.data.message + '</div>').show();
+                    messageDiv.html('<div class="alert alert-warning">Storia Sport salvato ma errore caricamento immagine: ' + response.data.message + '</div>').show();
                     setTimeout(function() {
                         window.location.href = redirectUrl;
                     }, 2000);
                 }
             },
             error: function() {
-                messageDiv.html('<div class="alert alert-warning">Racconto salvato ma errore caricamento immagine.</div>').show();
+                messageDiv.html('<div class="alert alert-warning">Storia Sport salvato ma errore caricamento immagine.</div>').show();
                 setTimeout(function() {
                     window.location.href = redirectUrl;
                 }, 2000);

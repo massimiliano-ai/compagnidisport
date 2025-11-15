@@ -279,84 +279,84 @@ class CDV_Notifications {
     /**
      * Helper: Notify when join request is created
      */
-    public static function notify_join_request($travel_id, $requester_id) {
-        $travel = get_post($travel_id);
-        $organizer_id = $travel->post_author;
+    public static function notify_join_request($activity_id, $requester_id) {
+        $activity = get_post($activity_id);
+        $organizer_id = $activity->post_author;
         $requester = get_userdata($requester_id);
 
         self::create(
             $organizer_id,
             'join_request',
             'Nuova Richiesta di Partecipazione',
-            $requester->display_name . ' vuole partecipare a "' . $travel->post_title . '"',
+            $requester->display_name . ' vuole partecipare a "' . $activity->post_title . '"',
             home_url('/dashboard?tab=requests'),
-            $travel_id
+            $activity_id
         );
     }
 
     /**
      * Helper: Notify when request is accepted
      */
-    public static function notify_request_accepted($travel_id, $participant_id) {
-        $travel = get_post($travel_id);
+    public static function notify_request_accepted($activity_id, $participant_id) {
+        $activity = get_post($activity_id);
 
         self::create(
             $participant_id,
             'request_accepted',
             'Richiesta Accettata!',
-            'La tua richiesta per "' . $travel->post_title . '" è stata accettata',
-            get_permalink($travel_id),
-            $travel_id
+            'La tua richiesta per "' . $activity->post_title . '" è stata accettata',
+            get_permalink($activity_id),
+            $activity_id
         );
     }
 
     /**
      * Helper: Notify when request is rejected
      */
-    public static function notify_request_rejected($travel_id, $participant_id) {
-        $travel = get_post($travel_id);
+    public static function notify_request_rejected($activity_id, $participant_id) {
+        $activity = get_post($activity_id);
 
         self::create(
             $participant_id,
             'request_rejected',
             'Richiesta Rifiutata',
-            'La tua richiesta per "' . $travel->post_title . '" è stata rifiutata',
+            'La tua richiesta per "' . $activity->post_title . '" è stata rifiutata',
             null,
-            $travel_id
+            $activity_id
         );
     }
 
     /**
      * Helper: Notify new message
      */
-    public static function notify_new_message($recipient_id, $sender_id, $travel_id) {
+    public static function notify_new_message($recipient_id, $sender_id, $activity_id) {
         $sender = get_userdata($sender_id);
-        $travel = get_post($travel_id);
+        $activity = get_post($activity_id);
 
         self::create(
             $recipient_id,
             'new_message',
             'Nuovo Messaggio',
-            $sender->display_name . ' ti ha inviato un messaggio su "' . $travel->post_title . '"',
-            home_url('/dashboard?tab=messages&user_id=' . $sender_id . '&travel_id=' . $travel_id),
-            $travel_id
+            $sender->display_name . ' ti ha inviato un messaggio su "' . $activity->post_title . '"',
+            home_url('/dashboard?tab=messages&user_id=' . $sender_id . '&activity_id=' . $activity_id),
+            $activity_id
         );
     }
 
     /**
      * Helper: Notify new review
      */
-    public static function notify_new_review($user_id, $reviewer_id, $travel_id) {
+    public static function notify_new_review($user_id, $reviewer_id, $activity_id) {
         $reviewer = get_userdata($reviewer_id);
-        $travel = get_post($travel_id);
+        $activity = get_post($activity_id);
 
         self::create(
             $user_id,
             'review_received',
             'Nuova Recensione',
-            $reviewer->display_name . ' ha lasciato una recensione per il viaggio "' . $travel->post_title . '"',
+            $reviewer->display_name . ' ha lasciato una recensione per il attivitào "' . $activity->post_title . '"',
             home_url('/dashboard?tab=reviews'),
-            $travel_id
+            $activity_id
         );
     }
 }

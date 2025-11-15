@@ -64,7 +64,7 @@ $is_own_profile = is_user_logged_in() && get_current_user_id() == $user->ID;
             <div class="profile-stats">
                 <div class="stat-item">
                     <span class="stat-number"><?php echo $stats['organized']; ?></span>
-                    <span class="stat-label">Viaggi Organizzati</span>
+                    <span class="stat-label">Attività Organizzati</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number"><?php echo $stats['participated']; ?></span>
@@ -88,7 +88,7 @@ $is_own_profile = is_user_logged_in() && get_current_user_id() == $user->ID;
         <!-- Tab Navigation -->
         <div class="profile-tabs">
             <button class="tab-button active" data-tab="about">Chi Sono</button>
-            <button class="tab-button" data-tab="travels">Viaggi</button>
+            <button class="tab-button" data-tab="travels">Attività</button>
             <button class="tab-button" data-tab="badges">Badge</button>
             <button class="tab-button" data-tab="reviews">Recensioni</button>
         </div>
@@ -111,12 +111,12 @@ $is_own_profile = is_user_logged_in() && get_current_user_id() == $user->ID;
                         </div>
                     <?php endif; ?>
 
-                    <?php if (!empty($profile['travel_styles'])) : ?>
+                    <?php if (!empty($profile['activity_styles'])) : ?>
                         <div class="detail-item">
-                            <h4><i class="icon-compass"></i> Stile di Viaggio</h4>
+                            <h4><i class="icon-compass"></i> Stile di Attività</h4>
                             <div class="tags">
                                 <?php
-                                $styles = is_array($profile['travel_styles']) ? $profile['travel_styles'] : array($profile['travel_styles']);
+                                $styles = is_array($profile['activity_styles']) ? $profile['activity_styles'] : array($profile['activity_styles']);
                                 foreach ($styles as $style) :
                                 ?>
                                     <span class="tag"><?php echo esc_html($style); ?></span>
@@ -174,7 +174,7 @@ $is_own_profile = is_user_logged_in() && get_current_user_id() == $user->ID;
             </div>
         </div>
 
-        <!-- Tab: Viaggi -->
+        <!-- Tab: Attività -->
         <div class="tab-content" id="tab-travels">
             <?php if ($travels->have_posts()) : ?>
                 <div class="travels-grid">
@@ -184,7 +184,7 @@ $is_own_profile = is_user_logged_in() && get_current_user_id() == $user->ID;
                     <?php wp_reset_postdata(); ?>
                 </div>
             <?php else : ?>
-                <p class="no-content">Nessun viaggio organizzato ancora.</p>
+                <p class="no-content">Nessun attività organizzato ancora.</p>
             <?php endif; ?>
         </div>
 

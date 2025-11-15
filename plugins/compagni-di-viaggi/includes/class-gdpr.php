@@ -214,7 +214,7 @@ class CDV_GDPR {
         $data = self::get_user_data($user_id);
 
         // Create JSON file
-        $filename = 'compagni-di-viaggi-data-' . $user_id . '-' . date('Y-m-d') . '.json';
+        $filename = 'compagni-di-sport-data-' . $user_id . '-' . date('Y-m-d') . '.json';
 
         wp_send_json_success(array(
             'data' => $data,
@@ -249,7 +249,7 @@ class CDV_GDPR {
                 'gender' => get_user_meta($user_id, 'cdv_gender', true),
                 'languages' => get_user_meta($user_id, 'cdv_languages', true),
                 'interests' => get_user_meta($user_id, 'cdv_interests', true),
-                'travel_style' => get_user_meta($user_id, 'cdv_travel_style', true),
+                'travel_style' => get_user_meta($user_id, 'cdv_activity_style', true),
                 'verified' => get_user_meta($user_id, 'cdv_verified', true),
                 'reputation_score' => get_user_meta($user_id, 'cdv_reputation_score', true)
             ),
@@ -261,24 +261,24 @@ class CDV_GDPR {
         );
 
         // Get user's travels
-        $travels = get_posts(array(
-            'post_type' => 'viaggio',
+        $activities = get_posts(array(
+            'post_type' => 'attivita',
             'author' => $user_id,
             'posts_per_page' => -1,
             'post_status' => 'any'
         ));
 
-        foreach ($travels as $travel) {
+        foreach ($activities as $activity) {
             $data['travels'][] = array(
-                'title' => $travel->post_title,
-                'content' => $travel->post_content,
-                'destination' => get_post_meta($travel->ID, 'cdv_destination', true),
-                'country' => get_post_meta($travel->ID, 'cdv_country', true),
-                'start_date' => get_post_meta($travel->ID, 'cdv_start_date', true),
-                'end_date' => get_post_meta($travel->ID, 'cdv_end_date', true),
-                'budget' => get_post_meta($travel->ID, 'cdv_budget', true),
-                'created_date' => $travel->post_date,
-                'status' => $travel->post_status
+                'title' => $activity->post_title,
+                'content' => $activity->post_content,
+                'destination' => get_post_meta($activity->ID, 'cdv_destination', true),
+                'country' => get_post_meta($activity->ID, 'cdv_country', true),
+                'start_date' => get_post_meta($activity->ID, 'cdv_start_date', true),
+                'end_date' => get_post_meta($activity->ID, 'cdv_end_date', true),
+                'budget' => get_post_meta($activity->ID, 'cdv_budget', true),
+                'created_date' => $activity->post_date,
+                'status' => $activity->post_status
             );
         }
 
@@ -289,10 +289,10 @@ class CDV_GDPR {
         ), ARRAY_A);
 
         foreach ($participations as $participation) {
-            $travel = get_post($participation['travel_id']);
-            if ($travel) {
+            $activity = get_post($participation['activity_id']);
+            if ($activity) {
                 $data['participations'][] = array(
-                    'travel_title' => $travel->post_title,
+                    'travel_title' => $activity->post_title,
                     'status' => $participation['status'],
                     'joined_date' => $participation['joined_at']
                 );
@@ -311,7 +311,7 @@ class CDV_GDPR {
                 'reviewed_user' => $reviewed_user ? $reviewed_user->user_login : 'Unknown',
                 'rating' => $review['rating'],
                 'comment' => $review['comment'],
-                'travel_id' => $review['travel_id'],
+                'activity_id' => $review['activity_id'],
                 'created_date' => $review['created_at']
             );
         }
@@ -329,7 +329,7 @@ class CDV_GDPR {
                 'reviewer' => $reviewer ? $reviewer->user_login : 'Unknown',
                 'rating' => $review['rating'],
                 'comment' => $review['comment'],
-                'travel_id' => $review['travel_id'],
+                'activity_id' => $review['activity_id'],
                 'created_date' => $review['created_at']
             );
         }
@@ -505,15 +505,15 @@ class CDV_GDPR {
         global $wpdb;
 
         // Delete user's travels
-        $travels = get_posts(array(
-            'post_type' => 'viaggio',
+        $activities = get_posts(array(
+            'post_type' => 'attivita',
             'author' => $user_id,
             'posts_per_page' => -1,
             'post_status' => 'any'
         ));
 
-        foreach ($travels as $travel) {
-            wp_delete_post($travel->ID, true);
+        foreach ($activities as $activity) {
+            wp_delete_post($activity->ID, true);
         }
 
         // Delete from custom tables
@@ -549,7 +549,7 @@ class CDV_GDPR {
 
         // Delete old completed travels
         $old_travels = get_posts(array(
-            'post_type' => 'viaggio',
+            'post_type' => 'attivita',
             'post_status' => 'publish',
             'posts_per_page' => -1,
             'meta_query' => array(
@@ -562,10 +562,10 @@ class CDV_GDPR {
             )
         ));
 
-        foreach ($old_travels as $travel) {
+        foreach ($old_travels as $activity) {
             // Archive instead of delete
             wp_update_post(array(
-                'ID' => $travel->ID,
+                'ID' => $activity->ID,
                 'post_status' => 'archived'
             ));
         }

@@ -15,28 +15,28 @@ class CDV_User_Roles {
     public static function init() {
         add_action('init', array(__CLASS__, 'register_roles'));
 
-        // Block backend access for viaggiatore
+        // Block backend access for attivitàatore
         add_action('admin_init', array(__CLASS__, 'block_admin_access'));
 
-        // Hide admin bar for viaggiatore
+        // Hide admin bar for attivitàatore
         add_filter('show_admin_bar', array(__CLASS__, 'hide_admin_bar'));
         add_action('after_setup_theme', array(__CLASS__, 'hide_admin_bar_theme'));
 
-        // Allow viaggiatori to appear in author dropdown for viaggio post type
-        add_filter('wp_dropdown_users_args', array(__CLASS__, 'add_viaggiatori_to_author_dropdown'), 10, 2);
+        // Allow attivitàatori to appear in author dropdown for attivitào post type
+        add_filter('wp_dropdown_users_args', array(__CLASS__, 'add_attivitàatori_to_author_dropdown'), 10, 2);
 
         // Also filter for ajax requests (Quick Edit uses AJAX)
-        add_action('wp_ajax_inline-save', array(__CLASS__, 'ajax_inline_save_allow_viaggiatori'), 0);
+        add_action('wp_ajax_inline-save', array(__CLASS__, 'ajax_inline_save_allow_attivitàatori'), 0);
 
-        // Replace author metabox for viaggio post type
+        // Replace author metabox for attivitào post type
         add_action('add_meta_boxes', array(__CLASS__, 'replace_author_metabox'));
-        add_action('save_post_viaggio', array(__CLASS__, 'save_custom_author'), 10, 2);
+        add_action('save_post_attivitào', array(__CLASS__, 'save_custom_author'), 10, 2);
     }
 
     /**
-     * Check if current user is a viaggiatore
+     * Check if current user is a attivitàatore
      */
-    public static function is_viaggiatore($user_id = null) {
+    public static function is_attivitàatore($user_id = null) {
         if (!$user_id) {
             $user_id = get_current_user_id();
         }
@@ -50,18 +50,18 @@ class CDV_User_Roles {
             return false;
         }
 
-        return in_array('viaggiatore', (array) $user->roles);
+        return in_array('attivitàatore', (array) $user->roles);
     }
 
     /**
      * Register custom user roles
      */
     public static function register_roles() {
-        // Add Viaggiatore role on plugin activation
-        if (!get_role('viaggiatore')) {
+        // Add Attivitàatore role on plugin activation
+        if (!get_role('attivitàatore')) {
             add_role(
-                'viaggiatore',
-                __('Viaggiatore', 'compagni-di-viaggi'),
+                'attivitàatore',
+                __('Attivitàatore', 'compagni-di-sport'),
                 array(
                     'read' => true,
                     'level_0' => true, // Required for appearing in author dropdown
@@ -71,17 +71,17 @@ class CDV_User_Roles {
                     'upload_files' => true,
 
                     // Custom capabilities
-                    'create_viaggi' => true,
-                    'edit_own_viaggi' => true,
-                    'delete_own_viaggi' => true,
-                    'join_viaggi' => true,
+                    'create_attività' => true,
+                    'edit_own_attività' => true,
+                    'delete_own_attività' => true,
+                    'join_attività' => true,
                     'use_chat' => true,
                     'leave_reviews' => true,
                 )
             );
         } else {
             // Update existing role to add level_0 if missing
-            $role = get_role('viaggiatore');
+            $role = get_role('attivitàatore');
             if ($role && !$role->has_cap('level_0')) {
                 $role->add_cap('level_0');
             }
@@ -92,15 +92,15 @@ class CDV_User_Roles {
         if ($admin_role) {
             // Admin-specific capabilities
             $admin_role->add_cap('approve_users');
-            $admin_role->add_cap('approve_viaggi');
+            $admin_role->add_cap('approve_attività');
             $admin_role->add_cap('moderate_chat');
-            $admin_role->add_cap('manage_viaggiatori');
+            $admin_role->add_cap('manage_attivitàatori');
 
-            // Viaggiatore capabilities (so admins can do everything viaggiatori can)
-            $admin_role->add_cap('create_viaggi');
-            $admin_role->add_cap('edit_own_viaggi');
-            $admin_role->add_cap('delete_own_viaggi');
-            $admin_role->add_cap('join_viaggi');
+            // Attivitàatore capabilities (so admins can do everything attivitàatori can)
+            $admin_role->add_cap('create_attività');
+            $admin_role->add_cap('edit_own_attività');
+            $admin_role->add_cap('delete_own_attività');
+            $admin_role->add_cap('join_attività');
             $admin_role->add_cap('use_chat');
             $admin_role->add_cap('leave_reviews');
         }
@@ -155,7 +155,7 @@ class CDV_User_Roles {
 
         $subject = 'Il tuo account è stato approvato!';
         $message = sprintf(
-            "Ciao %s,\n\nIl tuo account su Compagni di Viaggi è stato approvato!\n\nOra puoi:\n- Cercare viaggi\n- Creare i tuoi viaggi\n- Richiedere di partecipare\n- Usare la chat di gruppo\n\nAccedi qui: %s\n\nBuon viaggio!\nIl team di Compagni di Viaggi",
+            "Ciao %s,\n\nIl tuo account su Compagni di Attività è stato approvato!\n\nOra puoi:\n- Cercare attività\n- Creare i tuoi attività\n- Richiedere di partecipare\n- Usare la chat di gruppo\n\nAccedi qui: %s\n\nBuon attivitào!\nIl team di Compagni di Attività",
             $user->display_name,
             wp_login_url()
         );
@@ -166,7 +166,7 @@ class CDV_User_Roles {
     /**
      * Check if user can create travel posts
      */
-    public static function can_create_travel($user_id = null) {
+    public static function can_create_activity($user_id = null) {
         if (!$user_id) {
             $user_id = get_current_user_id();
         }
@@ -181,7 +181,7 @@ class CDV_User_Roles {
         }
 
         // Must have capability
-        return user_can($user_id, 'create_viaggi');
+        return user_can($user_id, 'create_attività');
     }
 
     /**
@@ -189,7 +189,7 @@ class CDV_User_Roles {
      */
     public static function get_pending_users_count() {
         $args = array(
-            'role' => 'viaggiatore',
+            'role' => 'attivitàatore',
             'meta_query' => array(
                 'relation' => 'OR',
                 array(
@@ -214,7 +214,7 @@ class CDV_User_Roles {
      */
     public static function get_pending_users() {
         $args = array(
-            'role' => 'viaggiatore',
+            'role' => 'attivitàatore',
             'meta_query' => array(
                 'relation' => 'OR',
                 array(
@@ -243,7 +243,7 @@ class CDV_User_Roles {
             'cdv_city',
             'cdv_country',
             'cdv_languages',
-            'cdv_travel_styles',
+            'cdv_activity_styles',
         );
 
         $completed = 0;
@@ -264,56 +264,56 @@ class CDV_User_Roles {
     }
 
     /**
-     * Block admin access for viaggiatore role
+     * Block admin access for attivitàatore role
      */
     public static function block_admin_access() {
-        if (self::is_viaggiatore() && !wp_doing_ajax()) {
+        if (self::is_attivitàatore() && !wp_doing_ajax()) {
             wp_redirect(home_url('/dashboard'));
             exit;
         }
     }
 
     /**
-     * Hide admin bar for viaggiatore role (filter)
+     * Hide admin bar for attivitàatore role (filter)
      */
     public static function hide_admin_bar($show_admin_bar) {
-        if (self::is_viaggiatore()) {
+        if (self::is_attivitàatore()) {
             return false;
         }
         return $show_admin_bar;
     }
 
     /**
-     * Hide admin bar for viaggiatore role (action)
+     * Hide admin bar for attivitàatore role (action)
      */
     public static function hide_admin_bar_theme() {
-        if (self::is_viaggiatore()) {
+        if (self::is_attivitàatore()) {
             show_admin_bar(false);
         }
     }
 
     /**
-     * Allow viaggiatori for ajax inline save
+     * Allow attivitàatori for ajax inline save
      */
-    public static function ajax_inline_save_allow_viaggiatori() {
-        if (isset($_POST['post_type']) && $_POST['post_type'] === 'viaggio') {
-            add_filter('wp_dropdown_users_args', array(__CLASS__, 'force_viaggiatori_in_dropdown'), 999, 2);
+    public static function ajax_inline_save_allow_attivitàatori() {
+        if (isset($_POST['post_type']) && $_POST['post_type'] === 'attivita') {
+            add_filter('wp_dropdown_users_args', array(__CLASS__, 'force_attivitàatori_in_dropdown'), 999, 2);
         }
     }
 
     /**
-     * Force viaggiatori in dropdown (high priority)
+     * Force attivitàatori in dropdown (high priority)
      */
-    public static function force_viaggiatori_in_dropdown($query_args, $parsed_args) {
+    public static function force_attivitàatori_in_dropdown($query_args, $parsed_args) {
         unset($query_args['who']);
-        $query_args['role__in'] = array('administrator', 'editor', 'viaggiatore');
+        $query_args['role__in'] = array('administrator', 'editor', 'attivitàatore');
         return $query_args;
     }
 
     /**
-     * Add viaggiatori to author dropdown in backend for viaggio post type
+     * Add attivitàatori to author dropdown in backend for attivitào post type
      */
-    public static function add_viaggiatori_to_author_dropdown($query_args, $parsed_args) {
+    public static function add_attivitàatori_to_author_dropdown($query_args, $parsed_args) {
         global $pagenow, $typenow;
 
         // Debug: log the context
@@ -322,64 +322,64 @@ class CDV_User_Roles {
         }
 
         // Check if we're on the right screen
-        $is_viaggio_screen = false;
+        $is_attivitào_screen = false;
 
         // Check for new post screen
-        if ($pagenow === 'post-new.php' && isset($_GET['post_type']) && $_GET['post_type'] === 'viaggio') {
-            $is_viaggio_screen = true;
+        if ($pagenow === 'post-new.php' && isset($_GET['post_type']) && $_GET['post_type'] === 'attivita') {
+            $is_attivitào_screen = true;
         }
 
         // Check for edit post screen
         if ($pagenow === 'post.php' && isset($_GET['post']) && !empty($_GET['post'])) {
             $post = get_post(intval($_GET['post']));
-            if ($post && $post->post_type === 'viaggio') {
-                $is_viaggio_screen = true;
+            if ($post && $post->post_type === 'attivita') {
+                $is_attivitào_screen = true;
             }
         }
 
         // Check for list screen (quick edit)
-        if ($pagenow === 'edit.php' && isset($_GET['post_type']) && $_GET['post_type'] === 'viaggio') {
-            $is_viaggio_screen = true;
+        if ($pagenow === 'edit.php' && isset($_GET['post_type']) && $_GET['post_type'] === 'attivita') {
+            $is_attivitào_screen = true;
         }
 
         // Also check global $typenow
-        if ($typenow === 'viaggio') {
-            $is_viaggio_screen = true;
+        if ($typenow === 'attivita') {
+            $is_attivitào_screen = true;
         }
 
         // Check screen object as fallback
         $screen = function_exists('get_current_screen') ? get_current_screen() : null;
-        if ($screen && $screen->post_type === 'viaggio') {
-            $is_viaggio_screen = true;
+        if ($screen && $screen->post_type === 'attivita') {
+            $is_attivitào_screen = true;
         }
 
-        // Only modify query for viaggio post type
-        if (is_admin() && $is_viaggio_screen) {
+        // Only modify query for attivitào post type
+        if (is_admin() && $is_attivitào_screen) {
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('CDV: Modifying wp_dropdown_users query for viaggio');
+                error_log('CDV: Modifying wp_dropdown_users query for attivitào');
             }
 
             // Remove the default capability requirement
             unset($query_args['who']);
 
-            // Include viaggiatori role
-            $query_args['role__in'] = array('administrator', 'editor', 'viaggiatore');
+            // Include attivitàatori role
+            $query_args['role__in'] = array('administrator', 'editor', 'attivitàatore');
         }
 
         return $query_args;
     }
 
     /**
-     * Replace default author metabox with custom one for viaggio
+     * Replace default author metabox with custom one for attivitào
      */
     public static function replace_author_metabox() {
-        remove_meta_box('authordiv', 'viaggio', 'normal');
+        remove_meta_box('authordiv', 'attivita', 'normal');
 
         add_meta_box(
             'cdv_authordiv',
-            __('Autore', 'compagni-di-viaggi'),
+            __('Autore', 'compagni-di-sport'),
             array(__CLASS__, 'render_author_metabox'),
-            'viaggio',
+            'attivita',
             'side',
             'default'
         );
@@ -393,7 +393,7 @@ class CDV_User_Roles {
 
         // Get all users with appropriate roles
         $users = get_users(array(
-            'role__in' => array('administrator', 'editor', 'viaggiatore'),
+            'role__in' => array('administrator', 'editor', 'attivitàatore'),
             'orderby' => 'display_name',
             'order' => 'ASC',
         ));
@@ -407,7 +407,7 @@ class CDV_User_Roles {
             'selected' => empty($post->ID) ? $user_ID : $post->post_author,
             'include_selected' => true,
             'show' => 'display_name_with_login',
-            'role__in' => array('administrator', 'editor', 'viaggiatore'),
+            'role__in' => array('administrator', 'editor', 'attivitàatore'),
         ));
     }
 
@@ -426,14 +426,14 @@ class CDV_User_Roles {
 
             // Verify the user exists and has appropriate role
             $user = get_userdata($author_id);
-            if ($user && array_intersect($user->roles, array('administrator', 'editor', 'viaggiatore'))) {
+            if ($user && array_intersect($user->roles, array('administrator', 'editor', 'attivitàatore'))) {
                 // Update post author
-                remove_action('save_post_viaggio', array(__CLASS__, 'save_custom_author'), 10);
+                remove_action('save_post_attivitào', array(__CLASS__, 'save_custom_author'), 10);
                 wp_update_post(array(
                     'ID' => $post_id,
                     'post_author' => $author_id,
                 ));
-                add_action('save_post_viaggio', array(__CLASS__, 'save_custom_author'), 10, 2);
+                add_action('save_post_attivitào', array(__CLASS__, 'save_custom_author'), 10, 2);
             }
         }
     }

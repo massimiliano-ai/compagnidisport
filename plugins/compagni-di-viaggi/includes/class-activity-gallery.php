@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class CDV_Travel_Gallery {
+class CDV_Activity_Gallery {
 
     /**
      * Initialize
@@ -32,16 +32,16 @@ class CDV_Travel_Gallery {
             wp_send_json_error(array('message' => 'Non autenticato'));
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
 
-        if (!$travel_id) {
-            wp_send_json_error(array('message' => 'ID viaggio non valido'));
+        if (!$activity_id) {
+            wp_send_json_error(array('message' => 'ID attivitào non valido'));
         }
 
         // Check if user owns the travel
-        $travel = get_post($travel_id);
-        if (!$travel || $travel->post_author != get_current_user_id()) {
-            wp_send_json_error(array('message' => 'Non hai i permessi per modificare questo viaggio'));
+        $activity = get_post($activity_id);
+        if (!$activity || $activity->post_author != get_current_user_id()) {
+            wp_send_json_error(array('message' => 'Non hai i permessi per modificare questo attivitào'));
         }
 
         // Check if file was uploaded
@@ -70,20 +70,20 @@ class CDV_Travel_Gallery {
         require_once(ABSPATH . 'wp-admin/includes/image.php');
         require_once(ABSPATH . 'wp-admin/includes/media.php');
 
-        $attachment_id = media_handle_upload('gallery_image', $travel_id);
+        $attachment_id = media_handle_upload('gallery_image', $activity_id);
 
         if (is_wp_error($attachment_id)) {
             wp_send_json_error(array('message' => $attachment_id->get_error_message()));
         }
 
         // Add to gallery meta
-        $gallery = get_post_meta($travel_id, 'cdv_gallery_images', true);
+        $gallery = get_post_meta($activity_id, 'cdv_gallery_images', true);
         if (!is_array($gallery)) {
             $gallery = array();
         }
 
         $gallery[] = $attachment_id;
-        update_post_meta($travel_id, 'cdv_gallery_images', $gallery);
+        update_post_meta($activity_id, 'cdv_gallery_images', $gallery);
 
         // Return image data
         wp_send_json_success(array(
@@ -106,25 +106,25 @@ class CDV_Travel_Gallery {
             wp_send_json_error(array('message' => 'Non autenticato'));
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
         $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
 
-        if (!$travel_id || !$image_id) {
+        if (!$activity_id || !$image_id) {
             wp_send_json_error(array('message' => 'Parametri non validi'));
         }
 
         // Check permissions
-        $travel = get_post($travel_id);
-        if (!$travel || $travel->post_author != get_current_user_id()) {
+        $activity = get_post($activity_id);
+        if (!$activity || $activity->post_author != get_current_user_id()) {
             wp_send_json_error(array('message' => 'Non hai i permessi'));
         }
 
         // Remove from gallery
-        $gallery = get_post_meta($travel_id, 'cdv_gallery_images', true);
+        $gallery = get_post_meta($activity_id, 'cdv_gallery_images', true);
         if (is_array($gallery)) {
             $gallery = array_diff($gallery, array($image_id));
             $gallery = array_values($gallery); // Re-index
-            update_post_meta($travel_id, 'cdv_gallery_images', $gallery);
+            update_post_meta($activity_id, 'cdv_gallery_images', $gallery);
         }
 
         // Delete attachment
@@ -143,21 +143,21 @@ class CDV_Travel_Gallery {
             wp_send_json_error(array('message' => 'Non autenticato'));
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
         $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
 
-        if (!$travel_id || !$image_id) {
+        if (!$activity_id || !$image_id) {
             wp_send_json_error(array('message' => 'Parametri non validi'));
         }
 
         // Check permissions
-        $travel = get_post($travel_id);
-        if (!$travel || $travel->post_author != get_current_user_id()) {
+        $activity = get_post($activity_id);
+        if (!$activity || $activity->post_author != get_current_user_id()) {
             wp_send_json_error(array('message' => 'Non hai i permessi'));
         }
 
         // Set as featured image
-        set_post_thumbnail($travel_id, $image_id);
+        set_post_thumbnail($activity_id, $image_id);
 
         wp_send_json_success(array('message' => 'Immagine in evidenza aggiornata'));
     }
@@ -172,21 +172,21 @@ class CDV_Travel_Gallery {
             wp_send_json_error(array('message' => 'Non autenticato'));
         }
 
-        $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
+        $activity_id = isset($_POST['activity_id']) ? intval($_POST['activity_id']) : 0;
         $order = isset($_POST['order']) ? array_map('intval', $_POST['order']) : array();
 
-        if (!$travel_id || empty($order)) {
+        if (!$activity_id || empty($order)) {
             wp_send_json_error(array('message' => 'Parametri non validi'));
         }
 
         // Check permissions
-        $travel = get_post($travel_id);
-        if (!$travel || $travel->post_author != get_current_user_id()) {
+        $activity = get_post($activity_id);
+        if (!$activity || $activity->post_author != get_current_user_id()) {
             wp_send_json_error(array('message' => 'Non hai i permessi'));
         }
 
         // Update gallery order
-        update_post_meta($travel_id, 'cdv_gallery_images', $order);
+        update_post_meta($activity_id, 'cdv_gallery_images', $order);
 
         wp_send_json_success(array('message' => 'Ordine aggiornato'));
     }
@@ -194,8 +194,8 @@ class CDV_Travel_Gallery {
     /**
      * Get gallery images for a travel
      */
-    public static function get_gallery_images($travel_id) {
-        $gallery_ids = get_post_meta($travel_id, 'cdv_gallery_images', true);
+    public static function get_gallery_images($activity_id) {
+        $gallery_ids = get_post_meta($activity_id, 'cdv_gallery_images', true);
 
         if (empty($gallery_ids) || !is_array($gallery_ids)) {
             return array();
@@ -223,8 +223,8 @@ class CDV_Travel_Gallery {
     /**
      * Get gallery image count
      */
-    public static function get_gallery_count($travel_id) {
-        $gallery = get_post_meta($travel_id, 'cdv_gallery_images', true);
+    public static function get_gallery_count($activity_id) {
+        $gallery = get_post_meta($activity_id, 'cdv_gallery_images', true);
         return is_array($gallery) ? count($gallery) : 0;
     }
 }

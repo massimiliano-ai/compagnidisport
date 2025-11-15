@@ -24,7 +24,7 @@ get_header();
                     <div class="suggestion-card">
                         <div class="suggestion-icon">🏠</div>
                         <h3>Torna alla Home</h3>
-                        <p>Ricomincia dalla homepage e scopri i nostri viaggi</p>
+                        <p>Ricomincia dalla homepage e scopri i nostri attività</p>
                         <a href="<?php echo home_url(); ?>" class="btn btn-primary">
                             Vai alla Home
                         </a>
@@ -32,10 +32,10 @@ get_header();
 
                     <div class="suggestion-card">
                         <div class="suggestion-icon">🌍</div>
-                        <h3>Esplora i Viaggi</h3>
+                        <h3>Esplora i Attività</h3>
                         <p>Trova compagni per la tua prossima avventura</p>
-                        <a href="<?php echo get_post_type_archive_link('viaggio'); ?>" class="btn btn-secondary">
-                            Scopri i Viaggi
+                        <a href="<?php echo get_post_type_archive_link('attivita'); ?>" class="btn btn-secondary">
+                            Scopri i Attività
                         </a>
                     </div>
 
@@ -72,7 +72,7 @@ get_header();
                 <h3>Link Popolari</h3>
                 <ul>
                     <li><a href="<?php echo home_url(); ?>">Homepage</a></li>
-                    <li><a href="<?php echo get_post_type_archive_link('viaggio'); ?>">Tutti i Viaggi</a></li>
+                    <li><a href="<?php echo get_post_type_archive_link('attivita'); ?>">Tutti i Attività</a></li>
                     <?php if (!is_user_logged_in()) : ?>
                         <li><a href="<?php echo home_url('/registrazione/'); ?>">Registrazione</a></li>
                         <li><a href="<?php echo wp_login_url(); ?>">Accedi</a></li>

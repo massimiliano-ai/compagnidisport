@@ -29,7 +29,7 @@ $search_query = get_search_query();
                 <span class="filter-label">Filtra per tipo:</span>
                 <button class="filter-btn active" data-type="all">Tutti</button>
                 <button class="filter-btn" data-type="post">Articoli</button>
-                <button class="filter-btn" data-type="viaggio">Viaggi</button>
+                <button class="filter-btn" data-type="attivita">Attività</button>
                 <button class="filter-btn" data-type="page">Pagine</button>
             </div>
 
@@ -41,12 +41,12 @@ $search_query = get_search_query();
                             $has_thumbnail = has_post_thumbnail();
                             $taxonomy_image_url = false;
 
-                            // Se non ha immagine e è un viaggio, cerca l'immagine del tipo di viaggio
-                            if (!$has_thumbnail && get_post_type() === 'viaggio' && class_exists('CDV_Taxonomy_Images')) {
-                                $travel_types = wp_get_post_terms(get_the_ID(), 'tipo_viaggio', array('fields' => 'ids'));
-                                if (!empty($travel_types)) {
+                            // Se non ha immagine e è un attività, cerca l'immagine del tipo di attività
+                            if (!$has_thumbnail && get_post_type() === 'attivita' && class_exists('CDV_Taxonomy_Images')) {
+                                $activity_types = wp_get_post_terms(get_the_ID(), 'tipo_sport', array('fields' => 'ids'));
+                                if (!empty($activity_types)) {
                                     // Ottieni immagine random se ci sono più tipi
-                                    $taxonomy_image_url = CDV_Taxonomy_Images::get_random_term_image($travel_types, 'medium');
+                                    $taxonomy_image_url = CDV_Taxonomy_Images::get_random_term_image($activity_types, 'medium');
                                 }
                             }
                             ?>
@@ -59,7 +59,7 @@ $search_query = get_search_query();
                                 <a href="<?php the_permalink(); ?>" class="result-thumbnail">
                                     <img src="<?php echo esc_url($taxonomy_image_url); ?>" alt="<?php the_title_attribute(); ?>" />
                                 </a>
-                            <?php elseif (get_post_type() === 'viaggio') : ?>
+                            <?php elseif (get_post_type() === 'attivita') : ?>
                                 <a href="<?php the_permalink(); ?>" class="result-thumbnail result-thumbnail-placeholder">
                                     <div class="placeholder-content">
                                         <span class="placeholder-icon">✈️</span>
@@ -74,7 +74,7 @@ $search_query = get_search_query();
                                         $post_type = get_post_type();
                                         $type_labels = array(
                                             'post' => '📝 Articolo',
-                                            'viaggio' => '✈️ Viaggio',
+                                            'attivita' => '✈️ Attività',
                                             'page' => '📄 Pagina',
                                         );
                                         echo isset($type_labels[$post_type]) ? $type_labels[$post_type] : '📌 ' . ucfirst($post_type);
@@ -120,9 +120,9 @@ $search_query = get_search_query();
                                         <?php echo get_the_date('d M Y'); ?>
                                     </span>
 
-                                    <?php if (get_post_type() === 'viaggio') : ?>
+                                    <?php if (get_post_type() === 'attivita') : ?>
                                         <?php
-                                        $destination = get_post_meta(get_the_ID(), 'cdv_destination', true);
+                                        $destination = get_post_meta(get_the_ID(), 'cdv_location', true);
                                         if ($destination) :
                                         ?>
                                             <span class="result-destination">
@@ -144,7 +144,7 @@ $search_query = get_search_query();
                                 </div>
 
                                 <a href="<?php the_permalink(); ?>" class="result-link">
-                                    <?php echo get_post_type() === 'viaggio' ? 'Vedi il viaggio' : 'Leggi di più'; ?> →
+                                    <?php echo get_post_type() === 'attivita' ? 'Vedi l'attività' : 'Leggi di più'; ?> →
                                 </a>
                             </div>
                         </div>
@@ -174,23 +174,23 @@ $search_query = get_search_query();
                         <li>Verifica di aver scritto correttamente i termini di ricerca</li>
                         <li>Prova con parole chiave diverse o più generiche</li>
                         <li>Usa meno parole nella ricerca</li>
-                        <li>Cerca per destinazioni o tipologie di viaggio</li>
+                        <li>Cerca per destinazioni o tipologie di attività</li>
                     </ul>
                 </div>
 
                 <div class="search-alternatives">
                     <h3>Oppure esplora:</h3>
                     <div class="alternatives-grid">
-                        <a href="<?php echo get_post_type_archive_link('viaggio'); ?>" class="alternative-card">
+                        <a href="<?php echo get_post_type_archive_link('attivita'); ?>" class="alternative-card">
                             <span class="alternative-icon">✈️</span>
-                            <h4>Tutti i Viaggi</h4>
+                            <h4>Tutti i Attività</h4>
                             <p>Scopri tutte le destinazioni disponibili</p>
                         </a>
 
                         <a href="<?php echo home_url('/blog/'); ?>" class="alternative-card">
                             <span class="alternative-icon">📝</span>
                             <h4>Blog</h4>
-                            <p>Leggi articoli e consigli di viaggio</p>
+                            <p>Leggi articoli e consigli di attività</p>
                         </a>
 
                         <a href="<?php echo home_url(); ?>" class="alternative-card">

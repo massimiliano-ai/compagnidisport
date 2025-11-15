@@ -158,7 +158,7 @@ class CDV_Email_Notifications {
         <div class="email-footer">
             <p style="margin: 0 0 10px 0;">
                 <strong>' . esc_html($site_name) . '</strong><br>
-                La piattaforma per trovare compagni di viaggio
+                La piattaforma per trovare compagni di attivitào
             </p>
             <p style="margin: 0; font-size: 12px;">
                 <a href="' . esc_url($site_url) . '">Visita il sito</a> |
@@ -174,25 +174,25 @@ class CDV_Email_Notifications {
     /**
      * Send email notification to organizer when someone requests to join
      */
-    public static function notify_organizer_new_request($travel_id, $user_id, $organizer_id) {
-        $travel = get_post($travel_id);
+    public static function notify_organizer_new_request($activity_id, $user_id, $organizer_id) {
+        $activity = get_post($activity_id);
         $organizer = get_userdata($organizer_id);
         $requester = get_userdata($user_id);
 
-        if (!$travel || !$organizer || !$requester) {
+        if (!$activity || !$organizer || !$requester) {
             return false;
         }
 
-        $travel_url = get_permalink($travel_id);
+        $travel_url = get_permalink($activity_id);
         $dashboard_url = home_url('/dashboard');
 
         $content = '
             <h2>Ciao ' . esc_html($organizer->display_name) . ',</h2>
 
-            <p><strong>' . esc_html($requester->display_name) . '</strong> ha richiesto di partecipare al tuo viaggio!</p>
+            <p><strong>' . esc_html($requester->display_name) . '</strong> ha richiesto di partecipare al tuo attivitào!</p>
 
             <div class="travel-info">
-                <h3>📍 ' . esc_html($travel->post_title) . '</h3>
+                <h3>📍 ' . esc_html($activity->post_title) . '</h3>
                 <div class="travel-detail">
                     <strong>Richiedente:</strong>
                     <span>' . esc_html($requester->display_name) . ' (' . esc_html($requester->user_email) . ')</span>
@@ -215,7 +215,7 @@ class CDV_Email_Notifications {
             </p>
         ';
 
-        $subject = 'Nuova richiesta di partecipazione - ' . $travel->post_title;
+        $subject = 'Nuova richiesta di partecipazione - ' . $activity->post_title;
         $message = self::get_email_template($content, 'Nuova Richiesta di Partecipazione');
         $headers = array('Content-Type: text/html; charset=UTF-8');
 
@@ -225,16 +225,16 @@ class CDV_Email_Notifications {
     /**
      * Notify participant when their request is accepted or rejected
      */
-    public static function notify_participant_status_change($travel_id, $user_id, $status) {
-        $travel = get_post($travel_id);
+    public static function notify_participant_status_change($activity_id, $user_id, $status) {
+        $activity = get_post($activity_id);
         $user = get_userdata($user_id);
-        $organizer = get_userdata($travel->post_author);
+        $organizer = get_userdata($activity->post_author);
 
-        if (!$travel || !$user || !$organizer) {
+        if (!$activity || !$user || !$organizer) {
             return false;
         }
 
-        $travel_url = get_permalink($travel_id);
+        $travel_url = get_permalink($activity_id);
         $dashboard_url = home_url('/dashboard');
 
         if ($status === 'accepted') {
@@ -245,28 +245,28 @@ class CDV_Email_Notifications {
                     <p style="margin: 0;"><strong>La tua richiesta è stata accettata!</strong></p>
                 </div>
 
-                <p>Sei stato accettato per il viaggio:</p>
+                <p>Sei stato accettato per il attivitào:</p>
 
                 <div class="travel-info">
-                    <h3>📍 ' . esc_html($travel->post_title) . '</h3>
+                    <h3>📍 ' . esc_html($activity->post_title) . '</h3>
                     <div class="travel-detail">
                         <strong>Organizzatore:</strong>
                         <span>' . esc_html($organizer->display_name) . '</span>
                     </div>
                     <div class="travel-detail">
                         <strong>Date:</strong>
-                        <span>' . self::format_travel_dates($travel_id) . '</span>
+                        <span>' . self::format_travel_dates($activity_id) . '</span>
                     </div>
                     <div class="travel-detail">
                         <strong>Destinazione:</strong>
-                        <span>' . esc_html(get_post_meta($travel_id, 'cdv_destination', true)) . '</span>
+                        <span>' . esc_html(get_post_meta($activity_id, 'cdv_destination', true)) . '</span>
                     </div>
                 </div>
 
                 <div class="info-box">
                     <p style="margin: 0;"><strong>💡 Prossimi passi:</strong></p>
                     <ul style="margin: 10px 0 0 0; padding-left: 20px;">
-                        <li>Ora hai accesso alla chat di gruppo del viaggio</li>
+                        <li>Ora hai accesso alla chat di gruppo del attivitào</li>
                         <li>Puoi coordinare i dettagli con l\'organizzatore e gli altri partecipanti</li>
                         <li>Controlla la dashboard per tutti i dettagli</li>
                     </ul>
@@ -274,16 +274,16 @@ class CDV_Email_Notifications {
 
                 <p style="text-align: center;">
                     <a href="' . esc_url($travel_url) . '" class="button">
-                        Vai al Viaggio
+                        Vai al Attività
                     </a>
                 </p>
 
                 <p style="font-size: 14px; color: #6c757d;">
-                    Buon viaggio! 🌍
+                    Buon attivitào! 🌍
                 </p>
             ';
 
-            $subject = 'Richiesta Accettata - ' . $travel->post_title;
+            $subject = 'Richiesta Accettata - ' . $activity->post_title;
             $title = 'Richiesta Accettata!';
 
         } else { // rejected
@@ -291,23 +291,23 @@ class CDV_Email_Notifications {
                 <h2>Ciao ' . esc_html($user->display_name) . ',</h2>
 
                 <div class="warning-box">
-                    <p style="margin: 0;">Ci dispiace, ma la tua richiesta per partecipare al viaggio <strong>' . esc_html($travel->post_title) . '</strong> non è stata accettata.</p>
+                    <p style="margin: 0;">Ci dispiace, ma la tua richiesta per partecipare al attivitào <strong>' . esc_html($activity->post_title) . '</strong> non è stata accettata.</p>
                 </div>
 
-                <p>Non preoccuparti! Ci sono molti altri viaggi disponibili sulla piattaforma.</p>
+                <p>Non preoccuparti! Ci sono molti altri attività disponibili sulla piattaforma.</p>
 
                 <p style="text-align: center;">
                     <a href="' . esc_url(home_url()) . '" class="button">
-                        Scopri Altri Viaggi
+                        Scopri Altri Attività
                     </a>
                 </p>
 
                 <p style="font-size: 14px; color: #6c757d;">
-                    Continua a cercare il viaggio perfetto per te!
+                    Continua a cercare il attivitào perfetto per te!
                 </p>
             ';
 
-            $subject = 'Aggiornamento Richiesta - ' . $travel->post_title;
+            $subject = 'Aggiornamento Richiesta - ' . $activity->post_title;
             $title = 'Aggiornamento Richiesta';
         }
 
@@ -324,26 +324,26 @@ class CDV_Email_Notifications {
     public static function send_review_reminders() {
         global $wpdb;
 
-        $table = $wpdb->prefix . 'cdv_travel_participants';
+        $table = $wpdb->prefix . 'cdv_activity_participants';
         $reviews_table = $wpdb->prefix . 'cdv_reviews';
 
         // Get all completed travels with accepted participants
         $participants = $wpdb->get_results("
             SELECT p.*, t.post_author as organizer_id
             FROM $table p
-            INNER JOIN {$wpdb->posts} t ON p.travel_id = t.ID
+            INNER JOIN {$wpdb->posts} t ON p.activity_id = t.ID
             WHERE p.status = 'accepted'
-            AND t.post_type = 'viaggio'
+            AND t.post_type = 'attivita'
             AND t.post_status = 'publish'
         ");
 
         foreach ($participants as $participant) {
-            $travel_id = $participant->travel_id;
+            $activity_id = $participant->activity_id;
             $user_id = $participant->user_id;
             $organizer_id = $participant->organizer_id;
 
             // Get travel end date
-            $end_date = get_post_meta($travel_id, 'cdv_end_date', true);
+            $end_date = get_post_meta($activity_id, 'cdv_end_date', true);
             if (empty($end_date)) {
                 continue;
             }
@@ -362,10 +362,10 @@ class CDV_Email_Notifications {
                 "SELECT id FROM $reviews_table
                 WHERE reviewer_id = %d
                 AND reviewed_id = %d
-                AND travel_id = %d",
+                AND activity_id = %d",
                 $user_id,
                 $organizer_id,
-                $travel_id
+                $activity_id
             ));
 
             if ($existing_review) {
@@ -373,19 +373,19 @@ class CDV_Email_Notifications {
             }
 
             // Check if we already sent a reminder
-            $reminder_15_sent = get_user_meta($user_id, "cdv_review_reminder_15_{$travel_id}", true);
-            $reminder_30_sent = get_user_meta($user_id, "cdv_review_reminder_30_{$travel_id}", true);
+            $reminder_15_sent = get_user_meta($user_id, "cdv_review_reminder_15_{$activity_id}", true);
+            $reminder_30_sent = get_user_meta($user_id, "cdv_review_reminder_30_{$activity_id}", true);
 
             // Send 15-day reminder
             if ($days_since_end >= 15 && $days_since_end < 16 && !$reminder_15_sent) {
-                self::send_review_reminder_email($user_id, $travel_id, 15);
-                update_user_meta($user_id, "cdv_review_reminder_15_{$travel_id}", current_time('mysql'));
+                self::send_review_reminder_email($user_id, $activity_id, 15);
+                update_user_meta($user_id, "cdv_review_reminder_15_{$activity_id}", current_time('mysql'));
             }
 
             // Send 30-day reminder
             if ($days_since_end >= 30 && $days_since_end < 31 && !$reminder_30_sent) {
-                self::send_review_reminder_email($user_id, $travel_id, 30);
-                update_user_meta($user_id, "cdv_review_reminder_30_{$travel_id}", current_time('mysql'));
+                self::send_review_reminder_email($user_id, $activity_id, 30);
+                update_user_meta($user_id, "cdv_review_reminder_30_{$activity_id}", current_time('mysql'));
             }
         }
     }
@@ -393,45 +393,45 @@ class CDV_Email_Notifications {
     /**
      * Send review reminder email
      */
-    private static function send_review_reminder_email($user_id, $travel_id, $days) {
+    private static function send_review_reminder_email($user_id, $activity_id, $days) {
         $user = get_userdata($user_id);
-        $travel = get_post($travel_id);
-        $organizer = get_userdata($travel->post_author);
+        $activity = get_post($activity_id);
+        $organizer = get_userdata($activity->post_author);
 
-        if (!$user || !$travel || !$organizer) {
+        if (!$user || !$activity || !$organizer) {
             return false;
         }
 
-        $travel_url = get_permalink($travel_id);
-        $review_url = home_url('/dashboard?action=write_review&travel_id=' . $travel_id);
+        $travel_url = get_permalink($activity_id);
+        $review_url = home_url('/dashboard?action=write_review&activity_id=' . $activity_id);
 
         if ($days === 15) {
-            $intro = 'Sono passate due settimane dal tuo viaggio';
+            $intro = 'Sono passate due settimane dal tuo attivitào';
             $cta = 'Condividi la tua esperienza!';
         } else {
-            $intro = 'È passato un mese dal tuo viaggio';
+            $intro = 'È passato un mese dal tuo attivitào';
             $cta = 'Non dimenticare di lasciare una recensione!';
         }
 
         $content = '
             <h2>Ciao ' . esc_html($user->display_name) . ',</h2>
 
-            <p>' . esc_html($intro) . ' <strong>' . esc_html($travel->post_title) . '</strong>.</p>
+            <p>' . esc_html($intro) . ' <strong>' . esc_html($activity->post_title) . '</strong>.</p>
 
             <div class="info-box">
                 <p style="margin: 0 0 10px 0;"><strong>⭐ Lascia una recensione!</strong></p>
-                <p style="margin: 0;">La tua opinione è preziosa per aiutare altri viaggiatori a fare scelte consapevoli. Ci vorranno solo 2 minuti!</p>
+                <p style="margin: 0;">La tua opinione è preziosa per aiutare altri attivitàatori a fare scelte consapevoli. Ci vorranno solo 2 minuti!</p>
             </div>
 
             <div class="travel-info">
-                <h3>📍 ' . esc_html($travel->post_title) . '</h3>
+                <h3>📍 ' . esc_html($activity->post_title) . '</h3>
                 <div class="travel-detail">
                     <strong>Organizzatore:</strong>
                     <span>' . esc_html($organizer->display_name) . '</span>
                 </div>
                 <div class="travel-detail">
                     <strong>Date:</strong>
-                    <span>' . self::format_travel_dates($travel_id) . '</span>
+                    <span>' . self::format_travel_dates($activity_id) . '</span>
                 </div>
             </div>
 
@@ -446,14 +446,14 @@ class CDV_Email_Notifications {
             </p>
         ';
 
-        $subject = 'Lascia una recensione per il viaggio: ' . $travel->post_title;
+        $subject = 'Lascia una recensione per il attivitào: ' . $activity->post_title;
         $message = self::get_email_template($content, 'Scrivi una Recensione');
         $headers = array('Content-Type: text/html; charset=UTF-8');
 
         $result = wp_mail($user->user_email, $subject, $message, $headers);
 
         if ($result) {
-            error_log("CDV: Sent {$days}-day review reminder to user {$user_id} for travel {$travel_id}");
+            error_log("CDV: Sent {$days}-day review reminder to user {$user_id} for travel {$activity_id}");
         }
 
         return $result;
@@ -462,10 +462,10 @@ class CDV_Email_Notifications {
     /**
      * Format travel dates for display
      */
-    private static function format_travel_dates($travel_id) {
-        $start_date = get_post_meta($travel_id, 'cdv_start_date', true);
-        $end_date = get_post_meta($travel_id, 'cdv_end_date', true);
-        $date_type = get_post_meta($travel_id, 'cdv_date_type', true);
+    private static function format_travel_dates($activity_id) {
+        $start_date = get_post_meta($activity_id, 'cdv_start_date', true);
+        $end_date = get_post_meta($activity_id, 'cdv_end_date', true);
+        $date_type = get_post_meta($activity_id, 'cdv_date_type', true);
 
         if (empty($start_date) || empty($end_date)) {
             return 'Date da definire';
@@ -476,7 +476,7 @@ class CDV_Email_Notifications {
 
         // If month-based, show only month
         if ($date_type === 'month') {
-            $month = get_post_meta($travel_id, 'cdv_travel_month', true);
+            $month = get_post_meta($activity_id, 'cdv_activity_month', true);
             if ($month) {
                 return date_i18n('F Y', strtotime($month . '-01'));
             }

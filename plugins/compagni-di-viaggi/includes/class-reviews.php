@@ -19,7 +19,7 @@ class CDV_Reviews {
     /**
      * Add review
      */
-    public static function add_review($travel_id, $reviewer_id, $reviewed_id, $scores, $comment = '') {
+    public static function add_review($activity_id, $reviewer_id, $reviewed_id, $scores, $comment = '') {
         global $wpdb;
 
         $table = $wpdb->prefix . 'cdv_reviews';
@@ -27,32 +27,32 @@ class CDV_Reviews {
         // Validate scores (1-5)
         foreach ($scores as $score) {
             if ($score < 1 || $score > 5) {
-                return new WP_Error('invalid_score', __('I punteggi devono essere tra 1 e 5', 'compagni-di-viaggi'));
+                return new WP_Error('invalid_score', __('I punteggi devono essere tra 1 e 5', 'compagni-di-sport'));
             }
         }
 
         // Check if reviewer and reviewed were both participants
-        if (!self::can_review($travel_id, $reviewer_id, $reviewed_id)) {
-            return new WP_Error('cannot_review', __('Non puoi recensire questo utente', 'compagni-di-viaggi'));
+        if (!self::can_review($activity_id, $reviewer_id, $reviewed_id)) {
+            return new WP_Error('cannot_review', __('Non puoi recensire questo utente', 'compagni-di-sport'));
         }
 
         // Check if review already exists
         $exists = $wpdb->get_var($wpdb->prepare(
-            "SELECT id FROM $table WHERE travel_id = %d AND reviewer_id = %d AND reviewed_id = %d",
-            $travel_id,
+            "SELECT id FROM $table WHERE activity_id = %d AND reviewer_id = %d AND reviewed_id = %d",
+            $activity_id,
             $reviewer_id,
             $reviewed_id
         ));
 
         if ($exists) {
-            return new WP_Error('review_exists', __('Hai già recensito questo utente per questo viaggio', 'compagni-di-viaggi'));
+            return new WP_Error('review_exists', __('Hai già recensito questo utente per questa attività', 'compagni-di-sport'));
         }
 
         // Insert review
         $result = $wpdb->insert(
             $table,
             array(
-                'travel_id' => $travel_id,
+                'activity_id' => $activity_id,
                 'reviewer_id' => $reviewer_id,
                 'reviewed_id' => $reviewed_id,
                 'punctuality' => $scores['punctuality'],
@@ -76,20 +76,20 @@ class CDV_Reviews {
     /**
      * Check if user can review another user for a travel
      */
-    public static function can_review($travel_id, $reviewer_id, $reviewed_id) {
+    public static function can_review($activity_id, $reviewer_id, $reviewed_id) {
         // Travel must be completed
-        $status = get_post_meta($travel_id, 'cdv_travel_status', true);
+        $status = get_post_meta($activity_id, 'cdv_activity_status', true);
         if ($status !== 'completed') {
             return false;
         }
 
         // Both must have been participants
-        $reviewer_participated = CDV_Participants::is_participant($travel_id, $reviewer_id, 'accepted');
-        $reviewed_participated = CDV_Participants::is_participant($travel_id, $reviewed_id, 'accepted');
+        $reviewer_participated = CDV_Participants::is_participant($activity_id, $reviewer_id, 'accepted');
+        $reviewed_participated = CDV_Participants::is_participant($activity_id, $reviewed_id, 'accepted');
 
         // Or reviewer is the organizer
-        $travel = get_post($travel_id);
-        $reviewer_is_organizer = ($travel->post_author == $reviewer_id);
+        $activity = get_post($activity_id);
+        $reviewer_is_organizer = ($activity->post_author == $reviewer_id);
 
         return ($reviewer_is_organizer || $reviewer_participated) && $reviewed_participated;
     }
@@ -118,27 +118,27 @@ class CDV_Reviews {
     public static function get_pending_reviews($user_id) {
         global $wpdb;
 
-        $table_participants = $wpdb->prefix . 'cdv_travel_participants';
+        $table_participants = $wpdb->prefix . 'cdv_activity_participants';
         $table_reviews = $wpdb->prefix . 'cdv_reviews';
 
         // Get completed travels where user was a participant
-        $travels = $wpdb->get_results($wpdb->prepare(
-            "SELECT DISTINCT tp.travel_id
+        $activities = $wpdb->get_results($wpdb->prepare(
+            "SELECT DISTINCT tp.activity_id
             FROM $table_participants tp
-            INNER JOIN {$wpdb->posts} p ON tp.travel_id = p.ID
+            INNER JOIN {$wpdb->posts} p ON tp.activity_id = p.ID
             INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
             WHERE tp.user_id = %d
             AND tp.status = 'accepted'
-            AND pm.meta_key = 'cdv_travel_status'
+            AND pm.meta_key = 'cdv_activity_status'
             AND pm.meta_value = 'completed'",
             $user_id
         ));
 
         $pending = array();
 
-        foreach ($travels as $travel) {
+        foreach ($activities as $activity) {
             // Get other participants
-            $participants = CDV_Participants::get_participants($travel->travel_id, 'accepted');
+            $participants = CDV_Participants::get_participants($activity->activity_id, 'accepted');
 
             foreach ($participants as $participant) {
                 if ($participant->user_id == $user_id) {
@@ -148,17 +148,17 @@ class CDV_Reviews {
                 // Check if already reviewed
                 $reviewed = $wpdb->get_var($wpdb->prepare(
                     "SELECT id FROM $table_reviews
-                    WHERE travel_id = %d
+                    WHERE activity_id = %d
                     AND reviewer_id = %d
                     AND reviewed_id = %d",
-                    $travel->travel_id,
+                    $activity->activity_id,
                     $user_id,
                     $participant->user_id
                 ));
 
                 if (!$reviewed) {
                     $pending[] = array(
-                        'travel_id' => $travel->travel_id,
+                        'activity_id' => $activity->activity_id,
                         'user_id' => $participant->user_id,
                     );
                 }
@@ -296,7 +296,7 @@ class CDV_Reviews {
         if ($avg >= 4.8 && $total >= 20) {
             return array('badge' => 'super_host', 'label' => '🌟 Super Host', 'color' => '#FFD700');
         } elseif ($avg >= 4.5 && $total >= 10) {
-            return array('badge' => 'trusted_traveler', 'label' => '✨ Viaggiatore Fidato', 'color' => '#4CAF50');
+            return array('badge' => 'trusted_traveler', 'label' => '✨ Attivitàatore Fidato', 'color' => '#4CAF50');
         } elseif ($avg >= 4.0 && $total >= 5) {
             return array('badge' => 'reliable', 'label' => '👍 Affidabile', 'color' => '#2196F3');
         }

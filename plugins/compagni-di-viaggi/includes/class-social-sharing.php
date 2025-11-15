@@ -28,7 +28,7 @@ class CDV_Social_Sharing {
      * Enqueue scripts and styles
      */
     public static function enqueue_scripts() {
-        if (is_singular('viaggio')) {
+        if (is_singular('attivita')) {
             wp_enqueue_style('cdv-social-sharing', CDV_PLUGIN_URL . 'assets/css/social-sharing.css', array(), CDV_VERSION);
             wp_enqueue_script('cdv-social-sharing', CDV_PLUGIN_URL . 'assets/js/social-sharing.js', array('jquery'), CDV_VERSION, true);
         }
@@ -38,7 +38,7 @@ class CDV_Social_Sharing {
      * Add Open Graph meta tags
      */
     public static function add_og_meta_tags() {
-        if (!is_singular('viaggio')) {
+        if (!is_singular('attivita')) {
             return;
         }
 
@@ -80,7 +80,7 @@ class CDV_Social_Sharing {
      * Add Twitter Card meta tags
      */
     public static function add_twitter_card_meta_tags() {
-        if (!is_singular('viaggio')) {
+        if (!is_singular('attivita')) {
             return;
         }
 
@@ -127,7 +127,7 @@ class CDV_Social_Sharing {
             $parts[] = '💰 €' . number_format($budget, 0, ',', '.');
         }
 
-        $description = 'Unisciti a questo viaggio! ' . implode(' • ', $parts);
+        $description = 'Unisciti a questo attivitào! ' . implode(' • ', $parts);
 
         // Fallback to excerpt if no meta
         if (empty($parts)) {

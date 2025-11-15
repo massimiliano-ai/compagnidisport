@@ -24,9 +24,9 @@ class CDV_Badges {
             'description' => 'Identità verificata',
         ),
         'first_travel' => array(
-            'name' => 'Primo Viaggio',
+            'name' => 'Primo Attività',
             'icon' => '🚀',
-            'description' => 'Ha organizzato il primo viaggio',
+            'description' => 'Ha organizzato il primo attivitào',
         ),
         'first_story' => array(
             'name' => 'Narratore',
@@ -36,17 +36,17 @@ class CDV_Badges {
         'explorer' => array(
             'name' => 'Esploratore',
             'icon' => '🧭',
-            'description' => 'Ha partecipato a 5 viaggi',
+            'description' => 'Ha partecipato a 5 attività',
         ),
         'globetrotter' => array(
             'name' => 'Giramondo',
             'icon' => '✈️',
-            'description' => 'Ha partecipato a 10 viaggi',
+            'description' => 'Ha partecipato a 10 attività',
         ),
         'organizer' => array(
             'name' => 'Organizzatore',
             'icon' => '📅',
-            'description' => 'Ha organizzato 5 viaggi',
+            'description' => 'Ha organizzato 5 attività',
         ),
         'trusted' => array(
             'name' => 'Affidabile',
@@ -149,16 +149,16 @@ class CDV_Badges {
     public static function check_travel_badges($user_id) {
         global $wpdb;
 
-        $table_participants = $wpdb->prefix . 'cdv_travel_participants';
+        $table_participants = $wpdb->prefix . 'cdv_activity_participants';
 
         // Count completed travels
         $count = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(DISTINCT tp.travel_id)
+            "SELECT COUNT(DISTINCT tp.activity_id)
             FROM $table_participants tp
-            INNER JOIN {$wpdb->postmeta} pm ON tp.travel_id = pm.post_id
+            INNER JOIN {$wpdb->postmeta} pm ON tp.activity_id = pm.post_id
             WHERE tp.user_id = %d
             AND tp.status = 'accepted'
-            AND pm.meta_key = 'cdv_travel_status'
+            AND pm.meta_key = 'cdv_activity_status'
             AND pm.meta_value = 'completed'",
             $user_id
         ));
@@ -175,9 +175,9 @@ class CDV_Badges {
             FROM {$wpdb->posts} p
             INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
             WHERE p.post_author = %d
-            AND p.post_type = 'viaggio'
+            AND p.post_type = 'attivita'
             AND p.post_status = 'publish'
-            AND pm.meta_key = 'cdv_travel_status'
+            AND pm.meta_key = 'cdv_activity_status'
             AND pm.meta_value = 'completed'",
             $user_id
         ));

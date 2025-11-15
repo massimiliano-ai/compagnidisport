@@ -12,23 +12,23 @@ class CDV_Group_Chat {
     /**
      * Check if user is participant (accepted or organizer) of a travel
      */
-    public static function is_participant($travel_id, $user_id) {
+    public static function is_participant($activity_id, $user_id) {
         global $wpdb;
 
         // Check if user is the travel author (organizer)
-        $post = get_post($travel_id);
+        $post = get_post($activity_id);
         if ($post && $post->post_author == $user_id) {
             return true;
         }
 
         // Check if user is an accepted participant
-        $table = $wpdb->prefix . 'cdv_travel_participants';
+        $table = $wpdb->prefix . 'cdv_activity_participants';
         $is_participant = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM $table
-            WHERE travel_id = %d
+            WHERE activity_id = %d
             AND user_id = %d
             AND (status = 'accepted' OR is_organizer = 1)",
-            $travel_id,
+            $activity_id,
             $user_id
         ));
 
@@ -38,18 +38,18 @@ class CDV_Group_Chat {
     /**
      * Get all messages for a travel
      */
-    public static function get_messages($travel_id, $limit = 50) {
+    public static function get_messages($activity_id, $limit = 50) {
         global $wpdb;
-        $table = $wpdb->prefix . 'cdv_travel_group_messages';
+        $table = $wpdb->prefix . 'cdv_activity_group_messages';
 
         $messages = $wpdb->get_results($wpdb->prepare(
             "SELECT m.*, u.display_name, u.user_login
             FROM $table m
             LEFT JOIN {$wpdb->users} u ON m.user_id = u.ID
-            WHERE m.travel_id = %d
+            WHERE m.activity_id = %d
             ORDER BY m.created_at DESC
             LIMIT %d",
-            $travel_id,
+            $activity_id,
             $limit
         ));
 
@@ -60,12 +60,12 @@ class CDV_Group_Chat {
     /**
      * Send a message to group chat
      */
-    public static function send_message($travel_id, $user_id, $message) {
+    public static function send_message($activity_id, $user_id, $message) {
         global $wpdb;
 
         // Check if user is participant
-        if (!self::is_participant($travel_id, $user_id)) {
-            return new WP_Error('not_participant', 'Non sei un partecipante di questo viaggio');
+        if (!self::is_participant($activity_id, $user_id)) {
+            return new WP_Error('not_participant', 'Non sei un partecipante di questo attivitào');
         }
 
         // Sanitize message
@@ -75,12 +75,12 @@ class CDV_Group_Chat {
             return new WP_Error('empty_message', 'Il messaggio non può essere vuoto');
         }
 
-        $table = $wpdb->prefix . 'cdv_travel_group_messages';
+        $table = $wpdb->prefix . 'cdv_activity_group_messages';
 
         $inserted = $wpdb->insert(
             $table,
             array(
-                'travel_id' => $travel_id,
+                'activity_id' => $activity_id,
                 'user_id' => $user_id,
                 'message' => $message,
                 'created_at' => current_time('mysql'),
@@ -98,33 +98,33 @@ class CDV_Group_Chat {
     /**
      * Get participants count for a travel
      */
-    public static function get_participants_count($travel_id) {
+    public static function get_participants_count($activity_id) {
         global $wpdb;
-        $table = $wpdb->prefix . 'cdv_travel_participants';
+        $table = $wpdb->prefix . 'cdv_activity_participants';
 
         return (int) $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM $table
-            WHERE travel_id = %d
+            WHERE activity_id = %d
             AND (status = 'accepted' OR is_organizer = 1)",
-            $travel_id
+            $activity_id
         ));
     }
 
     /**
      * Get participants list for a travel
      */
-    public static function get_participants($travel_id) {
+    public static function get_participants($activity_id) {
         global $wpdb;
-        $table = $wpdb->prefix . 'cdv_travel_participants';
+        $table = $wpdb->prefix . 'cdv_activity_participants';
 
         return $wpdb->get_results($wpdb->prepare(
             "SELECT p.user_id, p.is_organizer, u.display_name, u.user_login
             FROM $table p
             LEFT JOIN {$wpdb->users} u ON p.user_id = u.ID
-            WHERE p.travel_id = %d
+            WHERE p.activity_id = %d
             AND (p.status = 'accepted' OR p.is_organizer = 1)
             ORDER BY p.is_organizer DESC, u.display_name ASC",
-            $travel_id
+            $activity_id
         ));
     }
 

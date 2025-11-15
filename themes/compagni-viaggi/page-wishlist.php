@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Wishlist Viaggi
+ * Template Name: Wishlist Attività
  *
  * Displays user's saved travels
  */
@@ -21,7 +21,7 @@ $wishlist_travels = CDV_Wishlist::get_wishlist_travels($user_id);
     <div class="page-header">
         <div class="container">
             <h1>💝 La Mia Wishlist</h1>
-            <p>I viaggi che hai salvato per dopo</p>
+            <p>I attività che hai salvato per dopo</p>
         </div>
     </div>
 
@@ -31,21 +31,21 @@ $wishlist_travels = CDV_Wishlist::get_wishlist_travels($user_id);
             <?php if ($wishlist_travels->have_posts()) : ?>
 
                 <div class="wishlist-count">
-                    <p><?php echo $wishlist_travels->post_count; ?> <?php echo $wishlist_travels->post_count === 1 ? 'viaggio salvato' : 'viaggi salvati'; ?></p>
+                    <p><?php echo $wishlist_travels->post_count; ?> <?php echo $wishlist_travels->post_count === 1 ? 'attività salvato' : 'attività salvati'; ?></p>
                 </div>
 
                 <div class="travels-grid">
                     <?php
                     while ($wishlist_travels->have_posts()) : $wishlist_travels->the_post();
-                        $travel_id = get_the_ID();
+                        $activity_id = get_the_ID();
                         $author_id = get_the_author_meta('ID');
-                        $destination = get_post_meta($travel_id, 'cdv_destination', true);
-                        $country = get_post_meta($travel_id, 'cdv_country', true);
-                        $start_date = get_post_meta($travel_id, 'cdv_start_date', true);
-                        $budget = get_post_meta($travel_id, 'cdv_budget', true);
-                        $max_participants = get_post_meta($travel_id, 'cdv_max_participants', true);
-                        $participants_count = CDV_Participants::get_participants_count($travel_id, 'accepted');
-                        $status = get_post_meta($travel_id, 'cdv_travel_status', true);
+                        $destination = get_post_meta($activity_id, 'cdv_location', true);
+                        $country = get_post_meta($activity_id, 'cdv_country', true);
+                        $start_date = get_post_meta($activity_id, 'cdv_start_date', true);
+                        $budget = get_post_meta($activity_id, 'cdv_budget', true);
+                        $max_participants = get_post_meta($activity_id, 'cdv_max_participants', true);
+                        $participants_count = CDV_Participants::get_participants_count($activity_id, 'accepted');
+                        $status = get_post_meta($activity_id, 'cdv_activity_status', true);
                         ?>
 
                         <article class="travel-card">
@@ -54,7 +54,7 @@ $wishlist_travels = CDV_Wishlist::get_wishlist_travels($user_id);
                                     <a href="<?php the_permalink(); ?>">
                                         <?php the_post_thumbnail('medium'); ?>
                                     </a>
-                                    <button class="wishlist-btn active" data-travel-id="<?php echo $travel_id; ?>" title="Rimuovi dalla wishlist">
+                                    <button class="wishlist-btn active" data-travel-id="<?php echo $activity_id; ?>" title="Rimuovi dalla wishlist">
                                         <span class="wishlist-icon">❤️</span>
                                     </button>
                                 </div>
@@ -62,8 +62,8 @@ $wishlist_travels = CDV_Wishlist::get_wishlist_travels($user_id);
 
                             <div class="travel-card-content">
                                 <div class="travel-card-badges">
-                                    <?php cdv_travel_type_badges(); ?>
-                                    <?php echo cdv_get_travel_status_label(); ?>
+                                    <?php cdv_activity_type_badges(); ?>
+                                    <?php echo cdv_get_activity_status_label(); ?>
                                 </div>
 
                                 <h3 class="travel-card-title">
@@ -122,10 +122,10 @@ $wishlist_travels = CDV_Wishlist::get_wishlist_travels($user_id);
                     <div class="empty-state">
                         <span class="empty-icon">💝</span>
                         <h2>La tua wishlist è vuota</h2>
-                        <p>Non hai ancora salvato nessun viaggio nella tua wishlist.</p>
-                        <p>Esplora i viaggi disponibili e salva quelli che ti interessano per trovarli facilmente!</p>
-                        <a href="<?php echo get_post_type_archive_link('viaggio'); ?>" class="btn-primary">
-                            Esplora Viaggi
+                        <p>Non hai ancora salvato nessun attività nella tua wishlist.</p>
+                        <p>Esplora i attività disponibili e salva quelli che ti interessano per trovarli facilmente!</p>
+                        <a href="<?php echo get_post_type_archive_link('attivita'); ?>" class="btn-primary">
+                            Esplora Attività
                         </a>
                     </div>
                 </div>
@@ -272,7 +272,7 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'cdv_toggle_wishlist',
                 nonce: cdvAjax.nonce,
-                travel_id: travelId
+                activity_id: travelId
             },
             beforeSend: function() {
                 $btn.prop('disabled', true);
@@ -289,7 +289,7 @@ jQuery(document).ready(function($) {
                         } else {
                             // Update count
                             const remaining = $('.travel-card').length;
-                            $('.wishlist-count p').text(remaining + (remaining === 1 ? ' viaggio salvato' : ' viaggi salvati'));
+                            $('.wishlist-count p').text(remaining + (remaining === 1 ? ' attività salvato' : ' attività salvati'));
                         }
                     });
                 }

@@ -20,26 +20,26 @@ class CDV_Taxonomies {
      * Register custom taxonomies
      */
     public static function register_taxonomies() {
-        self::register_tipo_viaggio();
-        self::register_destinazione();
+        self::register_tipo_sport();
+        self::register_luogo();
     }
 
     /**
-     * Register 'Tipo Viaggio' taxonomy
+     * Register 'Tipo Sport' taxonomy
      */
-    private static function register_tipo_viaggio() {
+    private static function register_tipo_sport() {
         $labels = array(
-            'name'              => _x('Tipi di Viaggio', 'taxonomy general name', 'compagni-di-viaggi'),
-            'singular_name'     => _x('Tipo di Viaggio', 'taxonomy singular name', 'compagni-di-viaggi'),
-            'search_items'      => __('Cerca Tipi', 'compagni-di-viaggi'),
-            'all_items'         => __('Tutti i Tipi', 'compagni-di-viaggi'),
-            'parent_item'       => __('Tipo Genitore', 'compagni-di-viaggi'),
-            'parent_item_colon' => __('Tipo Genitore:', 'compagni-di-viaggi'),
-            'edit_item'         => __('Modifica Tipo', 'compagni-di-viaggi'),
-            'update_item'       => __('Aggiorna Tipo', 'compagni-di-viaggi'),
-            'add_new_item'      => __('Aggiungi Nuovo Tipo', 'compagni-di-viaggi'),
-            'new_item_name'     => __('Nuovo Tipo di Viaggio', 'compagni-di-viaggi'),
-            'menu_name'         => __('Tipi di Viaggio', 'compagni-di-viaggi'),
+            'name'              => _x('Tipi di Sport', 'taxonomy general name', 'compagni-di-sport'),
+            'singular_name'     => _x('Tipo di Sport', 'taxonomy singular name', 'compagni-di-sport'),
+            'search_items'      => __('Cerca Sport', 'compagni-di-sport'),
+            'all_items'         => __('Tutti gli Sport', 'compagni-di-sport'),
+            'parent_item'       => __('Sport Genitore', 'compagni-di-sport'),
+            'parent_item_colon' => __('Sport Genitore:', 'compagni-di-sport'),
+            'edit_item'         => __('Modifica Sport', 'compagni-di-sport'),
+            'update_item'       => __('Aggiorna Sport', 'compagni-di-sport'),
+            'add_new_item'      => __('Aggiungi Nuovo Sport', 'compagni-di-sport'),
+            'new_item_name'     => __('Nuovo Tipo di Sport', 'compagni-di-sport'),
+            'menu_name'         => __('Tipi di Sport', 'compagni-di-sport'),
         );
 
         $args = array(
@@ -49,57 +49,60 @@ class CDV_Taxonomies {
             'show_admin_column' => true,
             'show_in_rest'      => true,
             'query_var'         => true,
-            'rewrite'           => array('slug' => 'tipo-viaggio'),
+            'rewrite'           => array('slug' => 'sport'),
         );
 
-        register_taxonomy('tipo_viaggio', array('viaggio'), $args);
+        register_taxonomy('tipo_sport', array('attivita'), $args);
 
-        // Add default terms
-        if (!term_exists('Avventura', 'tipo_viaggio')) {
-            wp_insert_term('Avventura', 'tipo_viaggio', array('slug' => 'avventura'));
-        }
-        if (!term_exists('Mare', 'tipo_viaggio')) {
-            wp_insert_term('Mare', 'tipo_viaggio', array('slug' => 'mare'));
-        }
-        if (!term_exists('Montagna', 'tipo_viaggio')) {
-            wp_insert_term('Montagna', 'tipo_viaggio', array('slug' => 'montagna'));
-        }
-        if (!term_exists('Città d\'Arte', 'tipo_viaggio')) {
-            wp_insert_term('Città d\'Arte', 'tipo_viaggio', array('slug' => 'citta-arte'));
-        }
-        if (!term_exists('Cultura', 'tipo_viaggio')) {
-            wp_insert_term('Cultura', 'tipo_viaggio', array('slug' => 'cultura'));
-        }
-        if (!term_exists('Relax', 'tipo_viaggio')) {
-            wp_insert_term('Relax', 'tipo_viaggio', array('slug' => 'relax'));
-        }
-        if (!term_exists('Food & Wine', 'tipo_viaggio')) {
-            wp_insert_term('Food & Wine', 'tipo_viaggio', array('slug' => 'food-wine'));
-        }
-        if (!term_exists('Sport', 'tipo_viaggio')) {
-            wp_insert_term('Sport', 'tipo_viaggio', array('slug' => 'sport'));
-        }
-        if (!term_exists('Zaino in Spalla', 'tipo_viaggio')) {
-            wp_insert_term('Zaino in Spalla', 'tipo_viaggio', array('slug' => 'zaino-spalla'));
+        // Add default sport terms
+        $sports = array(
+            'Calcio' => 'calcio',
+            'Calcetto' => 'calcetto',
+            'Tennis' => 'tennis',
+            'Padel' => 'padel',
+            'Corsa' => 'corsa',
+            'Running' => 'running',
+            'Ciclismo' => 'ciclismo',
+            'Mountain Bike' => 'mtb',
+            'Trekking' => 'trekking',
+            'Escursionismo' => 'escursionismo',
+            'Nuoto' => 'nuoto',
+            'Arrampicata' => 'arrampicata',
+            'Fitness' => 'fitness',
+            'Palestra' => 'palestra',
+            'Sport Acquatici' => 'sport-acquatici',
+            'Sport Invernali' => 'sport-invernali',
+            'Yoga' => 'yoga',
+            'Pilates' => 'pilates',
+            'Badminton' => 'badminton',
+            'Basket' => 'basket',
+            'Pallavolo' => 'pallavolo',
+            'Camminate' => 'camminate',
+        );
+
+        foreach ($sports as $name => $slug) {
+            if (!term_exists($name, 'tipo_sport')) {
+                wp_insert_term($name, 'tipo_sport', array('slug' => $slug));
+            }
         }
     }
 
     /**
-     * Register 'Destinazione' taxonomy
+     * Register 'Luogo' taxonomy
      */
-    private static function register_destinazione() {
+    private static function register_luogo() {
         $labels = array(
-            'name'              => _x('Destinazioni', 'taxonomy general name', 'compagni-di-viaggi'),
-            'singular_name'     => _x('Destinazione', 'taxonomy singular name', 'compagni-di-viaggi'),
-            'search_items'      => __('Cerca Destinazioni', 'compagni-di-viaggi'),
-            'all_items'         => __('Tutte le Destinazioni', 'compagni-di-viaggi'),
-            'parent_item'       => __('Destinazione Genitore', 'compagni-di-viaggi'),
-            'parent_item_colon' => __('Destinazione Genitore:', 'compagni-di-viaggi'),
-            'edit_item'         => __('Modifica Destinazione', 'compagni-di-viaggi'),
-            'update_item'       => __('Aggiorna Destinazione', 'compagni-di-viaggi'),
-            'add_new_item'      => __('Aggiungi Nuova Destinazione', 'compagni-di-viaggi'),
-            'new_item_name'     => __('Nuova Destinazione', 'compagni-di-viaggi'),
-            'menu_name'         => __('Destinazioni', 'compagni-di-viaggi'),
+            'name'              => _x('Luoghi', 'taxonomy general name', 'compagni-di-sport'),
+            'singular_name'     => _x('Luogo', 'taxonomy singular name', 'compagni-di-sport'),
+            'search_items'      => __('Cerca Luoghi', 'compagni-di-sport'),
+            'all_items'         => __('Tutti i Luoghi', 'compagni-di-sport'),
+            'parent_item'       => __('Luogo Genitore', 'compagni-di-sport'),
+            'parent_item_colon' => __('Luogo Genitore:', 'compagni-di-sport'),
+            'edit_item'         => __('Modifica Luogo', 'compagni-di-sport'),
+            'update_item'       => __('Aggiorna Luogo', 'compagni-di-sport'),
+            'add_new_item'      => __('Aggiungi Nuovo Luogo', 'compagni-di-sport'),
+            'new_item_name'     => __('Nuovo Luogo', 'compagni-di-sport'),
+            'menu_name'         => __('Luoghi', 'compagni-di-sport'),
         );
 
         $args = array(
@@ -109,9 +112,9 @@ class CDV_Taxonomies {
             'show_admin_column' => true,
             'show_in_rest'      => true,
             'query_var'         => true,
-            'rewrite'           => array('slug' => 'destinazione'),
+            'rewrite'           => array('slug' => 'luogo'),
         );
 
-        register_taxonomy('destinazione', array('viaggio'), $args);
+        register_taxonomy('luogo', array('attivita'), $args);
     }
 }

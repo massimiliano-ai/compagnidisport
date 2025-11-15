@@ -23,27 +23,27 @@ class CDV_REST_API {
         $namespace = 'cdv/v1';
 
         // Travels endpoints
-        register_rest_route($namespace, '/travels', array(
+        register_rest_route($namespace, '/activities', array(
             'methods' => 'GET',
-            'callback' => array(__CLASS__, 'get_travels'),
+            'callback' => array(__CLASS__, 'get_activities'),
             'permission_callback' => '__return_true',
         ));
 
-        register_rest_route($namespace, '/travels/(?P<id>\d+)', array(
+        register_rest_route($namespace, '/activities/(?P<id>\d+)', array(
             'methods' => 'GET',
-            'callback' => array(__CLASS__, 'get_travel'),
+            'callback' => array(__CLASS__, 'get_activity'),
             'permission_callback' => '__return_true',
         ));
 
-        register_rest_route($namespace, '/travels/(?P<id>\d+)/join', array(
+        register_rest_route($namespace, '/activities/(?P<id>\d+)/join', array(
             'methods' => 'POST',
-            'callback' => array(__CLASS__, 'join_travel'),
+            'callback' => array(__CLASS__, 'join_activity'),
             'permission_callback' => array(__CLASS__, 'is_user_logged_in'),
         ));
 
-        register_rest_route($namespace, '/travels/(?P<id>\d+)/participants', array(
+        register_rest_route($namespace, '/activities/(?P<id>\d+)/participants', array(
             'methods' => 'GET',
-            'callback' => array(__CLASS__, 'get_travel_participants'),
+            'callback' => array(__CLASS__, 'get_activity_participants'),
             'permission_callback' => '__return_true',
         ));
 
@@ -88,38 +88,38 @@ class CDV_REST_API {
         ));
 
         // Dashboard endpoints
-        register_rest_route($namespace, '/dashboard/my-travels', array(
+        register_rest_route($namespace, '/dashboard/my-activities', array(
             'methods' => 'GET',
-            'callback' => array(__CLASS__, 'get_my_travels'),
+            'callback' => array(__CLASS__, 'get_my_activities'),
             'permission_callback' => array(__CLASS__, 'is_user_logged_in'),
         ));
     }
 
     /**
-     * Get travels list
+     * Get activities list
      */
-    public static function get_travels($request) {
+    public static function get_activities($request) {
         $args = array(
-            'post_type' => 'viaggio',
+            'post_type' => 'attivita',
             'post_status' => 'publish',
             'posts_per_page' => $request->get_param('per_page') ?: 12,
             'paged' => $request->get_param('page') ?: 1,
         );
 
         // Filters
-        if ($request->get_param('tipo_viaggio')) {
+        if ($request->get_param('tipo_sport')) {
             $args['tax_query'][] = array(
-                'taxonomy' => 'tipo_viaggio',
+                'taxonomy' => 'tipo_sport',
                 'field' => 'slug',
-                'terms' => $request->get_param('tipo_viaggio'),
+                'terms' => $request->get_param('tipo_sport'),
             );
         }
 
-        if ($request->get_param('destinazione')) {
+        if ($request->get_param('luogo')) {
             $args['tax_query'][] = array(
-                'taxonomy' => 'destinazione',
+                'taxonomy' => 'luogo',
                 'field' => 'slug',
-                'terms' => $request->get_param('destinazione'),
+                'terms' => $request->get_param('luogo'),
             );
         }
 
@@ -129,13 +129,13 @@ class CDV_REST_API {
 
         $query = new WP_Query($args);
 
-        $travels = array();
+        $activities = array();
         foreach ($query->posts as $post) {
-            $travels[] = self::format_travel($post);
+            $activities[] = self::format_activity($post);
         }
 
         return new WP_REST_Response(array(
-            'travels' => $travels,
+            'activities' => $activities,
             'total' => $query->found_posts,
             'pages' => $query->max_num_pages,
         ), 200);
@@ -144,25 +144,25 @@ class CDV_REST_API {
     /**
      * Get single travel
      */
-    public static function get_travel($request) {
+    public static function get_activity($request) {
         $post = get_post($request['id']);
 
-        if (!$post || $post->post_type !== 'viaggio') {
-            return new WP_Error('not_found', 'Viaggio non trovato', array('status' => 404));
+        if (!$post || $post->post_type !== 'attivitào') {
+            return new WP_Error('not_found', 'Attivita non trovata', array('status' => 404));
         }
 
-        return new WP_REST_Response(self::format_travel($post), 200);
+        return new WP_REST_Response(self::format_activity($post), 200);
     }
 
     /**
      * Join travel
      */
-    public static function join_travel($request) {
-        $travel_id = $request['id'];
+    public static function join_activity($request) {
+        $activity_id = $request['id'];
         $user_id = get_current_user_id();
         $message = $request->get_param('message');
 
-        $result = CDV_Participants::request_join($travel_id, $user_id, $message);
+        $result = CDV_Participants::request_join($activity_id, $user_id, $message);
 
         if (is_wp_error($result)) {
             return new WP_Error($result->get_error_code(), $result->get_error_message(), array('status' => 400));
@@ -174,7 +174,7 @@ class CDV_REST_API {
     /**
      * Get travel participants
      */
-    public static function get_travel_participants($request) {
+    public static function get_activity_participants($request) {
         $participants = CDV_Participants::get_participants($request['id'], 'accepted');
 
         $formatted = array();
@@ -236,7 +236,7 @@ class CDV_REST_API {
      * Add review
      */
     public static function add_review($request) {
-        $travel_id = $request->get_param('travel_id');
+        $activity_id = $request->get_param('activity_id');
         $reviewed_id = $request->get_param('reviewed_id');
         $reviewer_id = get_current_user_id();
         $scores = array(
@@ -247,7 +247,7 @@ class CDV_REST_API {
         );
         $comment = $request->get_param('comment');
 
-        $result = CDV_Reviews::add_review($travel_id, $reviewer_id, $reviewed_id, $scores, $comment);
+        $result = CDV_Reviews::add_review($activity_id, $reviewer_id, $reviewed_id, $scores, $comment);
 
         if (is_wp_error($result)) {
             return new WP_Error($result->get_error_code(), $result->get_error_message(), array('status' => 400));
@@ -303,7 +303,7 @@ class CDV_REST_API {
             'city' => get_user_meta($user->ID, 'cdv_city', true),
             'country' => get_user_meta($user->ID, 'cdv_country', true),
             'languages' => get_user_meta($user->ID, 'cdv_languages', true),
-            'travel_styles' => get_user_meta($user->ID, 'cdv_travel_styles', true),
+            'sport_preferences' => get_user_meta($user->ID, 'cdv_activity_styles', true),
             'verified' => get_user_meta($user->ID, 'cdv_verified', true) === '1',
             'reputation' => get_user_meta($user->ID, 'cdv_reputation_score', true),
             'total_reviews' => get_user_meta($user->ID, 'cdv_total_reviews', true),
@@ -318,45 +318,45 @@ class CDV_REST_API {
     }
 
     /**
-     * Get user's travels (organized and participating)
+     * Get user's activities (organized and participating)
      */
-    public static function get_my_travels($request) {
+    public static function get_my_activities($request) {
         $user_id = get_current_user_id();
 
-        // Organized travels
+        // Organized activities
         $organized = get_posts(array(
-            'post_type' => 'viaggio',
+            'post_type' => 'attivita',
             'author' => $user_id,
             'posts_per_page' => -1,
         ));
 
-        // Participating travels
+        // Participating activities
         global $wpdb;
-        $table_participants = $wpdb->prefix . 'cdv_travel_participants';
+        $table_participants = $wpdb->prefix . 'cdv_activity_participants';
         $participating_ids = $wpdb->get_col($wpdb->prepare(
-            "SELECT travel_id FROM $table_participants WHERE user_id = %d AND status = 'accepted'",
+            "SELECT activity_id FROM $table_participants WHERE user_id = %d AND status = 'accepted'",
             $user_id
         ));
 
         $participating = array();
         if (!empty($participating_ids)) {
             $participating = get_posts(array(
-                'post_type' => 'viaggio',
+                'post_type' => 'attivita',
                 'post__in' => $participating_ids,
                 'posts_per_page' => -1,
             ));
         }
 
         return new WP_REST_Response(array(
-            'organized' => array_map(array(__CLASS__, 'format_travel'), $organized),
-            'participating' => array_map(array(__CLASS__, 'format_travel'), $participating),
+            'organized' => array_map(array(__CLASS__, 'format_activity'), $organized),
+            'participating' => array_map(array(__CLASS__, 'format_activity'), $participating),
         ), 200);
     }
 
     /**
      * Format travel post for API
      */
-    private static function format_travel($post) {
+    private static function format_activity($post) {
         $author = get_user_by('id', $post->post_author);
 
         return array(
@@ -378,8 +378,8 @@ class CDV_REST_API {
             'budget' => get_post_meta($post->ID, 'cdv_budget', true),
             'max_participants' => get_post_meta($post->ID, 'cdv_max_participants', true),
             'current_participants' => CDV_Participants::get_participant_count($post->ID),
-            'status' => get_post_meta($post->ID, 'cdv_travel_status', true) ?: 'open',
-            'tipo_viaggio' => wp_get_post_terms($post->ID, 'tipo_viaggio', array('fields' => 'names')),
+            'status' => get_post_meta($post->ID, 'cdv_activity_status', true) ?: 'open',
+            'tipo_sport' => wp_get_post_terms($post->ID, 'tipo_sport', array('fields' => 'names')),
             'created_at' => $post->post_date,
         );
     }

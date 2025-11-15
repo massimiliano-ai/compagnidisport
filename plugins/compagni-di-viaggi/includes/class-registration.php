@@ -154,9 +154,9 @@ class CDV_Registration {
             wp_send_json_error(array('message' => $user_id->get_error_message()));
         }
 
-        // Set role to viaggiatore
+        // Set role to attivitàatore
         $user = new WP_User($user_id);
-        $user->set_role('viaggiatore');
+        $user->set_role('attivitàatore');
 
         // Set names
         wp_update_user(array(
@@ -178,7 +178,7 @@ class CDV_Registration {
         self::notify_admin_new_user($user_id);
 
         // Auto-login temporaneo per completare la registrazione
-        // L'utente può completare il profilo e creare il primo viaggio,
+        // L'utente può completare il profilo e creare il primo attivitào,
         // ma dopo il logout NON potrà riaccedere finché non conferma l'email
         wp_set_current_user($user_id);
         wp_set_auth_cookie($user_id);
@@ -307,12 +307,12 @@ class CDV_Registration {
             update_user_meta($user_id, 'cdv_phone', $phone);
             update_user_meta($user_id, 'cdv_bio', $bio);
             update_user_meta($user_id, 'cdv_languages', $languages);
-            update_user_meta($user_id, 'cdv_travel_styles', !empty($travel_styles) ? implode(', ', $travel_styles) : '');
+            update_user_meta($user_id, 'cdv_activity_styles', !empty($travel_styles) ? implode(', ', $travel_styles) : '');
             update_user_meta($user_id, 'cdv_interests', !empty($interests) ? implode(', ', $interests) : '');
             update_user_meta($user_id, 'cdv_budget_range', $budget_range);
-            update_user_meta($user_id, 'cdv_travel_frequency', $travel_frequency);
+            update_user_meta($user_id, 'cdv_activity_frequency', $travel_frequency);
             update_user_meta($user_id, 'cdv_accommodation_preference', $accommodation_preference);
-            update_user_meta($user_id, 'cdv_travel_pace', $travel_pace);
+            update_user_meta($user_id, 'cdv_activity_pace', $travel_pace);
             update_user_meta($user_id, 'cdv_instagram', $instagram);
             update_user_meta($user_id, 'cdv_facebook', $facebook);
 
@@ -471,7 +471,7 @@ class CDV_Registration {
             return false;
         }
 
-        $subject = '[Compagni di Viaggi] Nuova registrazione utente';
+        $subject = '[Compagni di Attività] Nuova registrazione utente';
         $message = sprintf(
             "Nuovo utente registrato:\n\nNome: %s\nUsername: %s\nEmail: %s\nData: %s\n\nVisualizza utenti: %s",
             $user->display_name,
@@ -509,7 +509,7 @@ class CDV_Registration {
             'city' => get_user_meta($user_id, 'cdv_city', true),
             'country' => get_user_meta($user_id, 'cdv_country', true),
             'languages' => get_user_meta($user_id, 'cdv_languages', true),
-            'travel_styles' => get_user_meta($user_id, 'cdv_travel_styles', true),
+            'travel_styles' => get_user_meta($user_id, 'cdv_activity_styles', true),
             'interests' => get_user_meta($user_id, 'cdv_interests', true),
             'verified' => get_user_meta($user_id, 'cdv_verified', true) === '1',
             'reputation' => get_user_meta($user_id, 'cdv_reputation_score', true),
@@ -615,7 +615,7 @@ class CDV_Registration {
 
                 if (empty($travel_month)) {
                     error_log('CDV: Missing travel month');
-                    wp_send_json_error(array('message' => 'Seleziona il mese del viaggio'));
+                    wp_send_json_error(array('message' => 'Seleziona il mese del attivitào'));
                 }
 
                 // Format: YYYY-MM
@@ -641,7 +641,7 @@ class CDV_Registration {
 
                 if (empty($start_date) || empty($end_date)) {
                     error_log('CDV: Missing travel dates');
-                    wp_send_json_error(array('message' => 'Inserisci le date del viaggio'));
+                    wp_send_json_error(array('message' => 'Inserisci le date del attivitào'));
                 }
 
                 if (strtotime($start_date) < strtotime('today')) {
@@ -659,7 +659,7 @@ class CDV_Registration {
 
             // Create travel post
             $post_data = array(
-                'post_type' => 'viaggio',
+                'post_type' => 'attivita',
                 'post_title' => $title,
                 'post_content' => $description,
                 'post_status' => 'pending', // Will be moderated
@@ -670,7 +670,7 @@ class CDV_Registration {
 
             if (is_wp_error($post_id)) {
                 error_log('CDV: Failed to create travel post: ' . $post_id->get_error_message());
-                wp_send_json_error(array('message' => 'Errore durante la creazione del viaggio'));
+                wp_send_json_error(array('message' => 'Errore durante la creazione del attivitào'));
             }
 
             error_log('CDV: Travel post created with ID: ' . $post_id);
@@ -680,20 +680,20 @@ class CDV_Registration {
             update_post_meta($post_id, 'cdv_country', $country);
             update_post_meta($post_id, 'cdv_start_date', $start_date);
             update_post_meta($post_id, 'cdv_end_date', $end_date);
-            update_post_meta($post_id, 'cdv_travel_month', $travel_month); // Store original month for display
+            update_post_meta($post_id, 'cdv_activity_month', $travel_month); // Store original month for display
             update_post_meta($post_id, 'cdv_budget', $budget);
             update_post_meta($post_id, 'cdv_max_participants', $max_participants);
-            update_post_meta($post_id, 'cdv_travel_status', 'open');
+            update_post_meta($post_id, 'cdv_activity_status', 'open');
             update_post_meta($post_id, 'cdv_views', 0);
 
             // Add travel types taxonomy
             if (!empty($travel_types)) {
-                wp_set_post_terms($post_id, $travel_types, 'tipo_viaggio');
+                wp_set_post_terms($post_id, $travel_types, 'tipo_sport');
             }
 
             // Set destination taxonomy
             if (!empty($destination)) {
-                wp_set_post_terms($post_id, array($destination), 'destinazione', false);
+                wp_set_post_terms($post_id, array($destination), 'luogo', false);
             }
 
             // Award badge for first travel
@@ -705,8 +705,8 @@ class CDV_Registration {
             error_log('CDV: First travel creation completed successfully');
 
             wp_send_json_success(array(
-                'message' => 'Viaggio creato! Sarà pubblicato dopo l\'approvazione dell\'amministrazione.',
-                'travel_id' => $post_id,
+                'message' => 'Attività creato! Sarà pubblicato dopo l\'approvazione dell\'amministrazione.',
+                'activity_id' => $post_id,
             ));
 
         } catch (Exception $e) {
@@ -720,11 +720,11 @@ class CDV_Registration {
     /**
      * Notify admin of new travel pending approval
      */
-    private static function notify_admin_new_travel($travel_id, $user_id) {
-        $travel = get_post($travel_id);
+    private static function notify_admin_new_travel($activity_id, $user_id) {
+        $activity = get_post($activity_id);
         $user = get_userdata($user_id);
 
-        if (!$travel || !$user) {
+        if (!$activity || !$user) {
             error_log('CDV: Failed to notify admin - travel or user not found');
             return false;
         }
@@ -737,12 +737,12 @@ class CDV_Registration {
             return false;
         }
 
-        $edit_link = admin_url('post.php?post=' . $travel_id . '&action=edit');
-        $destination = get_post_meta($travel_id, 'cdv_destination', true);
-        $start_date = get_post_meta($travel_id, 'cdv_start_date', true);
-        $end_date = get_post_meta($travel_id, 'cdv_end_date', true);
+        $edit_link = admin_url('post.php?post=' . $activity_id . '&action=edit');
+        $destination = get_post_meta($activity_id, 'cdv_destination', true);
+        $start_date = get_post_meta($activity_id, 'cdv_start_date', true);
+        $end_date = get_post_meta($activity_id, 'cdv_end_date', true);
 
-        $subject = '🌍 Nuovo Viaggio da Approvare - ' . $travel->post_title;
+        $subject = '🌍 Nuovo Attività da Approvare - ' . $activity->post_title;
 
         $message = '
 <!DOCTYPE html>
@@ -762,15 +762,15 @@ class CDV_Registration {
 <body>
     <div class="container">
         <div class="header">
-            <h2 style="margin: 0;">🌍 Nuovo Viaggio in Attesa di Approvazione</h2>
+            <h2 style="margin: 0;">🌍 Nuovo Attività in Attesa di Approvazione</h2>
         </div>
 
         <div class="content">
-            <p>Un nuovo viaggio è stato creato sulla piattaforma e richiede la tua approvazione.</p>
+            <p>Un nuovo attivitào è stato creato sulla piattaforma e richiede la tua approvazione.</p>
 
             <div class="info-box">
-                <h3 style="margin-top: 0;">📋 Dettagli del Viaggio</h3>
-                <p><strong>Titolo:</strong> ' . esc_html($travel->post_title) . '</p>
+                <h3 style="margin-top: 0;">📋 Dettagli del Attività</h3>
+                <p><strong>Titolo:</strong> ' . esc_html($activity->post_title) . '</p>
                 <p><strong>Destinazione:</strong> ' . esc_html($destination) . '</p>
                 <p><strong>Date:</strong> ' . esc_html($start_date) . ' - ' . esc_html($end_date) . '</p>
                 <p><strong>Organizzatore:</strong> ' . esc_html($user->display_name) . ' (' . esc_html($user->user_email) . ')</p>
@@ -778,7 +778,7 @@ class CDV_Registration {
 
             <div class="info-box">
                 <h3 style="margin-top: 0;">📝 Descrizione</h3>
-                <p>' . wp_trim_words($travel->post_content, 50) . '</p>
+                <p>' . wp_trim_words($activity->post_content, 50) . '</p>
             </div>
 
             <p style="text-align: center;">
@@ -788,13 +788,13 @@ class CDV_Registration {
             </p>
 
             <p style="font-size: 12px; color: #666;">
-                Accedi al pannello admin per approvare o rifiutare questo viaggio.<br>
-                Il viaggio non sarà visibile pubblicamente fino all\'approvazione.
+                Accedi al pannello admin per approvare o rifiutare questo attivitào.<br>
+                Il attivitào non sarà visibile pubblicamente fino all\'approvazione.
             </p>
         </div>
 
         <div class="footer">
-            <p>Questa email è stata inviata automaticamente da Compagni di Viaggi</p>
+            <p>Questa email è stata inviata automaticamente da Compagni di Attività</p>
         </div>
     </div>
 </body>
@@ -806,9 +806,9 @@ class CDV_Registration {
         $result = wp_mail($admin_email, $subject, $message, $headers);
 
         if (!$result) {
-            error_log('CDV: Failed to send admin notification email for travel ' . $travel_id);
+            error_log('CDV: Failed to send admin notification email for travel ' . $activity_id);
         } else {
-            error_log('CDV: Admin notification sent successfully for travel ' . $travel_id);
+            error_log('CDV: Admin notification sent successfully for travel ' . $activity_id);
         }
 
         return $result;

@@ -12,7 +12,7 @@ get_header();
         <header class="blog-header">
             <h1 class="blog-title">Blog</h1>
             <p class="blog-description">
-                Consigli, storie e ispirazioni per i tuoi prossimi viaggi
+                Consigli, storie e ispirazioni per i tuoi prossimi attività
             </p>
         </header>
 

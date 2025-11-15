@@ -14,7 +14,7 @@
                 }
                 ?>
                 <p><?php bloginfo('description'); ?></p>
-                <p>Trova compagni di viaggio e organizza avventure insieme.</p>
+                <p>Trova compagni di sport e organizza avventure insieme.</p>
             </div>
 
             <?php if (is_active_sidebar('footer-1')) : ?>
@@ -37,7 +37,7 @@
         </div>
 
         <div class="footer-bottom">
-            <p><?php echo wp_kses_post(get_theme_mod('cdv_footer_copyright', '© ' . date('Y') . ' Compagni di viaggi. Tutti i diritti riservati.')); ?></p>
+            <p><?php echo wp_kses_post(get_theme_mod('cdv_footer_copyright', '© ' . date('Y') . ' Compagni di attività. Tutti i diritti riservati.')); ?></p>
         </div>
     </div>
 </footer>

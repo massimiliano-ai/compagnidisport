@@ -19,7 +19,7 @@ get_header();
             <div class="grid">
                 <?php
                 while (have_posts()) : the_post();
-                    if (get_post_type() === 'viaggio') {
+                    if (get_post_type() === 'attivita') {
                         get_template_part('template-parts/content', 'travel-card');
                     } else {
                         get_template_part('template-parts/content', get_post_type());
@@ -33,11 +33,11 @@ get_header();
         <?php else : ?>
             <section class="no-results not-found">
                 <header class="page-header">
-                    <h1 class="page-title"><?php esc_html_e('Nessun risultato trovato', 'compagni-viaggi'); ?></h1>
+                    <h1 class="page-title"><?php esc_html_e('Nessun risultato trovato', 'compagni-attività'); ?></h1>
                 </header>
 
                 <div class="page-content">
-                    <p><?php esc_html_e('Non è stato trovato nulla. Prova con una ricerca diversa.', 'compagni-viaggi'); ?></p>
+                    <p><?php esc_html_e('Non è stato trovato nulla. Prova con una ricerca diversa.', 'compagni-attività'); ?></p>
                     <?php get_search_form(); ?>
                 </div>
             </section>

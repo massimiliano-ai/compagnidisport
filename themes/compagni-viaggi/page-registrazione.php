@@ -24,8 +24,8 @@ get_header();
     <div class="container">
         <div class="registration-wrapper">
             <div class="registration-header">
-                <h1>Unisciti a Compagni di Viaggi</h1>
-                <p>Crea il tuo account e inizia a trovare compagni di viaggio</p>
+                <h1>Unisciti a Compagni di Attività</h1>
+                <p>Crea il tuo account e inizia a trovare compagni di sport</p>
             </div>
 
             <!-- Progress Steps -->
@@ -47,7 +47,7 @@ get_header();
                 <div class="step-connector"></div>
                 <div class="step" data-step="4">
                     <div class="step-number">4</div>
-                    <div class="step-label">Viaggio (Opzionale)</div>
+                    <div class="step-label">Attività (Opzionale)</div>
                 </div>
             </div>
 
@@ -103,12 +103,12 @@ get_header();
                             Registrandoti, comprendi e accetti che:
                         </p>
                         <ul>
-                            <li>La piattaforma <strong>facilita l'incontro tra viaggiatori</strong> ma non organizza materialmente i viaggi</li>
+                            <li>La piattaforma <strong>facilita l'incontro tra viaggiatori</strong> ma non organizza materialmente i attività</li>
                             <li>Sei <strong>l'unico responsabile</strong> per i contenuti che pubblichi (testi, foto, recensioni)</li>
                             <li>Sei <strong>responsabile</strong> per le informazioni fornite nel tuo profilo e per i tuoi comportamenti</li>
                             <li>La piattaforma <strong>non verifica l'identità</strong> degli utenti oltre l'email e <strong>non garantisce</strong> la veridicità dei profili</li>
-                            <li>Ogni <strong>accordo di viaggio</strong> avviene direttamente tra te e gli altri viaggiatori, <strong>senza intermediazione</strong> della piattaforma</li>
-                            <li>La piattaforma <strong>non è responsabile</strong> per comportamenti, danni o disservizi derivanti da incontri o viaggi organizzati tramite il servizio</li>
+                            <li>Ogni <strong>accordo di attività</strong> avviene direttamente tra te e gli altri viaggiatori, <strong>senza intermediazione</strong> della piattaforma</li>
+                            <li>La piattaforma <strong>non è responsabile</strong> per comportamenti, danni o disservizi derivanti da incontri o attività organizzati tramite il servizio</li>
                         </ul>
                         <p>
                             <strong>Ti invitiamo a usare prudenza, buonsenso e a incontrare sempre altre persone in luoghi pubblici prima di partire.</strong>
@@ -125,7 +125,7 @@ get_header();
                     <div class="form-group checkbox-group">
                         <label>
                             <input type="checkbox" name="disclaimer_understood" required>
-                            <strong>Comprendo</strong> che la piattaforma declina ogni responsabilità per contenuti pubblicati dagli utenti, comportamenti al di fuori della piattaforma e per l'organizzazione dei viaggi che avviene esclusivamente tra viaggiatori.
+                            <strong>Comprendo</strong> che la piattaforma declina ogni responsabilità per contenuti pubblicati dagli utenti, comportamenti al di fuori della piattaforma e per l'organizzazione dei attività che avviene esclusivamente tra viaggiatori.
                         </label>
                     </div>
 
@@ -186,7 +186,7 @@ get_header();
 
                         <div class="form-group">
                             <label for="bio">Bio <span class="required">*</span></label>
-                            <textarea id="bio" name="bio" rows="5" required placeholder="Raccontaci chi sei, cosa ami dei viaggi, le tue esperienze..."></textarea>
+                            <textarea id="bio" name="bio" rows="5" required placeholder="Raccontaci chi sei, cosa ami dei attività, le tue esperienze..."></textarea>
                             <small id="bio-count">0/500 caratteri</small>
                         </div>
 
@@ -197,25 +197,25 @@ get_header();
                     </div>
 
                     <div class="form-section">
-                        <h3>Stili di Viaggio</h3>
+                        <h3>Stili di Attività</h3>
                         <p>Seleziona i tuoi stili preferiti:</p>
 
                         <div class="checkbox-grid">
-                            <label><input type="checkbox" name="travel_styles[]" value="Avventura"> Avventura</label>
-                            <label><input type="checkbox" name="travel_styles[]" value="Mare"> Mare</label>
-                            <label><input type="checkbox" name="travel_styles[]" value="Montagna"> Montagna</label>
-                            <label><input type="checkbox" name="travel_styles[]" value="Città d'Arte"> Città d'Arte</label>
-                            <label><input type="checkbox" name="travel_styles[]" value="Cultura"> Cultura</label>
-                            <label><input type="checkbox" name="travel_styles[]" value="Relax"> Relax</label>
-                            <label><input type="checkbox" name="travel_styles[]" value="Food & Wine"> Food & Wine</label>
-                            <label><input type="checkbox" name="travel_styles[]" value="Sport"> Sport</label>
-                            <label><input type="checkbox" name="travel_styles[]" value="Zaino in Spalla"> Zaino in Spalla</label>
+                            <label><input type="checkbox" name="activity_styles[]" value="Avventura"> Avventura</label>
+                            <label><input type="checkbox" name="activity_styles[]" value="Mare"> Mare</label>
+                            <label><input type="checkbox" name="activity_styles[]" value="Montagna"> Montagna</label>
+                            <label><input type="checkbox" name="activity_styles[]" value="Città d'Arte"> Città d'Arte</label>
+                            <label><input type="checkbox" name="activity_styles[]" value="Cultura"> Cultura</label>
+                            <label><input type="checkbox" name="activity_styles[]" value="Relax"> Relax</label>
+                            <label><input type="checkbox" name="activity_styles[]" value="Food & Wine"> Food & Wine</label>
+                            <label><input type="checkbox" name="activity_styles[]" value="Sport"> Sport</label>
+                            <label><input type="checkbox" name="activity_styles[]" value="Zaino in Spalla"> Zaino in Spalla</label>
                         </div>
                     </div>
 
                     <div class="form-section">
                         <h3>Interessi</h3>
-                        <p>Cosa ti piace fare in viaggio?</p>
+                        <p>Cosa ti piace fare in attività?</p>
 
                         <div class="checkbox-grid">
                             <label><input type="checkbox" name="interests[]" value="Fotografia"> Fotografia</label>
@@ -232,7 +232,7 @@ get_header();
                     </div>
 
                     <div class="form-section">
-                        <h3>Preferenze di Viaggio</h3>
+                        <h3>Preferenze di Attività</h3>
 
                         <div class="form-row">
                             <div class="form-group">
@@ -246,8 +246,8 @@ get_header();
                             </div>
 
                             <div class="form-group">
-                                <label for="travel_frequency">Quanto viaggi?</label>
-                                <select id="travel_frequency" name="travel_frequency">
+                                <label for="activity_frequency">Quanto attività?</label>
+                                <select id="activity_frequency" name="activity_frequency">
                                     <option value="raro">Raramente (1-2 volte/anno)</option>
                                     <option value="occasionale">Occasionalmente (3-4 volte/anno)</option>
                                     <option value="frequente">Frequentemente (5+ volte/anno)</option>
@@ -268,8 +268,8 @@ get_header();
                             </div>
 
                             <div class="form-group">
-                                <label for="travel_pace">Ritmo di Viaggio</label>
-                                <select id="travel_pace" name="travel_pace">
+                                <label for="activity_pace">Ritmo di Attività</label>
+                                <select id="activity_pace" name="activity_pace">
                                     <option value="rilassato">Rilassato</option>
                                     <option value="moderato">Moderato</option>
                                     <option value="intenso">Intenso</option>
@@ -341,13 +341,13 @@ get_header();
 
                 <!-- Step 4: Create First Travel (Optional) -->
                 <form id="registration-step-4" class="registration-step">
-                    <h2>Vuoi inserire la tua prima proposta di viaggio e cercare compagni con cui viaggiare?</h2>
-                    <p class="step-intro">Questo passaggio è completamente <strong>opzionale</strong>. Puoi saltare e aggiungere viaggi in seguito dalla tua dashboard.</p>
+                    <h2>Vuoi inserire la tua prima proposta di attività e cercare compagni con cui viaggiare?</h2>
+                    <p class="step-intro">Questo passaggio è completamente <strong>opzionale</strong>. Puoi saltare e aggiungere attività in seguito dalla tua dashboard.</p>
 
                     <div class="optional-choice" style="text-align: center; margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 8px;">
                         <p style="font-size: 1.1rem; margin-bottom: 20px;">Cosa vuoi fare?</p>
                         <div style="display: flex; gap: 15px; justify-content: center;">
-                            <button type="button" class="btn-primary" id="show-travel-form">Sì, voglio creare un viaggio</button>
+                            <button type="button" class="btn-primary" id="show-travel-form">Sì, voglio creare un attività</button>
                             <button type="button" class="btn-secondary" id="skip-travel-direct">No, completa la registrazione</button>
                         </div>
                     </div>
@@ -355,24 +355,24 @@ get_header();
                     <div id="travel-form-fields" style="display: none;">
 
                     <div class="form-group">
-                        <label for="travel_title">Titolo del Viaggio <span class="required">*</span></label>
-                        <input type="text" id="travel_title" name="travel_title" placeholder="Es: Weekend a Venezia, Road Trip in Toscana">
+                        <label for="activity_title">Titolo dell'Attività <span class="required">*</span></label>
+                        <input type="text" id="activity_title" name="activity_title" placeholder="Es: Partita di calcetto, Escursione in montagna">
                     </div>
 
                     <div class="form-group">
-                        <label for="travel_description">Descrizione <span class="required">*</span></label>
-                        <textarea id="travel_description" name="travel_description" rows="5" placeholder="Descrivi il tuo viaggio: destinazioni, attività previste, cosa rende speciale questa esperienza..."></textarea>
+                        <label for="activity_description">Descrizione <span class="required">*</span></label>
+                        <textarea id="activity_description" name="activity_description" rows="5" placeholder="Descrivi il tua attività: destinazioni, attività previste, cosa rende speciale questa esperienza..."></textarea>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="travel_destination">Destinazione <span class="required">*</span></label>
-                            <input type="text" id="travel_destination" name="travel_destination" placeholder="Es: Venezia, Toscana">
+                            <label for="activity_destination">Luogo <span class="required">*</span></label>
+                            <input type="text" id="activity_destination" name="activity_destination" placeholder="Es: Venezia, Toscana">
                         </div>
 
                         <div class="form-group">
-                            <label for="travel_country">Paese <span class="required">*</span></label>
-                            <input type="text" id="travel_country" name="travel_country" placeholder="Es: Italia, Francia">
+                            <label for="activity_country">Paese <span class="required">*</span></label>
+                            <input type="text" id="activity_country" name="activity_country" placeholder="Es: Italia, Francia">
                         </div>
                     </div>
 
@@ -380,11 +380,11 @@ get_header();
                         <label>Tipo di Data <span class="required">*</span></label>
                         <div class="radio-group" style="display: flex; gap: 20px; margin-bottom: 15px;">
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input type="radio" name="travel_date_type" value="precise" checked>
+                                <input type="radio" name="activity_date_type" value="precise" checked>
                                 <span>Date precise</span>
                             </label>
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input type="radio" name="travel_date_type" value="month">
+                                <input type="radio" name="activity_date_type" value="month">
                                 <span>Solo mese</span>
                             </label>
                         </div>
@@ -393,21 +393,21 @@ get_header();
                     <div id="precise-dates-container-reg">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="travel_start_date">Data Inizio <span class="required">*</span></label>
-                                <input type="date" id="travel_start_date" name="travel_start_date" min="<?php echo date('Y-m-d'); ?>">
+                                <label for="activity_start_date">Data Inizio <span class="required">*</span></label>
+                                <input type="date" id="activity_start_date" name="activity_start_date" min="<?php echo date('Y-m-d'); ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="travel_end_date">Data Fine <span class="required">*</span></label>
-                                <input type="date" id="travel_end_date" name="travel_end_date" min="<?php echo date('Y-m-d'); ?>">
+                                <label for="activity_end_date">Data Fine <span class="required">*</span></label>
+                                <input type="date" id="activity_end_date" name="activity_end_date" min="<?php echo date('Y-m-d'); ?>">
                             </div>
                         </div>
                     </div>
 
                     <div id="month-container-reg" style="display: none;">
                         <div class="form-group">
-                            <label for="travel_month">Mese di Partenza <span class="required">*</span></label>
-                            <select id="travel_month" name="travel_month">
+                            <label for="activity_month">Mese di Partenza <span class="required">*</span></label>
+                            <select id="activity_month" name="activity_month">
                                 <option value="">Seleziona il mese</option>
                                 <?php
                                 $months = array(
@@ -432,35 +432,35 @@ get_header();
                                 }
                                 ?>
                             </select>
-                            <small>Il viaggio sarà disponibile per tutto il mese selezionato</small>
+                            <small>Il attività sarà disponibile per tutto il mese selezionato</small>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="travel_budget">Budget per Persona (€) <span class="required">*</span></label>
-                            <input type="number" id="travel_budget" name="travel_budget" min="0" placeholder="500">
+                            <label for="activity_budget">Budget per Persona (€) <span class="required">*</span></label>
+                            <input type="number" id="activity_budget" name="activity_budget" min="0" placeholder="500">
                         </div>
 
                         <div class="form-group">
-                            <label for="travel_max_participants">Max Partecipanti <span class="required">*</span></label>
-                            <input type="number" id="travel_max_participants" name="travel_max_participants" min="2" max="50" value="5">
+                            <label for="activity_max_participants">Max Partecipanti <span class="required">*</span></label>
+                            <input type="number" id="activity_max_participants" name="activity_max_participants" min="2" max="50" value="5">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Tipo di Viaggio</label>
+                        <label>Tipo di Attività</label>
                         <div class="checkbox-group">
                             <?php
-                            $travel_types = get_terms(array(
-                                'taxonomy' => 'tipo_viaggio',
+                            $activity_types = get_terms(array(
+                                'taxonomy' => 'tipo_sport',
                                 'hide_empty' => false,
                             ));
-                            if (!empty($travel_types) && !is_wp_error($travel_types)) :
-                                foreach ($travel_types as $type) :
+                            if (!empty($activity_types) && !is_wp_error($activity_types)) :
+                                foreach ($activity_types as $type) :
                             ?>
                                 <label>
-                                    <input type="checkbox" name="travel_types[]" value="<?php echo esc_attr($type->term_id); ?>">
+                                    <input type="checkbox" name="activity_types[]" value="<?php echo esc_attr($type->term_id); ?>">
                                     <?php echo esc_html($type->name); ?>
                                 </label>
                             <?php
@@ -472,15 +472,15 @@ get_header();
 
                     <div class="disclaimer-box" style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 8px; margin: 30px 0;">
                         <h4 style="margin-top: 0; color: #856404;">⚠️ Informativa Importante</h4>
-                        <p style="margin-bottom: 15px;">Pubblicando questo viaggio, dichiari di comprendere e accettare che:</p>
+                        <p style="margin-bottom: 15px;">Pubblicando questo attività, dichiari di comprendere e accettare che:</p>
                         <ul style="margin: 0 0 15px 0; padding-left: 20px;">
-                            <li style="margin-bottom: 8px;">La piattaforma facilita l'incontro tra viaggiatori ma <strong>non organizza</strong> materialmente i viaggi</li>
-                            <li style="margin-bottom: 8px;">Sei <strong>l'unico responsabile</strong> per organizzazione, sicurezza e gestione del viaggio</li>
+                            <li style="margin-bottom: 8px;">La piattaforma facilita l'incontro tra viaggiatori ma <strong>non organizza</strong> materialmente i attività</li>
+                            <li style="margin-bottom: 8px;">Sei <strong>l'unico responsabile</strong> per organizzazione, sicurezza e gestione dell'attività</li>
                             <li style="margin-bottom: 8px;">La piattaforma <strong>non è responsabile</strong> per comportamenti, danni o disservizi</li>
                         </ul>
                         <label style="display: flex; align-items: start; gap: 10px; cursor: pointer;">
-                            <input type="checkbox" id="accept_travel_disclaimer_reg" name="accept_travel_disclaimer" style="margin-top: 4px;">
-                            <span>Accetto e comprendo di essere l'unico responsabile per questo viaggio</span>
+                            <input type="checkbox" id="accept_activity_disclaimer_reg" name="accept_activity_disclaimer" style="margin-top: 4px;">
+                            <span>Accetto e comprendo di essere l'unico responsabile per questo attività</span>
                         </label>
                     </div>
 
@@ -978,8 +978,8 @@ jQuery(document).ready(function($) {
         e.preventDefault();
 
         // Check at least one travel style selected
-        if ($('input[name="travel_styles[]"]:checked').length === 0) {
-            alert('Seleziona almeno uno stile di viaggio');
+        if ($('input[name="activity_styles[]"]:checked').length === 0) {
+            alert('Seleziona almeno uno stile di attività');
             return;
         }
 
@@ -1142,28 +1142,28 @@ jQuery(document).ready(function($) {
     });
 
     // Toggle between precise dates and month selection
-    $('input[name="travel_date_type"]').on('change', function() {
+    $('input[name="activity_date_type"]').on('change', function() {
         const dateType = $(this).val();
 
         if (dateType === 'precise') {
             $('#precise-dates-container-reg').show();
             $('#month-container-reg').hide();
-            $('#travel_start_date').prop('required', true);
-            $('#travel_end_date').prop('required', true);
-            $('#travel_month').prop('required', false);
+            $('#activity_start_date').prop('required', true);
+            $('#activity_end_date').prop('required', true);
+            $('#activity_month').prop('required', false);
         } else {
             $('#precise-dates-container-reg').hide();
             $('#month-container-reg').show();
-            $('#travel_start_date').prop('required', false);
-            $('#travel_end_date').prop('required', false);
-            $('#travel_month').prop('required', true);
+            $('#activity_start_date').prop('required', false);
+            $('#activity_end_date').prop('required', false);
+            $('#activity_month').prop('required', true);
         }
     });
 
     // Update end date min when start date changes
-    $('#travel_start_date').on('change', function() {
+    $('#activity_start_date').on('change', function() {
         const startDate = $(this).val();
-        $('#travel_end_date').attr('min', startDate);
+        $('#activity_end_date').attr('min', startDate);
     });
 
     // Step 4: Create Travel (Optional)
@@ -1190,7 +1190,7 @@ jQuery(document).ready(function($) {
                     console.log('Step 4 - Travel created successfully');
                     window.location.href = '<?php echo home_url('/dashboard'); ?>';
                 } else {
-                    alert(response.data.message || 'Errore durante la creazione del viaggio');
+                    alert(response.data.message || 'Errore durante la creazione dell'attività');
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
