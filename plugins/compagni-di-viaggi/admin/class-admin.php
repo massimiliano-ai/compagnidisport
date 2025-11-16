@@ -15,7 +15,7 @@ class CDV_Admin {
     public static function init() {
         add_action('admin_menu', array(__CLASS__, 'add_menu'));
         add_action('add_meta_boxes', array(__CLASS__, 'add_meta_boxes'));
-        add_action('save_post_viaggio', array(__CLASS__, 'save_meta_boxes'));
+        add_action('save_post_attivita', array(__CLASS__, 'save_meta_boxes'));
         add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_scripts'));
     }
 
@@ -24,8 +24,8 @@ class CDV_Admin {
      */
     public static function add_menu() {
         add_menu_page(
-            'Compagni di Viaggi',
-            'Compagni di Viaggi',
+            'Compagni di Attività',
+            'Compagni di Attività',
             'manage_options',
             'cdv-dashboard',
             array(__CLASS__, 'dashboard_page'),
@@ -47,14 +47,14 @@ class CDV_Admin {
         );
 
         // Pending travels submenu
-        $pending_travels = CDV_Travel_Moderation::get_pending_travels_count();
+        $pending_travels = CDV_Activity_Moderation::get_pending_travels_count();
         $travels_badge = $pending_travels > 0 ? ' <span class="awaiting-mod">' . $pending_travels . '</span>' : '';
 
         add_submenu_page(
             'cdv-dashboard',
-            'Viaggi in Attesa',
-            'Viaggi in Attesa' . $travels_badge,
-            'approve_viaggi',
+            'Annunci in Attesa',
+            'Annunci in Attesa' . $travels_badge,
+            'approve_attività',
             'cdv-pending-travels',
             array(__CLASS__, 'pending_travels_page')
         );
@@ -98,19 +98,19 @@ class CDV_Admin {
         global $wpdb;
 
         $stats = array(
-            'total_travels' => wp_count_posts('viaggio')->publish,
+            'total_travels' => wp_count_posts('attivita')->publish,
             'total_users' => count_users()['total_users'],
-            'total_participants' => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}cdv_travel_participants WHERE status = 'accepted'"),
+            'total_participants' => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}cdv_activity_participants WHERE status = 'accepted'"),
             'total_reviews' => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}cdv_reviews"),
         );
 
         ?>
         <div class="wrap">
-            <h1>Dashboard Compagni di Viaggi</h1>
+            <h1>Dashboard Compagni di Attività</h1>
 
             <div class="cdv-stats">
                 <div class="cdv-stat-box">
-                    <h3>Viaggi Pubblicati</h3>
+                    <h3>Annunci Pubblicati</h3>
                     <p class="cdv-stat-number"><?php echo $stats['total_travels']; ?></p>
                 </div>
                 <div class="cdv-stat-box">
@@ -167,8 +167,8 @@ class CDV_Admin {
                 $test_email = get_option('admin_email');
             }
 
-            $subject = '[Compagni di Viaggi] Test Email';
-            $message = "Questa è un'email di test inviata da Compagni di Viaggi.\n\n";
+            $subject = '[Compagni di Attività] Test Email';
+            $message = "Questa è un'email di test inviata da Compagni di Attività.\n\n";
             $message .= "Se ricevi questo messaggio, la configurazione email funziona correttamente!\n\n";
             $message .= "Data invio: " . current_time('d/m/Y H:i:s') . "\n";
             $message .= "Inviato a: " . $test_email . "\n";
@@ -204,7 +204,7 @@ class CDV_Admin {
 
         ?>
         <div class="wrap">
-            <h1>Impostazioni Compagni di Viaggi</h1>
+            <h1>Impostazioni Compagni di Attività</h1>
 
             <form method="post" action="">
                 <?php wp_nonce_field('cdv_settings_nonce'); ?>
@@ -216,7 +216,7 @@ class CDV_Admin {
                         </th>
                         <td>
                             <input type="number" name="cdv_max_participants" id="cdv_max_participants" value="<?php echo esc_attr($max_participants); ?>" class="regular-text" />
-                            <p class="description">Numero massimo di partecipanti per viaggio (può essere sovrascritto per singolo viaggio)</p>
+                            <p class="description">Numero massimo di partecipanti per annuncio (può essere sovrascritto per singolo annuncio)</p>
                         </td>
                     </tr>
                     <tr>
@@ -320,7 +320,7 @@ class CDV_Admin {
                 <ul>
                     <li>✉️ <strong>Verifica email</strong> - Inviata agli utenti al momento della registrazione</li>
                     <li>✉️ <strong>Notifica admin</strong> - Inviata all'amministratore quando un nuovo utente si registra</li>
-                    <li>✉️ <strong>Notifiche viaggi</strong> - Per richieste di partecipazione, approvazioni, ecc.</li>
+                    <li>✉️ <strong>Notifiche annunci</strong> - Per richieste di partecipazione, approvazioni, ecc.</li>
                 </ul>
 
                 <p><strong>Nota:</strong> Le email di verifica sono opzionali. Gli utenti possono comunque accedere anche senza verificare l'email. L'invio email è stato configurato per non bloccare le registrazioni in caso di problemi.</p>
@@ -334,19 +334,19 @@ class CDV_Admin {
      */
     public static function add_meta_boxes() {
         add_meta_box(
-            'cdv_travel_details',
-            'Dettagli Viaggio',
+            'cdv_activity_details',
+            'Dettagli Annuncio',
             array(__CLASS__, 'travel_details_meta_box'),
-            'viaggio',
+            'attivita',
             'normal',
             'high'
         );
 
         add_meta_box(
-            'cdv_travel_participants',
+            'cdv_activity_participants',
             'Partecipanti',
             array(__CLASS__, 'travel_participants_meta_box'),
-            'viaggio',
+            'attivita',
             'side',
             'default'
         );
@@ -358,53 +358,205 @@ class CDV_Admin {
     public static function travel_details_meta_box($post) {
         wp_nonce_field('cdv_meta_box_nonce', 'cdv_meta_box_nonce');
 
+        // Get all meta values
         $start_date = get_post_meta($post->ID, 'cdv_start_date', true);
         $end_date = get_post_meta($post->ID, 'cdv_end_date', true);
         $destination = get_post_meta($post->ID, 'cdv_destination', true);
         $country = get_post_meta($post->ID, 'cdv_country', true);
         $budget = get_post_meta($post->ID, 'cdv_budget', true);
         $max_participants = get_post_meta($post->ID, 'cdv_max_participants', true);
-        $status = get_post_meta($post->ID, 'cdv_travel_status', true);
+        $status = get_post_meta($post->ID, 'cdv_activity_status', true);
+        $activity_month = get_post_meta($post->ID, 'cdv_activity_month', true);
+        $date_type = get_post_meta($post->ID, 'cdv_date_type', true);
+
+        // Sport-specific fields
+        $activity_time = get_post_meta($post->ID, 'cdv_activity_time', true);
+        $activity_duration = get_post_meta($post->ID, 'cdv_activity_duration', true);
+        $activity_level = get_post_meta($post->ID, 'cdv_activity_level', true);
+        $equipment = get_post_meta($post->ID, 'cdv_equipment', true);
+        $facilities = get_post_meta($post->ID, 'cdv_facilities', true);
+        $activity_requirements = get_post_meta($post->ID, 'cdv_activity_requirements', true);
 
         ?>
-        <table class="form-table">
-            <tr>
-                <th><label for="cdv_start_date">Data Inizio</label></th>
-                <td><input type="date" name="cdv_start_date" id="cdv_start_date" value="<?php echo esc_attr($start_date); ?>" class="regular-text" /></td>
-            </tr>
-            <tr>
-                <th><label for="cdv_end_date">Data Fine</label></th>
-                <td><input type="date" name="cdv_end_date" id="cdv_end_date" value="<?php echo esc_attr($end_date); ?>" class="regular-text" /></td>
-            </tr>
-            <tr>
-                <th><label for="cdv_destination">Destinazione</label></th>
-                <td><input type="text" name="cdv_destination" id="cdv_destination" value="<?php echo esc_attr($destination); ?>" class="regular-text" /></td>
-            </tr>
-            <tr>
-                <th><label for="cdv_country">Paese</label></th>
-                <td><input type="text" name="cdv_country" id="cdv_country" value="<?php echo esc_attr($country); ?>" class="regular-text" /></td>
-            </tr>
-            <tr>
-                <th><label for="cdv_budget">Budget Stimato (€)</label></th>
-                <td><input type="number" name="cdv_budget" id="cdv_budget" value="<?php echo esc_attr($budget); ?>" class="regular-text" /></td>
-            </tr>
-            <tr>
-                <th><label for="cdv_max_participants">Max Partecipanti</label></th>
-                <td><input type="number" name="cdv_max_participants" id="cdv_max_participants" value="<?php echo esc_attr($max_participants); ?>" class="regular-text" /></td>
-            </tr>
-            <tr>
-                <th><label for="cdv_travel_status">Stato Viaggio</label></th>
-                <td>
-                    <select name="cdv_travel_status" id="cdv_travel_status">
-                        <option value="open" <?php selected($status, 'open'); ?>>Aperto</option>
-                        <option value="full" <?php selected($status, 'full'); ?>>Completo</option>
-                        <option value="in_progress" <?php selected($status, 'in_progress'); ?>>In Corso</option>
-                        <option value="completed" <?php selected($status, 'completed'); ?>>Completato</option>
-                        <option value="cancelled" <?php selected($status, 'cancelled'); ?>>Annullato</option>
-                    </select>
-                </td>
-            </tr>
-        </table>
+        <style>
+            .cdv-meta-section { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #ddd; }
+            .cdv-meta-section:last-child { border-bottom: none; }
+            .cdv-meta-section h4 { margin: 0 0 15px 0; color: #23282d; font-size: 14px; }
+            .cdv-checkbox-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
+            .cdv-checkbox-group label { display: flex; align-items: center; gap: 5px; }
+        </style>
+
+        <div class="cdv-meta-section">
+            <h4>📅 Date e Orari</h4>
+            <table class="form-table">
+                <tr>
+                    <th><label for="cdv_date_type">Tipo Data</label></th>
+                    <td>
+                        <select name="cdv_date_type" id="cdv_date_type">
+                            <option value="precise" <?php selected($date_type, 'precise'); ?>>Date Precise</option>
+                            <option value="month" <?php selected($date_type, 'month'); ?>>Mese Flessibile</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="date-precise-field">
+                    <th><label for="cdv_start_date">Data Inizio</label></th>
+                    <td><input type="date" name="cdv_start_date" id="cdv_start_date" value="<?php echo esc_attr($start_date); ?>" class="regular-text" /></td>
+                </tr>
+                <tr class="date-precise-field">
+                    <th><label for="cdv_end_date">Data Fine</label></th>
+                    <td><input type="date" name="cdv_end_date" id="cdv_end_date" value="<?php echo esc_attr($end_date); ?>" class="regular-text" /></td>
+                </tr>
+                <tr class="date-month-field">
+                    <th><label for="cdv_activity_month">Mese</label></th>
+                    <td><input type="month" name="cdv_activity_month" id="cdv_activity_month" value="<?php echo esc_attr($activity_month); ?>" class="regular-text" /></td>
+                </tr>
+                <tr>
+                    <th><label for="cdv_activity_time">Orario Inizio</label></th>
+                    <td><input type="time" name="cdv_activity_time" id="cdv_activity_time" value="<?php echo esc_attr($activity_time); ?>" /></td>
+                </tr>
+                <tr>
+                    <th><label for="cdv_activity_duration">Durata (minuti)</label></th>
+                    <td>
+                        <select name="cdv_activity_duration" id="cdv_activity_duration">
+                            <option value="">Seleziona durata</option>
+                            <option value="30" <?php selected($activity_duration, '30'); ?>>30 minuti</option>
+                            <option value="60" <?php selected($activity_duration, '60'); ?>>1 ora</option>
+                            <option value="90" <?php selected($activity_duration, '90'); ?>>1.5 ore</option>
+                            <option value="120" <?php selected($activity_duration, '120'); ?>>2 ore</option>
+                            <option value="180" <?php selected($activity_duration, '180'); ?>>3 ore</option>
+                            <option value="240" <?php selected($activity_duration, '240'); ?>>4 ore</option>
+                            <option value="480" <?php selected($activity_duration, '480'); ?>>Mezza giornata</option>
+                            <option value="720" <?php selected($activity_duration, '720'); ?>>Giornata intera</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="cdv-meta-section">
+            <h4>📍 Luogo</h4>
+            <table class="form-table">
+                <tr>
+                    <th><label for="cdv_destination">Luogo</label></th>
+                    <td><input type="text" name="cdv_destination" id="cdv_destination" value="<?php echo esc_attr($destination); ?>" class="regular-text" /></td>
+                </tr>
+                <tr>
+                    <th><label for="cdv_country">Paese</label></th>
+                    <td><input type="text" name="cdv_country" id="cdv_country" value="<?php echo esc_attr($country); ?>" class="regular-text" /></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="cdv-meta-section">
+            <h4>💰 Budget e Partecipanti</h4>
+            <table class="form-table">
+                <tr>
+                    <th><label for="cdv_budget">Budget per Persona (€)</label></th>
+                    <td><input type="number" name="cdv_budget" id="cdv_budget" value="<?php echo esc_attr($budget); ?>" class="regular-text" /></td>
+                </tr>
+                <tr>
+                    <th><label for="cdv_max_participants">Max Partecipanti</label></th>
+                    <td><input type="number" name="cdv_max_participants" id="cdv_max_participants" value="<?php echo esc_attr($max_participants); ?>" class="regular-text" min="2" max="50" /></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="cdv-meta-section">
+            <h4>📊 Livello e Dettagli Sportivi</h4>
+            <table class="form-table">
+                <tr>
+                    <th><label for="cdv_activity_level">Livello Esperienza</label></th>
+                    <td>
+                        <select name="cdv_activity_level" id="cdv_activity_level">
+                            <option value="">Seleziona livello</option>
+                            <option value="principiante" <?php selected($activity_level, 'principiante'); ?>>🟢 Principiante</option>
+                            <option value="intermedio" <?php selected($activity_level, 'intermedio'); ?>>🟡 Intermedio</option>
+                            <option value="avanzato" <?php selected($activity_level, 'avanzato'); ?>>🟠 Avanzato</option>
+                            <option value="esperto" <?php selected($activity_level, 'esperto'); ?>>🔴 Esperto</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label>Attrezzatura Richiesta</label></th>
+                    <td>
+                        <?php
+                        $equipment_options = array('scarpe', 'racchetta', 'bici', 'abbigliamento', 'borraccia', 'pallone');
+                        $selected_equipment = is_array($equipment) ? $equipment : array();
+                        ?>
+                        <div class="cdv-checkbox-group">
+                            <?php foreach ($equipment_options as $eq) : ?>
+                                <label>
+                                    <input type="checkbox" name="cdv_equipment[]" value="<?php echo esc_attr($eq); ?>"
+                                        <?php checked(in_array($eq, $selected_equipment)); ?>>
+                                    <?php echo esc_html(ucfirst($eq)); ?>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label>Servizi Disponibili</label></th>
+                    <td>
+                        <?php
+                        $facilities_options = array('spogliatoi', 'docce', 'parcheggio', 'bar', 'wifi');
+                        $selected_facilities = is_array($facilities) ? $facilities : array();
+                        ?>
+                        <div class="cdv-checkbox-group">
+                            <?php foreach ($facilities_options as $fac) : ?>
+                                <label>
+                                    <input type="checkbox" name="cdv_facilities[]" value="<?php echo esc_attr($fac); ?>"
+                                        <?php checked(in_array($fac, $selected_facilities)); ?>>
+                                    <?php echo esc_html(ucfirst($fac)); ?>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="cdv_activity_requirements">Note e Requisiti</label></th>
+                    <td>
+                        <textarea name="cdv_activity_requirements" id="cdv_activity_requirements" rows="4" class="large-text"><?php echo esc_textarea($activity_requirements); ?></textarea>
+                        <p class="description">Requisiti particolari, documenti necessari, ecc.</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="cdv-meta-section">
+            <h4>⚙️ Stato Annuncio</h4>
+            <table class="form-table">
+                <tr>
+                    <th><label for="cdv_activity_status">Stato Attività</label></th>
+                    <td>
+                        <select name="cdv_activity_status" id="cdv_activity_status">
+                            <option value="open" <?php selected($status, 'open'); ?>>Aperto</option>
+                            <option value="full" <?php selected($status, 'full'); ?>>Completo</option>
+                            <option value="in_progress" <?php selected($status, 'in_progress'); ?>>In Corso</option>
+                            <option value="completed" <?php selected($status, 'completed'); ?>>Completato</option>
+                            <option value="cancelled" <?php selected($status, 'cancelled'); ?>>Annullato</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <script>
+        jQuery(document).ready(function($) {
+            function toggleDateFields() {
+                var dateType = $('#cdv_date_type').val();
+                if (dateType === 'precise') {
+                    $('.date-precise-field').show();
+                    $('.date-month-field').hide();
+                } else {
+                    $('.date-precise-field').hide();
+                    $('.date-month-field').show();
+                }
+            }
+
+            $('#cdv_date_type').on('change', toggleDateFields);
+            toggleDateFields();
+        });
+        </script>
         <?php
     }
 
@@ -451,19 +603,41 @@ class CDV_Admin {
             return;
         }
 
-        $fields = array(
+        // Text fields
+        $text_fields = array(
             'cdv_start_date',
             'cdv_end_date',
             'cdv_destination',
             'cdv_country',
             'cdv_budget',
             'cdv_max_participants',
-            'cdv_travel_status',
+            'cdv_activity_status',
+            'cdv_activity_month',
+            'cdv_date_type',
+            'cdv_activity_time',
+            'cdv_activity_duration',
+            'cdv_activity_level',
         );
 
-        foreach ($fields as $field) {
+        foreach ($text_fields as $field) {
             if (isset($_POST[$field])) {
                 update_post_meta($post_id, $field, sanitize_text_field($_POST[$field]));
+            }
+        }
+
+        // Textarea fields
+        if (isset($_POST['cdv_activity_requirements'])) {
+            update_post_meta($post_id, 'cdv_activity_requirements', sanitize_textarea_field($_POST['cdv_activity_requirements']));
+        }
+
+        // Array fields (checkboxes)
+        $array_fields = array('cdv_equipment', 'cdv_facilities');
+        foreach ($array_fields as $field) {
+            if (isset($_POST[$field]) && is_array($_POST[$field])) {
+                $sanitized = array_map('sanitize_text_field', $_POST[$field]);
+                update_post_meta($post_id, $field, $sanitized);
+            } else {
+                delete_post_meta($post_id, $field);
             }
         }
     }
@@ -576,26 +750,26 @@ class CDV_Admin {
      */
     public static function pending_travels_page() {
         // Handle form submissions FIRST, before any output
-        if (isset($_POST['approve_travel']) && isset($_POST['travel_id'])) {
-            $travel_id = intval($_POST['travel_id']);
-            check_admin_referer('cdv_approve_travel_' . $travel_id);
+        if (isset($_POST['approve_travel']) && isset($_POST['activity_id'])) {
+            $activity_id = intval($_POST['activity_id']);
+            check_admin_referer('cdv_approve_travel_' . $activity_id);
 
-            CDV_Travel_Moderation::approve_travel($travel_id);
+            CDV_Activity_Moderation::approve_travel($activity_id);
             wp_redirect(add_query_arg('approved', '1', admin_url('admin.php?page=cdv-pending-travels')));
             exit;
         }
 
-        if (isset($_POST['reject_travel']) && isset($_POST['travel_id'])) {
-            $travel_id = intval($_POST['travel_id']);
-            check_admin_referer('cdv_approve_travel_' . $travel_id);
+        if (isset($_POST['reject_travel']) && isset($_POST['activity_id'])) {
+            $activity_id = intval($_POST['activity_id']);
+            check_admin_referer('cdv_approve_travel_' . $activity_id);
 
-            CDV_Travel_Moderation::reject_travel($travel_id, 'Contenuto non conforme alle linee guida');
+            CDV_Activity_Moderation::reject_travel($activity_id, 'Contenuto non conforme alle linee guida');
             wp_redirect(add_query_arg('rejected', '1', admin_url('admin.php?page=cdv-pending-travels')));
             exit;
         }
 
         $args = array(
-            'post_type' => 'viaggio',
+            'post_type' => 'attivita',
             'post_status' => 'pending',
             'posts_per_page' => -1,
         );
@@ -604,27 +778,27 @@ class CDV_Admin {
 
         ?>
         <div class="wrap">
-            <h1>Viaggi in Attesa di Approvazione</h1>
+            <h1>Annunci in Attesa di Approvazione</h1>
 
             <?php if (isset($_GET['approved'])) : ?>
                 <div class="notice notice-success is-dismissible">
-                    <p>Viaggio approvato con successo!</p>
+                    <p>Annuncio approvato con successo!</p>
                 </div>
             <?php endif; ?>
 
             <?php if (isset($_GET['rejected'])) : ?>
                 <div class="notice notice-info is-dismissible">
-                    <p>Viaggio rifiutato.</p>
+                    <p>Annuncio rifiutato.</p>
                 </div>
             <?php endif; ?>
 
             <?php if (empty($pending_travels)) : ?>
-                <p>Nessun viaggio in attesa di approvazione.</p>
+                <p>Nessun annuncio in attesa di approvazione.</p>
             <?php else : ?>
                 <table class="wp-list-table widefat fixed striped">
                     <thead>
                         <tr>
-                            <th>Viaggio</th>
+                            <th>Annuncio</th>
                             <th>Organizzatore</th>
                             <th>Destinazione</th>
                             <th>Date</th>
@@ -633,18 +807,18 @@ class CDV_Admin {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($pending_travels as $travel) :
-                            $author = get_user_by('id', $travel->post_author);
-                            $destination = get_post_meta($travel->ID, 'cdv_destination', true);
-                            $country = get_post_meta($travel->ID, 'cdv_country', true);
-                            $start_date = get_post_meta($travel->ID, 'cdv_start_date', true);
-                            $end_date = get_post_meta($travel->ID, 'cdv_end_date', true);
-                            $budget = get_post_meta($travel->ID, 'cdv_budget', true);
+                        <?php foreach ($pending_travels as $activity) :
+                            $author = get_user_by('id', $activity->post_author);
+                            $destination = get_post_meta($activity->ID, 'cdv_destination', true);
+                            $country = get_post_meta($activity->ID, 'cdv_country', true);
+                            $start_date = get_post_meta($activity->ID, 'cdv_start_date', true);
+                            $end_date = get_post_meta($activity->ID, 'cdv_end_date', true);
+                            $budget = get_post_meta($activity->ID, 'cdv_budget', true);
                             ?>
                             <tr>
                                 <td>
-                                    <strong><?php echo esc_html($travel->post_title); ?></strong><br>
-                                    <small><?php echo esc_html(wp_trim_words($travel->post_content, 20)); ?></small>
+                                    <strong><?php echo esc_html($activity->post_title); ?></strong><br>
+                                    <small><?php echo esc_html(wp_trim_words($activity->post_content, 20)); ?></small>
                                 </td>
                                 <td>
                                     <?php echo get_avatar($author->ID, 40); ?>
@@ -662,12 +836,12 @@ class CDV_Admin {
                                 </td>
                                 <td><?php echo $budget ? '€' . number_format($budget, 0, ',', '.') : '-'; ?></td>
                                 <td>
-                                    <a href="<?php echo get_edit_post_link($travel->ID); ?>" class="button" target="_blank">Vedi/Modifica</a>
+                                    <a href="<?php echo get_edit_post_link($activity->ID); ?>" class="button" target="_blank">Vedi/Modifica</a>
                                     <form method="post" style="display: inline;">
-                                        <?php wp_nonce_field('cdv_approve_travel_' . $travel->ID); ?>
-                                        <input type="hidden" name="travel_id" value="<?php echo $travel->ID; ?>">
+                                        <?php wp_nonce_field('cdv_approve_travel_' . $activity->ID); ?>
+                                        <input type="hidden" name="activity_id" value="<?php echo $activity->ID; ?>">
                                         <button type="submit" name="approve_travel" class="button button-primary">✓ Approva</button>
-                                        <button type="submit" name="reject_travel" class="button button-link-delete" onclick="return confirm('Sei sicuro di voler rifiutare questo viaggio?');">✗ Rifiuta</button>
+                                        <button type="submit" name="reject_travel" class="button button-link-delete" onclick="return confirm('Sei sicuro di voler rifiutare questo annuncio?');">✗ Rifiuta</button>
                                     </form>
                                 </td>
                             </tr>
@@ -742,7 +916,7 @@ class CDV_Admin {
                             <th>Racconto</th>
                             <th>Autore</th>
                             <th>Destinazione</th>
-                            <th>Data Viaggio</th>
+                            <th>Data Attività</th>
                             <th>Data Invio</th>
                             <th>Azioni</th>
                         </tr>
@@ -751,7 +925,7 @@ class CDV_Admin {
                         <?php foreach ($pending_stories as $story) :
                             $author = get_user_by('id', $story->post_author);
                             $destination = get_post_meta($story->ID, 'cdv_destination', true);
-                            $travel_date = get_post_meta($story->ID, 'cdv_travel_date', true);
+                            $travel_date = get_post_meta($story->ID, 'cdv_activity_date', true);
                             $categories = get_the_terms($story->ID, 'categoria_racconto');
                             ?>
                             <tr>
