@@ -43,13 +43,13 @@ while (have_posts()) : the_post();
                 <article class="travel-content">
                     <header class="travel-header">
                         <div class="travel-badges">
-                            <?php cdv_activity_type_badges(); ?>
-                            <?php echo cdv_get_activity_status_label(); ?>
+                            <?php cdv_travel_type_badges(); ?>
+                            <?php echo cdv_get_travel_status_label(); ?>
                         </div>
 
                         <h1><?php the_title(); ?></h1>
 
-                        <?php cdv_activity_meta(); ?>
+                        <?php cdv_travel_meta(); ?>
                     </header>
 
                     <!-- Travel Details Box - Prominent placement -->
