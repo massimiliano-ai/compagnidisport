@@ -62,62 +62,48 @@ while (have_posts()) : the_post();
                             $end_date = get_post_meta($activity_id, 'cdv_end_date', true);
                             $date_type = get_post_meta($activity_id, 'cdv_date_type', true);
                             $activity_month = get_post_meta($activity_id, 'cdv_activity_month', true);
-                            $destination = get_post_meta($activity_id, 'cdv_location', true);
+                            $destination = get_post_meta($activity_id, 'cdv_destination', true);
                             $country = get_post_meta($activity_id, 'cdv_country', true);
                             $budget = get_post_meta($activity_id, 'cdv_budget', true);
                             $max_participants = get_post_meta($activity_id, 'cdv_max_participants', true);
 
-                            // Optional fields
-                            $transport = get_post_meta($activity_id, 'cdv_activity_transport', true);
-                            $accommodation = get_post_meta($activity_id, 'cdv_activity_accommodation', true);
-                            $difficulty = get_post_meta($activity_id, 'cdv_activity_difficulty', true);
-                            $meals = get_post_meta($activity_id, 'cdv_activity_meals', true);
-                            $guide_type = get_post_meta($activity_id, 'cdv_activity_guide_type', true);
+                            // Sport-specific fields
+                            $activity_time = get_post_meta($activity_id, 'cdv_activity_time', true);
+                            $activity_duration = get_post_meta($activity_id, 'cdv_activity_duration', true);
+                            $activity_level = get_post_meta($activity_id, 'cdv_activity_level', true);
+                            $equipment = get_post_meta($activity_id, 'cdv_equipment', true);
+                            $facilities = get_post_meta($activity_id, 'cdv_facilities', true);
                             $requirements = get_post_meta($activity_id, 'cdv_activity_requirements', true);
 
-                            // Transport labels with emoji
-                            $transport_labels = array(
-                                'aereo' => '✈️ Aereo',
-                                'treno' => '🚂 Treno',
-                                'bus' => '🚌 Bus',
-                                'auto_propria' => '🚗 Auto propria',
-                                'auto_noleggio' => '🚙 Auto a noleggio',
-                                'nave' => '🚢 Nave/Traghetto'
+                            // Activity level labels
+                            $level_labels = array(
+                                'principiante' => 'Principiante',
+                                'intermedio' => 'Intermedio',
+                                'avanzato' => 'Avanzato',
+                                'esperto' => 'Esperto'
                             );
 
-                            // Accommodation labels
-                            $accommodation_labels = array(
-                                'hotel' => 'Hotel',
-                                'ostello' => 'Ostello',
-                                'bb' => 'B&B',
-                                'airbnb' => 'Airbnb/Casa vacanze',
-                                'camping' => 'Camping/Tenda',
-                                'rifugio' => 'Rifugio',
-                                'misto' => 'Misto',
+                            // Equipment labels
+                            $equipment_labels = array(
+                                'scarpe' => '👟 Scarpe sportive',
+                                'racchetta' => '🎾 Racchetta',
+                                'bici' => '🚴 Bicicletta',
+                                'abbigliamento' => '👕 Abbigliamento tecnico',
+                                'borraccia' => '💧 Borraccia',
+                                'pallone' => '⚽ Pallone',
+                                'casco' => '🪖 Casco',
                                 'altro' => 'Altro'
                             );
 
-                            // Difficulty labels
-                            $difficulty_labels = array(
-                                'facile' => 'Facile - Per tutti',
-                                'moderato' => 'Moderato',
-                                'impegnativo' => 'Impegnativo',
-                                'molto_impegnativo' => 'Molto impegnativo'
-                            );
-
-                            // Meals labels
-                            $meals_labels = array(
-                                'non_inclusi' => 'Non inclusi',
-                                'colazione' => 'Solo colazione',
-                                'mezza_pensione' => 'Mezza pensione',
-                                'pensione_completa' => 'Pensione completa'
-                            );
-
-                            // Guide type labels
-                            $guide_labels = array(
-                                'autonomo' => 'Attività autonomo',
-                                'guida_locale' => 'Con guida locale',
-                                'tour_organizzato' => 'Tour organizzato'
+                            // Facilities labels
+                            $facilities_labels = array(
+                                'spogliatoi' => '🚿 Spogliatoi',
+                                'docce' => '🚿 Docce',
+                                'parcheggio' => '🅿️ Parcheggio',
+                                'bar' => '☕ Bar/Ristoro',
+                                'wifi' => '📶 WiFi',
+                                'campo_coperto' => '🏠 Campo coperto',
+                                'illuminazione' => '💡 Illuminazione notturna'
                             );
                             ?>
 
@@ -170,46 +156,58 @@ while (have_posts()) : the_post();
                                 </div>
                             <?php endif; ?>
 
-                            <?php if (!empty($transport) && is_array($transport)) : ?>
+                            <?php if ($activity_time) : ?>
+                                <div class="detail-item">
+                                    <strong>🕐 Orario:</strong>
+                                    <span><?php echo esc_html($activity_time); ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ($activity_duration) : ?>
+                                <div class="detail-item">
+                                    <strong>⏱️ Durata:</strong>
+                                    <span><?php echo esc_html($activity_duration); ?> minuti</span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ($activity_level) : ?>
+                                <div class="detail-item">
+                                    <strong>📊 Livello:</strong>
+                                    <span><?php echo isset($level_labels[$activity_level]) ? esc_html($level_labels[$activity_level]) : esc_html($activity_level); ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if (!empty($equipment) && is_array($equipment)) : ?>
                                 <div class="detail-item detail-item-full">
-                                    <strong>🚗 Trasporti:</strong>
+                                    <strong>🎒 Attrezzatura necessaria:</strong>
                                     <span><?php
-                                        $transport_texts = array();
-                                        foreach ($transport as $t) {
-                                            if (isset($transport_labels[$t])) {
-                                                $transport_texts[] = $transport_labels[$t];
+                                        $equipment_texts = array();
+                                        foreach ($equipment as $eq) {
+                                            if (isset($equipment_labels[$eq])) {
+                                                $equipment_texts[] = $equipment_labels[$eq];
+                                            } else {
+                                                $equipment_texts[] = esc_html($eq);
                                             }
                                         }
-                                        echo implode(', ', $transport_texts);
+                                        echo implode(', ', $equipment_texts);
                                     ?></span>
                                 </div>
                             <?php endif; ?>
 
-                            <?php if ($accommodation) : ?>
-                                <div class="detail-item">
-                                    <strong>🏨 Alloggio:</strong>
-                                    <span><?php echo isset($accommodation_labels[$accommodation]) ? esc_html($accommodation_labels[$accommodation]) : esc_html($accommodation); ?></span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if ($difficulty) : ?>
-                                <div class="detail-item">
-                                    <strong>📈 Difficoltà:</strong>
-                                    <span><?php echo isset($difficulty_labels[$difficulty]) ? esc_html($difficulty_labels[$difficulty]) : esc_html($difficulty); ?></span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if ($meals) : ?>
-                                <div class="detail-item">
-                                    <strong>🍽️ Pasti:</strong>
-                                    <span><?php echo isset($meals_labels[$meals]) ? esc_html($meals_labels[$meals]) : esc_html($meals); ?></span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if ($guide_type) : ?>
-                                <div class="detail-item">
-                                    <strong>👥 Organizzazione:</strong>
-                                    <span><?php echo isset($guide_labels[$guide_type]) ? esc_html($guide_labels[$guide_type]) : esc_html($guide_type); ?></span>
+                            <?php if (!empty($facilities) && is_array($facilities)) : ?>
+                                <div class="detail-item detail-item-full">
+                                    <strong>🏢 Strutture disponibili:</strong>
+                                    <span><?php
+                                        $facilities_texts = array();
+                                        foreach ($facilities as $fac) {
+                                            if (isset($facilities_labels[$fac])) {
+                                                $facilities_texts[] = $facilities_labels[$fac];
+                                            } else {
+                                                $facilities_texts[] = esc_html($fac);
+                                            }
+                                        }
+                                        echo implode(', ', $facilities_texts);
+                                    ?></span>
                                 </div>
                             <?php endif; ?>
 
@@ -297,12 +295,12 @@ while (have_posts()) : the_post();
                             <h3>📍 Posizione</h3>
                             <?php echo CDV_Travel_Maps::get_map_html($activity_id, '450px'); ?>
                             <?php
-                            $destination = get_post_meta($activity_id, 'cdv_location', true);
-                            $country = get_post_meta($activity_id, 'cdv_country', true);
-                            if ($destination || $country) :
+                            $map_destination = get_post_meta($activity_id, 'cdv_destination', true);
+                            $map_country = get_post_meta($activity_id, 'cdv_country', true);
+                            if ($map_destination || $map_country) :
                             ?>
                                 <p class="map-location-text">
-                                    <strong>Luogo:</strong> <?php echo esc_html($destination); ?><?php echo $country ? ', ' . esc_html($country) : ''; ?>
+                                    <strong>Luogo:</strong> <?php echo esc_html($map_destination); ?><?php echo $map_country ? ', ' . esc_html($map_country) : ''; ?>
                                 </p>
                             <?php endif; ?>
                         </div>

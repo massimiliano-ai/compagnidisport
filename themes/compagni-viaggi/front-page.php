@@ -11,26 +11,26 @@ get_header();
     <section class="hero-section">
         <div class="container">
             <div class="hero-content">
-                <h1><?php echo esc_html(get_theme_mod('cdv_hero_title', 'Trova i Tuoi Compagni di Viaggio')); ?></h1>
-                <p><?php echo esc_html(get_theme_mod('cdv_hero_subtitle', 'Connettiti con viaggiatori che condividono le tue passioni. Organizza avventure indimenticabili insieme.')); ?></p>
+                <h1><?php echo esc_html(get_theme_mod('cdv_hero_title', 'Trova i Tuoi Compagni di Sport')); ?></h1>
+                <p><?php echo esc_html(get_theme_mod('cdv_hero_subtitle', 'Connettiti con sportivi che condividono le tue passioni. Organizza attività sportive insieme.')); ?></p>
 
                 <!-- Search Box -->
                 <div class="search-box">
                     <form class="search-form" action="<?php echo esc_url(home_url('/')); ?>" method="get">
-                        <input type="hidden" name="post_type" value="viaggio">
+                        <input type="hidden" name="post_type" value="attivita">
 
                         <div class="form-group">
-                            <label for="destination">Destinazione</label>
-                            <input type="text" id="destination" name="s" placeholder="Dove vuoi andare?">
+                            <label for="destination">Luogo</label>
+                            <input type="text" id="destination" name="s" placeholder="Dove vuoi praticare sport?">
                         </div>
 
                         <div class="form-group">
-                            <label for="travel_type">Tipo di Viaggio</label>
-                            <select id="travel_type" name="tipo_viaggio">
+                            <label for="travel_type">Tipo di Sport</label>
+                            <select id="travel_type" name="tipo_sport">
                                 <option value="">Tutti i tipi</option>
                                 <?php
                                 $types = get_terms(array(
-                                    'taxonomy' => 'tipo_viaggio',
+                                    'taxonomy' => 'tipo_sport',
                                     'hide_empty' => false,
                                 ));
                                 foreach ($types as $type) {
@@ -40,12 +40,12 @@ get_header();
                             </select>
                         </div>
 
-                        <button type="submit" class="btn-search">Cerca Viaggi</button>
+                        <button type="submit" class="btn-search">Cerca Attività</button>
                     </form>
 
                     <!-- CTA Button -->
                     <div class="hero-cta" style="text-align: center; margin-top: calc(var(--spacing-unit) * 4);">
-                        <a href="<?php echo esc_url(get_theme_mod('cdv_hero_button_url', '/crea-viaggio')); ?>" class="btn-primary btn-large" style="font-size: 1.1rem; padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 4); display: inline-flex; align-items: center; gap: calc(var(--spacing-unit) * 1); box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+                        <a href="<?php echo esc_url(get_theme_mod('cdv_hero_button_url', '/crea-attivita')); ?>" class="btn-primary btn-large" style="font-size: 1.1rem; padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 4); display: inline-flex; align-items: center; gap: calc(var(--spacing-unit) * 1); box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
                             <?php echo esc_html(get_theme_mod('cdv_hero_button_text', 'Inserisci il Tuo Annuncio')); ?>
                         </a>
                     </div>
@@ -54,22 +54,22 @@ get_header();
         </div>
     </section>
 
-    <!-- Featured Travels -->
+    <!-- Featured Activities -->
     <section class="section">
         <div class="container">
             <div class="section-title">
-                <h2><?php echo esc_html(get_theme_mod('cdv_travels_title', 'Proposte di Viaggi')); ?></h2>
-                <p><?php echo esc_html(get_theme_mod('cdv_travels_subtitle', 'Scopri le prossime avventure e unisciti ai viaggiatori')); ?></p>
+                <h2><?php echo esc_html(get_theme_mod('cdv_travels_title', 'Annunci di Attività Sportive')); ?></h2>
+                <p><?php echo esc_html(get_theme_mod('cdv_travels_subtitle', 'Scopri le prossime attività e trova i tuoi compagni di sport')); ?></p>
             </div>
 
             <div class="grid">
                 <?php
                 $featured_travels = new WP_Query(array(
-                    'post_type' => 'viaggio',
+                    'post_type' => 'attivita',
                     'posts_per_page' => 6,
                     'meta_query' => array(
                         array(
-                            'key' => 'cdv_travel_status',
+                            'key' => 'cdv_activity_status',
                             'value' => 'open',
                             'compare' => '=',
                         ),
@@ -84,13 +84,13 @@ get_header();
 
                 if ($featured_travels->have_posts()) :
                     while ($featured_travels->have_posts()) : $featured_travels->the_post();
-                        get_template_part('template-parts/content', 'travel-card');
+                        get_template_part('template-parts/content', 'activity-card');
                     endwhile;
                     wp_reset_postdata();
                 else :
                     ?>
                     <div class="no-travels">
-                        <p>Nessun viaggio disponibile al momento. <?php if (is_user_logged_in()) : ?><a href="<?php echo esc_url(home_url('/crea-viaggio')); ?>">Crea il primo annuncio!</a><?php endif; ?></p>
+                        <p>Nessuna attività disponibile al momento. <?php if (is_user_logged_in()) : ?><a href="<?php echo esc_url(home_url('/crea-attivita')); ?>">Crea il primo annuncio!</a><?php endif; ?></p>
                     </div>
                     <?php
                 endif;
@@ -98,8 +98,8 @@ get_header();
             </div>
 
             <div class="text-center mt-3">
-                <a href="<?php echo esc_url(get_post_type_archive_link('viaggio')); ?>" class="btn-primary">
-                    <?php echo esc_html(get_theme_mod('cdv_travels_button_text', 'Vedi Tutti i Viaggi')); ?> →
+                <a href="<?php echo esc_url(get_post_type_archive_link('attivita')); ?>" class="btn-primary">
+                    <?php echo esc_html(get_theme_mod('cdv_travels_button_text', 'Vedi Tutti gli Annunci')); ?> →
                 </a>
             </div>
         </div>
@@ -110,26 +110,26 @@ get_header();
         <div class="container">
             <div class="section-title">
                 <h2><?php echo esc_html(get_theme_mod('cdv_how_title', 'Come Funziona')); ?></h2>
-                <p class="subtitle"><?php echo esc_html(get_theme_mod('cdv_how_subtitle', 'In pochi semplici passi puoi trovare i tuoi compagni di viaggio')); ?></p>
+                <p class="subtitle"><?php echo esc_html(get_theme_mod('cdv_how_subtitle', 'In pochi semplici passi puoi trovare i tuoi compagni di sport')); ?></p>
             </div>
 
             <div class="grid">
                 <div class="step-card">
                     <div class="step-number">1</div>
                     <h3><?php echo esc_html(get_theme_mod('cdv_step1_title', '1. Crea il Tuo Profilo')); ?></h3>
-                    <p><?php echo esc_html(get_theme_mod('cdv_step1_text', 'Registrati e completa il tuo profilo con interessi, lingue parlate e stili di viaggio preferiti.')); ?></p>
+                    <p><?php echo esc_html(get_theme_mod('cdv_step1_text', 'Registrati e completa il tuo profilo con i tuoi sport preferiti e il livello di esperienza.')); ?></p>
                 </div>
 
                 <div class="step-card">
                     <div class="step-number">2</div>
-                    <h3><?php echo esc_html(get_theme_mod('cdv_step2_title', '2. Cerca o Crea un Viaggio')); ?></h3>
-                    <p><?php echo esc_html(get_theme_mod('cdv_step2_text', 'Cerca tra i viaggi disponibili o crea il tuo e aspetta che altri viaggiatori si uniscano.')); ?></p>
+                    <h3><?php echo esc_html(get_theme_mod('cdv_step2_title', '2. Cerca o Pubblica un Annuncio')); ?></h3>
+                    <p><?php echo esc_html(get_theme_mod('cdv_step2_text', 'Cerca tra gli annunci disponibili o pubblica il tuo e aspetta che altri sportivi si uniscano.')); ?></p>
                 </div>
 
                 <div class="step-card">
                     <div class="step-number">3</div>
-                    <h3><?php echo esc_html(get_theme_mod('cdv_step3_title', '3. Connettiti e Organizza')); ?></h3>
-                    <p><?php echo esc_html(get_theme_mod('cdv_step3_text', 'Usa la chat di gruppo per conoscere i compagni di viaggio e organizzare i dettagli insieme.')); ?></p>
+                    <h3><?php echo esc_html(get_theme_mod('cdv_step3_title', '3. Connettiti e Pratica Sport')); ?></h3>
+                    <p><?php echo esc_html(get_theme_mod('cdv_step3_text', 'Usa la chat di gruppo per conoscere i compagni di sport e organizzare l\'attività insieme.')); ?></p>
                 </div>
             </div>
 
@@ -161,18 +161,18 @@ get_header();
         </div>
     </section>
 
-    <!-- Travel Stories Section -->
+    <!-- Sport Stories Section -->
     <section class="section" style="background-color: white;">
         <div class="container">
             <div class="section-title">
-                <h2>📖 <?php echo esc_html(get_theme_mod('cdv_stories_title', 'Racconti di Viaggio')); ?></h2>
-                <p><?php echo esc_html(get_theme_mod('cdv_stories_subtitle', 'Lasciati ispirare dalle esperienze dei nostri viaggiatori')); ?></p>
+                <h2>📖 <?php echo esc_html(get_theme_mod('cdv_stories_title', 'Storie Sportive')); ?></h2>
+                <p><?php echo esc_html(get_theme_mod('cdv_stories_subtitle', 'Lasciati ispirare dalle esperienze dei nostri sportivi')); ?></p>
             </div>
 
             <div class="stories-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: calc(var(--spacing-unit) * 4);">
                 <?php
                 $recent_stories = new WP_Query(array(
-                    'post_type' => 'racconto',
+                    'post_type' => 'storia-sport',
                     'posts_per_page' => 3,
                     'post_status' => 'publish',
                     'orderby' => 'date',
@@ -187,7 +187,7 @@ get_header();
                 else :
                     ?>
                     <div class="no-stories" style="grid-column: 1 / -1; text-align: center; padding: calc(var(--spacing-unit) * 4) 0;">
-                        <p style="color: var(--text-medium);">Nessun racconto disponibile al momento.</p>
+                        <p style="color: var(--text-medium);">Nessuna storia disponibile al momento.</p>
                     </div>
                     <?php
                 endif;
@@ -196,8 +196,8 @@ get_header();
 
             <?php if ($recent_stories->found_posts > 0) : ?>
                 <div class="text-center mt-3">
-                    <a href="<?php echo esc_url(home_url('/racconti')); ?>" class="btn-primary">
-                        <?php echo esc_html(get_theme_mod('cdv_stories_button_text', 'Vedi Tutti i Racconti')); ?> →
+                    <a href="<?php echo esc_url(home_url('/storie-sport')); ?>" class="btn-primary">
+                        <?php echo esc_html(get_theme_mod('cdv_stories_button_text', 'Vedi Tutte le Storie')); ?> →
                     </a>
                 </div>
             <?php endif; ?>
@@ -210,19 +210,19 @@ get_header();
             <div class="stats-grid">
                 <?php
                 global $wpdb;
-                $total_travels = wp_count_posts('viaggio')->publish;
+                $total_travels = wp_count_posts('attivita')->publish;
                 $total_users = count_users()['total_users'];
-                $total_participants = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}cdv_travel_participants WHERE status = 'accepted'");
+                $total_participants = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}cdv_participants WHERE status = 'accepted'");
                 ?>
 
                 <div class="stat-item">
                     <div class="stat-number"><?php echo $total_travels; ?></div>
-                    <div class="stat-label">Viaggi Pubblicati</div>
+                    <div class="stat-label">Attività Pubblicate</div>
                 </div>
 
                 <div class="stat-item">
                     <div class="stat-number"><?php echo $total_users; ?></div>
-                    <div class="stat-label">Viaggiatori</div>
+                    <div class="stat-label">Sportivi Registrati</div>
                 </div>
 
                 <div class="stat-item">
@@ -260,12 +260,12 @@ get_header();
     <!-- CTA Section -->
     <section class="section cta-section" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
         <div class="container text-center">
-            <h2 style="color: white;">Pronto per la Tua Prossima Avventura?</h2>
+            <h2 style="color: white;">Pronto per la Tua Prossima Attività Sportiva?</h2>
             <p style="font-size: 1.2rem; margin-bottom: calc(var(--spacing-unit) * 4); opacity: 0.95;">
-                Unisciti a migliaia di viaggiatori che hanno già trovato i loro compagni di viaggio perfetti.
+                Unisciti a migliaia di sportivi che hanno già trovato i loro compagni di sport perfetti.
             </p>
             <?php if (is_user_logged_in()) : ?>
-                <a href="<?php echo esc_url(home_url('/crea-viaggio')); ?>" class="btn-primary">
+                <a href="<?php echo esc_url(home_url('/crea-attivita')); ?>" class="btn-primary">
                     Crea il Tuo Annuncio
                 </a>
             <?php else : ?>

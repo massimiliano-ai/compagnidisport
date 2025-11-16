@@ -263,7 +263,7 @@ function cdv_travel_type_badges($post_id = null) {
         $post_id = get_the_ID();
     }
 
-    $types = wp_get_post_terms($post_id, 'tipo_viaggio');
+    $types = wp_get_post_terms($post_id, 'tipo_sport');
 
     if (empty($types) || is_wp_error($types)) {
         return;
@@ -277,14 +277,14 @@ function cdv_travel_type_badges($post_id = null) {
 }
 
 /**
- * Get travel status label
+ * Get activity status label
  */
 function cdv_get_travel_status_label($post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
 
-    $status = get_post_meta($post_id, 'cdv_travel_status', true);
+    $status = get_post_meta($post_id, 'cdv_activity_status', true);
 
     $labels = array(
         'open' => array('label' => 'Aperto', 'class' => 'success'),
@@ -344,8 +344,8 @@ function cdv_body_classes($classes) {
         $classes[] = 'logged-out';
     }
 
-    if (is_post_type_archive('viaggio') || is_singular('viaggio')) {
-        $classes[] = 'viaggio-page';
+    if (is_post_type_archive('attivita') || is_singular('attivita')) {
+        $classes[] = 'attivita-page';
     }
 
     return $classes;
@@ -380,7 +380,7 @@ function cdv_add_custom_css_meta_box() {
         'cdv_custom_css',
         'CSS Personalizzato',
         'cdv_custom_css_meta_box_callback',
-        array('page', 'post', 'viaggio'),
+        array('page', 'post', 'attivita'),
         'normal',
         'low'
     );
@@ -445,18 +445,18 @@ function cdv_output_page_custom_css() {
 add_action('wp_head', 'cdv_output_page_custom_css', 100);
 
 /**
- * Advanced Search and Filters for Viaggi Archive
+ * Advanced Search and Filters for Activities Archive
  */
 function cdv_filter_viaggi_archive($query) {
-    // Only modify main query on viaggio archive pages OR search with post_type=viaggio
-    $is_viaggio_query = is_post_type_archive('viaggio') ||
-                        (is_search() && isset($_GET['post_type']) && $_GET['post_type'] === 'viaggio');
+    // Only modify main query on attivita archive pages OR search with post_type=attivita
+    $is_viaggio_query = is_post_type_archive('attivita') ||
+                        (is_search() && isset($_GET['post_type']) && $_GET['post_type'] === 'attivita');
 
     if (!is_admin() && $query->is_main_query() && $is_viaggio_query) {
 
-        // Force post_type to viaggio for search queries
-        if (is_search() && isset($_GET['post_type']) && $_GET['post_type'] === 'viaggio') {
-            $query->set('post_type', 'viaggio');
+        // Force post_type to attivita for search queries
+        if (is_search() && isset($_GET['post_type']) && $_GET['post_type'] === 'attivita') {
+            $query->set('post_type', 'attivita');
         }
 
         // Meta query array
@@ -532,11 +532,11 @@ function cdv_filter_viaggi_archive($query) {
             }
         }
 
-        // Filter by travel status
-        if (!empty($_GET['travel_status'])) {
+        // Filter by activity status
+        if (!empty($_GET['activity_status'])) {
             $meta_query[] = array(
-                'key' => 'cdv_travel_status',
-                'value' => sanitize_text_field($_GET['travel_status']),
+                'key' => 'cdv_activity_status',
+                'value' => sanitize_text_field($_GET['activity_status']),
                 'compare' => '='
             );
         }
@@ -679,12 +679,12 @@ function cdv_filter_viaggi_archive($query) {
         }
 
         // Taxonomy filters (already handled by WordPress, but we make them explicit)
-        if (!empty($_GET['tipo_viaggio'])) {
+        if (!empty($_GET['tipo_sport'])) {
             $query->set('tax_query', array(
                 array(
-                    'taxonomy' => 'tipo_viaggio',
+                    'taxonomy' => 'tipo_sport',
                     'field' => 'slug',
-                    'terms' => sanitize_text_field($_GET['tipo_viaggio'])
+                    'terms' => sanitize_text_field($_GET['tipo_sport'])
                 )
             ));
         }
@@ -742,15 +742,15 @@ function cdv_filter_viaggi_archive($query) {
 add_action('pre_get_posts', 'cdv_filter_viaggi_archive');
 
 /**
- * Force use of archive-viaggio.php template for viaggio searches
- * This ensures searches from hero section and travels page show results
- * in the travels archive page instead of the generic search page
+ * Force use of archive-attivita.php template for activity searches
+ * This ensures searches from hero section and activities page show results
+ * in the activities archive page instead of the generic search page
  */
 function cdv_force_viaggio_archive_template($template) {
-    // Check if this is a search with post_type=viaggio
-    if (is_search() && isset($_GET['post_type']) && $_GET['post_type'] === 'viaggio') {
-        // Get the archive-viaggio.php template
-        $archive_template = locate_template('archive-viaggio.php');
+    // Check if this is a search with post_type=attivita
+    if (is_search() && isset($_GET['post_type']) && $_GET['post_type'] === 'attivita') {
+        // Get the archive-attivita.php template
+        $archive_template = locate_template('archive-attivita.php');
         if ($archive_template) {
             return $archive_template;
         }
