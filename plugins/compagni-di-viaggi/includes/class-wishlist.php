@@ -84,7 +84,7 @@ class CDV_Wishlist {
         }
 
         $travels = new WP_Query(array(
-            'post_type' => 'viaggio',
+            'post_type' => 'attivita',
             'post__in' => $wishlist_ids,
             'post_status' => 'publish',
             'posts_per_page' => -1,
@@ -107,7 +107,7 @@ class CDV_Wishlist {
         $travel_id = isset($_POST['travel_id']) ? intval($_POST['travel_id']) : 0;
 
         if (!$travel_id) {
-            wp_send_json_error(array('message' => 'ID viaggio non valido'));
+            wp_send_json_error(array('message' => 'ID attività non valido'));
         }
 
         $user_id = get_current_user_id();

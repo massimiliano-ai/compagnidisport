@@ -471,7 +471,7 @@ while (have_posts()) : the_post();
                         <?php if ($is_organizer) : ?>
                             <div class="sidebar-card">
                                 <p><strong>Questo è il tuo annuncio!</strong></p>
-                                <a href="<?php echo home_url('/modifica-attività/?activity_id=' . $activity_id); ?>" class="btn-primary" style="width: 100%; text-align: center;">
+                                <a href="<?php echo home_url('/modifica-attivita/?activity_id=' . $activity_id); ?>" class="btn-primary" style="width: 100%; text-align: center;">
                                     Modifica Annuncio
                                 </a>
                             </div>

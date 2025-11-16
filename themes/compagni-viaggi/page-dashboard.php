@@ -131,13 +131,13 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                 <?php endif; ?>
             </button>
             <button class="tab-button" data-tab="participating">
-                Viaggi a cui Partecipo
+                Attività a cui Partecipo
                 <?php if ($participated_travels) : ?>
                     (<?php echo $participated_travels->post_count; ?>)
                 <?php endif; ?>
             </button>
             <button class="tab-button" data-tab="my-stories">
-                I Miei Racconti (<?php echo $my_stories->post_count; ?>)
+                Le Mie Storie (<?php echo $my_stories->post_count; ?>)
             </button>
             <button class="tab-button" data-tab="messages">
                 Messaggi
@@ -358,9 +358,9 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
             <?php endif; ?>
         </div>
 
-        <!-- Tab: Viaggi a cui Partecipo -->
+        <!-- Tab: Attività a cui Partecipo -->
         <div class="tab-content" id="tab-participating">
-            <h2>Viaggi a cui Partecipo</h2>
+            <h2>Attività a cui Partecipo</h2>
 
             <?php if ($participated_travels && $participated_travels->have_posts()) : ?>
                 <div class="travels-grid">
