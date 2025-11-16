@@ -1,7 +1,7 @@
 <?php
 /**
- * Template Name: Calendario Viaggi
- * Template per visualizzare i viaggi in formato calendario
+ * Template Name: Calendario Attività
+ * Template per visualizzare i attività in formato calendario
  */
 
 get_header();
@@ -21,13 +21,13 @@ $last_day = date('Y-m-t', strtotime($first_day));
 
 $travels = $wpdb->get_results($wpdb->prepare("
     SELECT p.ID, p.post_title, pm1.meta_value as start_date, pm2.meta_value as end_date,
-           pm3.meta_value as destination, pm4.meta_value as travel_status
+           pm3.meta_value as destination, pm4.meta_value as activity_status
     FROM {$wpdb->posts} p
     LEFT JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'cdv_start_date'
     LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = 'cdv_end_date'
-    LEFT JOIN {$wpdb->postmeta} pm3 ON p.ID = pm3.post_id AND pm3.meta_key = 'cdv_destination'
-    LEFT JOIN {$wpdb->postmeta} pm4 ON p.ID = pm4.post_id AND pm4.meta_key = 'cdv_travel_status'
-    WHERE p.post_type = 'viaggio'
+    LEFT JOIN {$wpdb->postmeta} pm3 ON p.ID = pm3.post_id AND pm3.meta_key = 'cdv_location'
+    LEFT JOIN {$wpdb->postmeta} pm4 ON p.ID = pm4.post_id AND pm4.meta_key = 'cdv_activity_status'
+    WHERE p.post_type = 'attivita'
     AND p.post_status = 'publish'
     AND (
         (pm1.meta_value >= %s AND pm1.meta_value <= %s)
@@ -68,8 +68,8 @@ $today_url = remove_query_arg(array('month', 'year'));
 <main class="site-main calendar-page">
     <div class="page-header">
         <div class="container">
-            <h1>📅 Calendario Viaggi</h1>
-            <p>Esplora i viaggi disponibili per data</p>
+            <h1>📅 Calendario Attività</h1>
+            <p>Esplora i attività disponibili per data</p>
         </div>
     </div>
 
@@ -87,7 +87,7 @@ $today_url = remove_query_arg(array('month', 'year'));
 
         <div class="calendar-actions">
             <a href="<?php echo esc_url($today_url); ?>" class="btn btn-primary">Oggi</a>
-            <a href="<?php echo get_post_type_archive_link('viaggio'); ?>" class="btn btn-secondary">Vista Lista</a>
+            <a href="<?php echo get_post_type_archive_link('attivita'); ?>" class="btn btn-secondary">Vista Lista</a>
         </div>
 
         <!-- Calendar Grid -->
@@ -127,9 +127,9 @@ $today_url = remove_query_arg(array('month', 'year'));
                     $count = count($travels_by_date[$date]);
                     foreach ($travels_by_date[$date] as $index => $travel) {
                         if ($index < 2) { // Show max 2 travels per day
-                            $status_class = 'status-' . ($travel->travel_status ?: 'open');
+                            $status_class = 'status-' . ($travel->activity_status ?: 'open');
                             echo '<a href="' . get_permalink($travel->ID) . '" class="day-travel-item ' . $status_class . '" title="' . esc_attr($travel->post_title) . '">';
-                            echo '<span class="travel-destination">' . esc_html($travel->destination ?: 'Viaggio') . '</span>';
+                            echo '<span class="travel-destination">' . esc_html($travel->destination ?: 'Attività') . '</span>';
                             echo '</a>';
                         }
                     }
@@ -159,7 +159,7 @@ $today_url = remove_query_arg(array('month', 'year'));
                     <span class="legend-color today-color"></span> Oggi
                 </div>
                 <div class="legend-item">
-                    <span class="legend-color has-travels-color"></span> Giorni con viaggi
+                    <span class="legend-color has-travels-color"></span> Giorni con attività
                 </div>
                 <div class="legend-item">
                     <span class="legend-color status-open"></span> Aperto

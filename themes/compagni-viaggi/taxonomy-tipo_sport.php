@@ -1,9 +1,12 @@
 <?php
 /**
- * Archive template for Viaggi
+ * Taxonomy template for Tipo Attività
  */
 
 get_header();
+
+// Get current taxonomy term
+$term = get_queried_object();
 ?>
 
 <main class="site-main">
@@ -11,10 +14,14 @@ get_header();
         <div class="container">
             <?php if (is_search() && get_search_query()) : ?>
                 <h1>Risultati per: "<?php echo esc_html(get_search_query()); ?>"</h1>
-                <p>Trovati <strong><?php echo $wp_query->found_posts; ?></strong> viaggi<?php if ($wp_query->found_posts != 1) : ?><?php endif; ?></p>
+                <p>Trovati <strong><?php echo $wp_query->found_posts; ?></strong> attività<?php if ($wp_query->found_posts != 1) : ?><?php endif; ?></p>
             <?php else : ?>
-                <h1>Tutti i Viaggi</h1>
-                <p>Esplora tutti i viaggi disponibili e trova la tua prossima avventura</p>
+                <h1><?php echo esc_html($term->name); ?></h1>
+                <?php if ($term->description) : ?>
+                    <p><?php echo esc_html($term->description); ?></p>
+                <?php else : ?>
+                    <p>Esplora tutti i attività di tipo <?php echo esc_html(strtolower($term->name)); ?></p>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
     </div>
@@ -23,29 +30,29 @@ get_header();
         <div class="archive-layout">
             <!-- Filters Sidebar -->
             <aside class="filters-sidebar">
-                <h3>Filtra Viaggi</h3>
+                <h3>Filtra Attività</h3>
 
                 <form method="get" action="<?php echo esc_url(home_url('/')); ?>" class="filters-form">
-                    <!-- Mantieni il post_type viaggio durante la ricerca -->
-                    <input type="hidden" name="post_type" value="viaggio">
+                    <!-- Mantieni il post_type attività durante la ricerca -->
+                    <input type="hidden" name="post_type" value="attivita">
 
                     <div class="filters-form-scroll">
                         <div class="filter-group">
                             <label for="search">Cerca</label>
-                            <input type="text" id="search" name="s" value="<?php echo get_search_query(); ?>" placeholder="Destinazione...">
+                            <input type="text" id="search" name="s" value="<?php echo get_search_query(); ?>" placeholder="Luogo...">
                         </div>
 
                     <div class="filter-group">
-                        <label for="tipo_viaggio">Tipo di Viaggio</label>
-                        <select id="tipo_viaggio" name="tipo_viaggio">
+                        <label for="tipo_sport">Tipo di Attività</label>
+                        <select id="tipo_sport" name="tipo_sport">
                             <option value="">Tutti</option>
                             <?php
                             $types = get_terms(array(
-                                'taxonomy' => 'tipo_viaggio',
+                                'taxonomy' => 'tipo_sport',
                                 'hide_empty' => false,
                             ));
                             foreach ($types as $type) {
-                                $selected = isset($_GET['tipo_viaggio']) && $_GET['tipo_viaggio'] === $type->slug ? 'selected' : '';
+                                $selected = isset($_GET['tipo_sport']) && $_GET['tipo_sport'] === $type->slug ? 'selected' : '';
                                 echo '<option value="' . esc_attr($type->slug) . '" ' . $selected . '>' . esc_html($type->name) . '</option>';
                             }
                             ?>
@@ -58,12 +65,12 @@ get_header();
                     </div>
 
                     <div class="filter-group">
-                        <label for="travel_status">Stato Viaggio</label>
-                        <select id="travel_status" name="travel_status">
+                        <label for="activity_status">Stato Attività</label>
+                        <select id="activity_status" name="activity_status">
                             <option value="">Tutti</option>
-                            <option value="open" <?php selected(isset($_GET['travel_status']) && $_GET['travel_status'] === 'open'); ?>>Aperto</option>
-                            <option value="full" <?php selected(isset($_GET['travel_status']) && $_GET['travel_status'] === 'full'); ?>>Completo</option>
-                            <option value="closed" <?php selected(isset($_GET['travel_status']) && $_GET['travel_status'] === 'closed'); ?>>Chiuso</option>
+                            <option value="open" <?php selected(isset($_GET['activity_status']) && $_GET['activity_status'] === 'open'); ?>>Aperto</option>
+                            <option value="full" <?php selected(isset($_GET['activity_status']) && $_GET['activity_status'] === 'full'); ?>>Completo</option>
+                            <option value="closed" <?php selected(isset($_GET['activity_status']) && $_GET['activity_status'] === 'closed'); ?>>Chiuso</option>
                         </select>
                     </div>
 
@@ -178,7 +185,7 @@ get_header();
                         </div>
 
                         <div class="filter-group">
-                            <label>Durata Viaggio</label>
+                            <label>Durata Attività</label>
                             <select name="duration">
                                 <option value="">Tutte</option>
                                 <option value="1-3" <?php selected(isset($_GET['duration']) && $_GET['duration'] === '1-3'); ?>>1-3 giorni</option>
@@ -191,7 +198,7 @@ get_header();
                         <div class="filter-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" name="solo_posti_disponibili" value="1" <?php checked(isset($_GET['solo_posti_disponibili'])); ?>>
-                                Solo viaggi con posti disponibili
+                                Solo attività con posti disponibili
                             </label>
                         </div>
                     </div>
@@ -212,13 +219,13 @@ get_header();
                     <div class="filters-form-actions">
                         <button type="submit" class="btn-primary" style="width: 100%;">Applica Filtri</button>
 
-                        <?php if (!empty($_GET['s']) || !empty($_GET['tipo_viaggio']) || !empty($_GET['date_from']) ||
+                        <?php if (!empty($_GET['s']) || !empty($_GET['tipo_sport']) || !empty($_GET['date_from']) ||
                                   !empty($_GET['budget_min']) || !empty($_GET['budget_max']) || !empty($_GET['max_participants']) ||
-                                  !empty($_GET['travel_status']) || !empty($_GET['transport']) || !empty($_GET['accommodation']) ||
+                                  !empty($_GET['activity_status']) || !empty($_GET['transport']) || !empty($_GET['accommodation']) ||
                                   !empty($_GET['difficulty']) || !empty($_GET['meals']) || !empty($_GET['guide']) ||
                                   !empty($_GET['min_rating']) || !empty($_GET['duration']) || !empty($_GET['solo_posti_disponibili']) ||
                                   (isset($_GET['orderby']) && $_GET['orderby'] !== 'date')) : ?>
-                            <a href="<?php echo esc_url(get_post_type_archive_link('viaggio')); ?>" class="btn-secondary" style="width: 100%; text-align: center;">
+                            <a href="<?php echo esc_url(get_post_type_archive_link('attivita')); ?>" class="btn-secondary" style="width: 100%; text-align: center;">
                                 Reset Filtri
                             </a>
                         <?php endif; ?>
@@ -251,7 +258,7 @@ get_header();
                     ?>
                     <div class="results-header">
                         <p>
-                            <?php echo $total_travels . ' ' . ($total_travels === 1 ? 'viaggio trovato' : 'viaggi trovati'); ?>
+                            <?php echo $total_travels . ' ' . ($total_travels === 1 ? 'attività trovato' : 'attività trovati'); ?>
                         </p>
                     </div>
 
@@ -278,11 +285,11 @@ get_header();
 
                 <?php else : ?>
                     <div class="no-results">
-                        <h2>Nessun viaggio trovato</h2>
-                        <p>Prova a modificare i filtri di ricerca o <a href="<?php echo esc_url(get_post_type_archive_link('viaggio')); ?>">visualizza tutti i viaggi</a>.</p>
+                        <h2>Nessun attività trovato</h2>
+                        <p>Prova a modificare i filtri di ricerca o <a href="<?php echo esc_url(get_post_type_archive_link('attivita')); ?>">visualizza tutti i attività</a>.</p>
                         <?php if (is_user_logged_in()) : ?>
-                            <a href="<?php echo esc_url(admin_url('post-new.php?post_type=viaggio')); ?>" class="btn-primary">
-                                Crea il Primo Viaggio
+                            <a href="<?php echo esc_url(admin_url('post-new.php?post_type=attività')); ?>" class="btn-primary">
+                                Crea il Primo Attività
                             </a>
                         <?php endif; ?>
                     </div>
