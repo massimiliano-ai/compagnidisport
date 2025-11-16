@@ -17,12 +17,12 @@ class CDV_Travel_Moderation {
         add_filter('wp_insert_post_data', array(__CLASS__, 'force_pending_status'), 10, 2);
 
         // Add moderation columns to admin
-        add_filter('manage_viaggio_posts_columns', array(__CLASS__, 'add_moderation_column'));
-        add_action('manage_viaggio_posts_custom_column', array(__CLASS__, 'moderation_column_content'), 10, 2);
+        add_filter('manage_attivita_posts_columns', array(__CLASS__, 'add_moderation_column'));
+        add_action('manage_attivita_posts_custom_column', array(__CLASS__, 'moderation_column_content'), 10, 2);
 
         // Bulk actions
-        add_filter('bulk_actions-edit-viaggio', array(__CLASS__, 'add_bulk_actions'));
-        add_filter('handle_bulk_actions-edit-viaggio', array(__CLASS__, 'handle_bulk_actions'), 10, 3);
+        add_filter('bulk_actions-edit-attivita', array(__CLASS__, 'add_bulk_actions'));
+        add_filter('handle_bulk_actions-edit-attivita', array(__CLASS__, 'handle_bulk_actions'), 10, 3);
 
         // Quick approve/reject
         add_action('wp_ajax_cdv_approve_travel', array(__CLASS__, 'ajax_approve_travel'));
@@ -37,7 +37,7 @@ class CDV_Travel_Moderation {
      */
     public static function force_pending_status($data, $postarr) {
         // Only for viaggio post type
-        if ($data['post_type'] !== 'viaggio') {
+        if ($data['post_type'] !== 'attivita') {
             return $data;
         }
 
@@ -269,11 +269,11 @@ class CDV_Travel_Moderation {
     public static function pending_travels_notice() {
         $screen = get_current_screen();
 
-        if ($screen->id !== 'edit-viaggio') {
+        if ($screen->id !== 'edit-attivita') {
             return;
         }
 
-        $pending_count = wp_count_posts('viaggio')->pending;
+        $pending_count = wp_count_posts('attivita')->pending;
 
         if ($pending_count > 0) {
             echo '<div class="notice notice-warning">';
@@ -301,7 +301,8 @@ class CDV_Travel_Moderation {
      * Get pending travels count
      */
     public static function get_pending_travels_count() {
-        return wp_count_posts('viaggio')->pending;
+        $counts = wp_count_posts('attivita');
+        return isset($counts->pending) ? $counts->pending : 0;
     }
 
     /**
