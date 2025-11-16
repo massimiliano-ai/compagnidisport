@@ -260,14 +260,14 @@ get_header();
                         // Show active travels first
                         foreach ($active_travels as $post) :
                             setup_postdata($post);
-                            get_template_part('template-parts/content', 'travel-card');
+                            get_template_part('template-parts/content', 'activity-card');
                         endforeach;
 
                         // Show expired travels with badge
                         foreach ($expired_travels as $post) :
                             setup_postdata($post);
                             set_query_var('is_expired', true);
-                            get_template_part('template-parts/content', 'travel-card');
+                            get_template_part('template-parts/content', 'activity-card');
                             set_query_var('is_expired', false);
                         endforeach;
                         wp_reset_postdata();
