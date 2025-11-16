@@ -76,7 +76,7 @@ class Compagni_Di_Sport {
         require_once CDV_PLUGIN_DIR . 'includes/class-database.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-user-roles.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-registration.php';
-        require_once CDV_PLUGIN_DIR . 'includes/class-activity-moderation.php';
+        require_once CDV_PLUGIN_DIR . 'includes/class-travel-moderation.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-user-profiles.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-email-verification.php';
         require_once CDV_PLUGIN_DIR . 'includes/class-email-notifications.php';
@@ -127,7 +127,7 @@ class Compagni_Di_Sport {
         CDV_User_Meta::init();
         CDV_User_Roles::init();
         CDV_Registration::init();
-        CDV_Activity_Moderation::init();
+        CDV_Travel_Moderation::init();
         CDV_User_Profiles::init();
         CDV_Email_Verification::init();
         CDV_Email_Notifications::init();
