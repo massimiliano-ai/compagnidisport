@@ -332,7 +332,7 @@ class CDV_REST_API {
 
         // Participating travels
         global $wpdb;
-        $table_participants = $wpdb->prefix . 'cdv_travel_participants';
+        $table_participants = $wpdb->prefix . 'cdv_participants';
         $participating_ids = $wpdb->get_col($wpdb->prepare(
             "SELECT travel_id FROM $table_participants WHERE user_id = %d AND status = 'accepted'",
             $user_id

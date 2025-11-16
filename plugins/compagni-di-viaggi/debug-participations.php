@@ -23,7 +23,7 @@ global $wpdb;
 
 // 1. Check if table exists
 echo '<h2>1. Verifica Tabella Database</h2>';
-$table_name = $wpdb->prefix . 'cdv_travel_participants';
+$table_name = $wpdb->prefix . 'cdv_participants';
 $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'");
 
 if ($table_exists) {

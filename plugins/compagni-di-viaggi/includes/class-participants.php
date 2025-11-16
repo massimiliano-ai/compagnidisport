@@ -22,7 +22,7 @@ class CDV_Participants {
     public static function request_join($travel_id, $user_id, $message = '') {
         global $wpdb;
 
-        $table = $wpdb->prefix . 'cdv_travel_participants';
+        $table = $wpdb->prefix . 'cdv_participants';
 
         // Check if already requested
         $existing = $wpdb->get_var($wpdb->prepare(
@@ -82,7 +82,7 @@ class CDV_Participants {
     public static function accept_participant($travel_id, $user_id) {
         global $wpdb;
 
-        $table = $wpdb->prefix . 'cdv_travel_participants';
+        $table = $wpdb->prefix . 'cdv_participants';
 
         // Check if travel is full
         if (self::is_travel_full($travel_id)) {
@@ -118,7 +118,7 @@ class CDV_Participants {
     public static function reject_participant($travel_id, $user_id) {
         global $wpdb;
 
-        $table = $wpdb->prefix . 'cdv_travel_participants';
+        $table = $wpdb->prefix . 'cdv_participants';
 
         $result = $wpdb->update(
             $table,
@@ -143,7 +143,7 @@ class CDV_Participants {
     public static function get_participants($travel_id, $status = null) {
         global $wpdb;
 
-        $table = $wpdb->prefix . 'cdv_travel_participants';
+        $table = $wpdb->prefix . 'cdv_participants';
 
         if ($status) {
             return $wpdb->get_results($wpdb->prepare(
@@ -165,7 +165,7 @@ class CDV_Participants {
     public static function is_participant($travel_id, $user_id, $status = null) {
         global $wpdb;
 
-        $table = $wpdb->prefix . 'cdv_travel_participants';
+        $table = $wpdb->prefix . 'cdv_participants';
 
         if ($status) {
             $result = $wpdb->get_var($wpdb->prepare(
@@ -234,7 +234,7 @@ class CDV_Participants {
     public static function remove_participant($travel_id, $user_id) {
         global $wpdb;
 
-        $table = $wpdb->prefix . 'cdv_travel_participants';
+        $table = $wpdb->prefix . 'cdv_participants';
 
         return $wpdb->delete(
             $table,

@@ -22,7 +22,7 @@ class CDV_Group_Chat {
         }
 
         // Check if user is an accepted participant
-        $table = $wpdb->prefix . 'cdv_travel_participants';
+        $table = $wpdb->prefix . 'cdv_participants';
         $is_participant = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM $table
             WHERE travel_id = %d
@@ -40,7 +40,7 @@ class CDV_Group_Chat {
      */
     public static function get_messages($travel_id, $limit = 50) {
         global $wpdb;
-        $table = $wpdb->prefix . 'cdv_travel_group_messages';
+        $table = $wpdb->prefix . 'cdv_group_messages';
 
         $messages = $wpdb->get_results($wpdb->prepare(
             "SELECT m.*, u.display_name, u.user_login
@@ -75,7 +75,7 @@ class CDV_Group_Chat {
             return new WP_Error('empty_message', 'Il messaggio non può essere vuoto');
         }
 
-        $table = $wpdb->prefix . 'cdv_travel_group_messages';
+        $table = $wpdb->prefix . 'cdv_group_messages';
 
         $inserted = $wpdb->insert(
             $table,
@@ -100,7 +100,7 @@ class CDV_Group_Chat {
      */
     public static function get_participants_count($travel_id) {
         global $wpdb;
-        $table = $wpdb->prefix . 'cdv_travel_participants';
+        $table = $wpdb->prefix . 'cdv_participants';
 
         return (int) $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM $table
@@ -115,7 +115,7 @@ class CDV_Group_Chat {
      */
     public static function get_participants($travel_id) {
         global $wpdb;
-        $table = $wpdb->prefix . 'cdv_travel_participants';
+        $table = $wpdb->prefix . 'cdv_participants';
 
         return $wpdb->get_results($wpdb->prepare(
             "SELECT p.user_id, p.is_organizer, u.display_name, u.user_login

@@ -149,7 +149,7 @@ class CDV_Badges {
     public static function check_travel_badges($user_id) {
         global $wpdb;
 
-        $table_participants = $wpdb->prefix . 'cdv_travel_participants';
+        $table_participants = $wpdb->prefix . 'cdv_participants';
 
         // Count completed travels
         $count = $wpdb->get_var($wpdb->prepare(

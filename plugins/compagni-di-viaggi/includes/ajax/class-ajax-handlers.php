@@ -624,7 +624,7 @@ class CDV_Ajax_Handlers {
 
         // Add organizer as first participant
         global $wpdb;
-        $table_name = $wpdb->prefix . 'cdv_travel_participants';
+        $table_name = $wpdb->prefix . 'cdv_participants';
 
         $wpdb->insert(
             $table_name,

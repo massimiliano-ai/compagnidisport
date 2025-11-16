@@ -324,7 +324,7 @@ class CDV_Email_Notifications {
     public static function send_review_reminders() {
         global $wpdb;
 
-        $table = $wpdb->prefix . 'cdv_travel_participants';
+        $table = $wpdb->prefix . 'cdv_participants';
         $reviews_table = $wpdb->prefix . 'cdv_reviews';
 
         // Get all completed travels with accepted participants

@@ -160,8 +160,8 @@ class CDV_Database {
         global $wpdb;
 
         $tables = array(
-            $wpdb->prefix . 'cdv_travel_participants',
-            $wpdb->prefix . 'cdv_travel_group_messages',
+            $wpdb->prefix . 'cdv_participants',
+            $wpdb->prefix . 'cdv_group_messages',
             $wpdb->prefix . 'cdv_reviews',
             $wpdb->prefix . 'cdv_review_reports',
             $wpdb->prefix . 'cdv_review_helpful',

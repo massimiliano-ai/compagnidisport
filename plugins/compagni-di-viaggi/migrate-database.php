@@ -29,7 +29,7 @@ h2 { color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
 </style>';
 
 global $wpdb;
-$table_name = $wpdb->prefix . 'cdv_travel_participants';
+$table_name = $wpdb->prefix . 'cdv_participants';
 
 // Check if table exists
 $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'");

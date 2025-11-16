@@ -118,7 +118,7 @@ class CDV_Reviews {
     public static function get_pending_reviews($user_id) {
         global $wpdb;
 
-        $table_participants = $wpdb->prefix . 'cdv_travel_participants';
+        $table_participants = $wpdb->prefix . 'cdv_participants';
         $table_reviews = $wpdb->prefix . 'cdv_reviews';
 
         // Get completed travels where user was a participant
