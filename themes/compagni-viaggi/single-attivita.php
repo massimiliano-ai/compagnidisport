@@ -15,536 +15,6 @@ while (have_posts()) : the_post();
     $pending_requests = CDV_Participants::get_participants($activity_id, 'pending');
     ?>
 
-    <main class="site-main single-travel">
-        <!-- Hero Image - Priorità alle immagini della tassonomia tipo_sport -->
-        <?php
-        $taxonomy_hero_url = false;
-        if (class_exists('CDV_Taxonomy_Images')) {
-            $activity_types = wp_get_post_terms($activity_id, 'tipo_sport', array('fields' => 'ids'));
-            if (!empty($activity_types)) {
-                $taxonomy_hero_url = CDV_Taxonomy_Images::get_random_term_image($activity_types, 'travel-hero');
-            }
-        }
-        ?>
-
-        <?php if ($taxonomy_hero_url) : ?>
-            <div class="travel-hero">
-                <img src="<?php echo esc_url($taxonomy_hero_url); ?>" alt="<?php the_title_attribute(); ?>" />
-            </div>
-        <?php elseif (has_post_thumbnail()) : ?>
-            <div class="travel-hero">
-                <?php the_post_thumbnail('travel-hero'); ?>
-            </div>
-        <?php endif; ?>
-
-        <div class="container">
-            <div class="travel-layout">
-                <!-- Main Content -->
-                <article class="travel-content">
-                    <header class="travel-header">
-                        <div class="travel-badges">
-                            <?php cdv_travel_type_badges(); ?>
-                            <?php echo cdv_get_travel_status_label(); ?>
-                        </div>
-
-                        <h1><?php the_title(); ?></h1>
-
-                        <?php cdv_travel_meta(); ?>
-                    </header>
-
-                    <!-- Travel Details Box - Prominent placement -->
-                    <div class="travel-details-box-top">
-                        <h3>📋 Dettagli Annuncio</h3>
-                        <div class="travel-details-grid">
-                            <?php
-                            // Core fields
-                            $start_date = get_post_meta($activity_id, 'cdv_start_date', true);
-                            $end_date = get_post_meta($activity_id, 'cdv_end_date', true);
-                            $date_type = get_post_meta($activity_id, 'cdv_date_type', true);
-                            $activity_month = get_post_meta($activity_id, 'cdv_activity_month', true);
-                            $destination = get_post_meta($activity_id, 'cdv_destination', true);
-                            $country = get_post_meta($activity_id, 'cdv_country', true);
-                            $budget = get_post_meta($activity_id, 'cdv_budget', true);
-                            $max_participants = get_post_meta($activity_id, 'cdv_max_participants', true);
-
-                            // Sport-specific fields
-                            $activity_time = get_post_meta($activity_id, 'cdv_activity_time', true);
-                            $activity_duration = get_post_meta($activity_id, 'cdv_activity_duration', true);
-                            $activity_level = get_post_meta($activity_id, 'cdv_activity_level', true);
-                            $equipment = get_post_meta($activity_id, 'cdv_equipment', true);
-                            $facilities = get_post_meta($activity_id, 'cdv_facilities', true);
-                            $requirements = get_post_meta($activity_id, 'cdv_activity_requirements', true);
-
-                            // Activity level labels
-                            $level_labels = array(
-                                'principiante' => 'Principiante',
-                                'intermedio' => 'Intermedio',
-                                'avanzato' => 'Avanzato',
-                                'esperto' => 'Esperto'
-                            );
-
-                            // Equipment labels
-                            $equipment_labels = array(
-                                'scarpe' => '👟 Scarpe sportive',
-                                'racchetta' => '🎾 Racchetta',
-                                'bici' => '🚴 Bicicletta',
-                                'abbigliamento' => '👕 Abbigliamento tecnico',
-                                'borraccia' => '💧 Borraccia',
-                                'pallone' => '⚽ Pallone',
-                                'casco' => '🪖 Casco',
-                                'altro' => 'Altro'
-                            );
-
-                            // Facilities labels
-                            $facilities_labels = array(
-                                'spogliatoi' => '🚿 Spogliatoi',
-                                'docce' => '🚿 Docce',
-                                'parcheggio' => '🅿️ Parcheggio',
-                                'bar' => '☕ Bar/Ristoro',
-                                'wifi' => '📶 WiFi',
-                                'campo_coperto' => '🏠 Campo coperto',
-                                'illuminazione' => '💡 Illuminazione notturna'
-                            );
-                            ?>
-
-                            <?php if ($date_type === 'month' && $activity_month) : ?>
-                                <div class="detail-item">
-                                    <strong>📅 Periodo:</strong>
-                                    <span><?php echo date_i18n('F Y', strtotime($activity_month . '-01')); ?> (flessibile)</span>
-                                </div>
-                            <?php else : ?>
-                                <?php if ($start_date) : ?>
-                                    <div class="detail-item">
-                                        <strong>📅 Inizio:</strong>
-                                        <span><?php echo date_i18n('d M Y', strtotime($start_date)); ?></span>
-                                    </div>
-                                <?php endif; ?>
-
-                                <?php if ($end_date) : ?>
-                                    <div class="detail-item">
-                                        <strong>📅 Fine:</strong>
-                                        <span><?php echo date_i18n('d M Y', strtotime($end_date)); ?></span>
-                                    </div>
-                                <?php endif; ?>
-                            <?php endif; ?>
-
-                            <?php if ($destination) : ?>
-                                <div class="detail-item">
-                                    <strong>📍 Luogo:</strong>
-                                    <span><?php echo esc_html($destination); ?></span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if ($country) : ?>
-                                <div class="detail-item">
-                                    <strong>🌍 Paese:</strong>
-                                    <span><?php echo esc_html($country); ?></span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if ($budget) : ?>
-                                <div class="detail-item">
-                                    <strong>💰 Budget indicativo:</strong>
-                                    <span>€<?php echo number_format($budget, 0, ',', '.'); ?></span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if ($max_participants) : ?>
-                                <div class="detail-item">
-                                    <strong>👥 Partecipanti:</strong>
-                                    <span><?php echo count($participants); ?>/<?php echo $max_participants; ?></span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if ($activity_time) : ?>
-                                <div class="detail-item">
-                                    <strong>🕐 Orario:</strong>
-                                    <span><?php echo esc_html($activity_time); ?></span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if ($activity_duration) : ?>
-                                <div class="detail-item">
-                                    <strong>⏱️ Durata:</strong>
-                                    <span><?php echo esc_html($activity_duration); ?> minuti</span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if ($activity_level) : ?>
-                                <div class="detail-item">
-                                    <strong>📊 Livello:</strong>
-                                    <span><?php echo isset($level_labels[$activity_level]) ? esc_html($level_labels[$activity_level]) : esc_html($activity_level); ?></span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if (!empty($equipment) && is_array($equipment)) : ?>
-                                <div class="detail-item detail-item-full">
-                                    <strong>🎒 Attrezzatura necessaria:</strong>
-                                    <span><?php
-                                        $equipment_texts = array();
-                                        foreach ($equipment as $eq) {
-                                            if (isset($equipment_labels[$eq])) {
-                                                $equipment_texts[] = $equipment_labels[$eq];
-                                            } else {
-                                                $equipment_texts[] = esc_html($eq);
-                                            }
-                                        }
-                                        echo implode(', ', $equipment_texts);
-                                    ?></span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if (!empty($facilities) && is_array($facilities)) : ?>
-                                <div class="detail-item detail-item-full">
-                                    <strong>🏢 Strutture disponibili:</strong>
-                                    <span><?php
-                                        $facilities_texts = array();
-                                        foreach ($facilities as $fac) {
-                                            if (isset($facilities_labels[$fac])) {
-                                                $facilities_texts[] = $facilities_labels[$fac];
-                                            } else {
-                                                $facilities_texts[] = esc_html($fac);
-                                            }
-                                        }
-                                        echo implode(', ', $facilities_texts);
-                                    ?></span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if ($requirements) : ?>
-                                <div class="detail-item detail-item-full detail-item-requirements">
-                                    <strong>📝 Requisiti e Note:</strong>
-                                    <span><?php echo nl2br(esc_html($requirements)); ?></span>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-
-                    <div class="travel-description">
-                        <?php the_content(); ?>
-                    </div>
-
-                    <!-- Featured Image caricata dall'utente - Mostrata dopo la descrizione -->
-                    <?php if (has_post_thumbnail() && $taxonomy_hero_url) : ?>
-                        <div class="travel-user-image">
-                            <h3>📸 Immagine dell'Annuncio</h3>
-                            <div class="user-image-wrapper">
-                                <?php the_post_thumbnail('large'); ?>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Social Sharing -->
-                    <div class="travel-share-section">
-                        <h3>💬 Condividi questo annuncio</h3>
-                        <?php
-                        if (class_exists('CDV_Social_Sharing')) {
-                            echo CDV_Social_Sharing::render_share_buttons($activity_id);
-                        }
-                        ?>
-                    </div>
-
-                    <!-- Photo Gallery -->
-                    <?php
-                    $gallery_images = CDV_Travel_Gallery::get_gallery_images($activity_id);
-                    if (!empty($gallery_images)) :
-                    ?>
-                        <div class="travel-gallery-section">
-                            <h3>📸 Galleria Fotografica (<?php echo count($gallery_images); ?> foto)</h3>
-                            <div class="travel-gallery-grid">
-                                <?php foreach ($gallery_images as $image) : ?>
-                                    <div class="gallery-item" data-image-id="<?php echo $image['id']; ?>">
-                                        <img src="<?php echo esc_url($image['medium']); ?>"
-                                             alt="<?php echo esc_attr($image['alt'] ?: 'Foto di attività'); ?>"
-                                             data-full="<?php echo esc_url($image['full']); ?>">
-                                        <div class="gallery-item-overlay">
-                                            <button class="gallery-view-btn" data-full-url="<?php echo esc_url($image['full']); ?>">
-                                                <span>🔍</span> Visualizza
-                                            </button>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-
-                            <?php if ($is_organizer) : ?>
-                                <div class="gallery-manage-link">
-                                    <a href="#" id="manage-gallery-btn" class="btn btn-secondary">
-                                        <span>📷</span> Gestisci Galleria
-                                    </a>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    <?php elseif ($is_organizer) : ?>
-                        <div class="travel-gallery-section empty">
-                            <div class="gallery-empty-state">
-                                <p>📷 Nessuna foto ancora. Aggiungi foto per far vedere la bellezza di questo annuncio!</p>
-                                <a href="#" id="add-first-photo-btn" class="btn btn-primary">
-                                    Aggiungi Prime Foto
-                                </a>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Travel Map -->
-                    <?php
-                    // Only show map section if coordinates exist
-                    $map_coords = CDV_Travel_Maps::get_activity_coordinates($activity_id);
-                    if ($map_coords && isset($map_coords['lat']) && isset($map_coords['lon'])) :
-                    ?>
-                        <div class="travel-map-section">
-                            <h3>📍 Posizione</h3>
-                            <?php echo CDV_Travel_Maps::get_map_html($activity_id, '450px'); ?>
-                            <?php
-                            $map_destination = get_post_meta($activity_id, 'cdv_destination', true);
-                            $map_country = get_post_meta($activity_id, 'cdv_country', true);
-                            if ($map_destination || $map_country) :
-                            ?>
-                                <p class="map-location-text">
-                                    <strong>Luogo:</strong> <?php echo esc_html($map_destination); ?><?php echo $map_country ? ', ' . esc_html($map_country) : ''; ?>
-                                </p>
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Participants Section -->
-                    <?php if (!empty($participants)) : ?>
-                        <div class="participants-section">
-                            <h3>Partecipanti (<?php echo count($participants); ?>)</h3>
-                            <div class="participants-grid">
-                                <!-- Organizer First -->
-                                <div class="participant-card-wrapper">
-                                    <a href="<?php echo esc_url(CDV_User_Profiles::get_profile_url($author_id)); ?>" class="participant-card organizer">
-                                        <?php echo get_avatar($author_id, 80); ?>
-                                        <div class="participant-info">
-                                            <div class="participant-name">
-                                                <?php echo esc_html(get_the_author_meta('user_login', $author_id)); ?>
-                                                <span class="organizer-badge">Organizzatore</span>
-                                            </div>
-                                            <?php
-                                            $reputation = get_user_meta($author_id, 'cdv_reputation_score', true);
-                                            if ($reputation) {
-                                                cdv_display_stars($reputation);
-                                            }
-                                            ?>
-                                        </div>
-                                    </a>
-                                    <?php if (is_user_logged_in() && get_current_user_id() != $author_id && ($is_participant || $is_organizer)) : ?>
-                                        <a href="<?php echo home_url('/dashboard?tab=messages&user_id=' . $author_id . '&activity_id=' . $activity_id); ?>" class="btn btn-sm btn-primary participant-message-btn">
-                                            Invia Messaggio
-                                        </a>
-                                    <?php endif; ?>
-                                </div>
-
-                                <!-- Other Participants -->
-                                <?php foreach ($participants as $participant) :
-                                    $user = get_user_by('id', $participant->user_id);
-                                    $reputation = get_user_meta($user->ID, 'cdv_reputation_score', true);
-                                    ?>
-                                    <div class="participant-card-wrapper">
-                                        <a href="<?php echo esc_url(CDV_User_Profiles::get_profile_url($user->ID)); ?>" class="participant-card">
-                                            <?php echo get_avatar($user->ID, 80); ?>
-                                            <div class="participant-info">
-                                                <div class="participant-name"><?php echo esc_html($user->user_login); ?></div>
-                                                <?php if ($reputation) {
-                                                    cdv_display_stars($reputation);
-                                                } ?>
-                                            </div>
-                                        </a>
-                                        <div class="participant-actions">
-                                            <?php if (is_user_logged_in() && get_current_user_id() != $user->ID && ($is_participant || $is_organizer)) : ?>
-                                                <a href="<?php echo home_url('/dashboard?tab=messages&user_id=' . $user->ID . '&activity_id=' . $activity_id); ?>" class="btn btn-sm btn-primary participant-message-btn">
-                                                    Invia Messaggio
-                                                </a>
-                                            <?php endif; ?>
-
-                                            <?php if ($is_organizer) : ?>
-                                                <button class="btn btn-sm btn-danger btn-remove-participant"
-                                                        data-travel-id="<?php echo $activity_id; ?>"
-                                                        data-user-id="<?php echo $user->ID; ?>"
-                                                        data-user-name="<?php echo esc_attr($user->user_login); ?>">
-                                                    Rimuovi
-                                                </button>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Group Chat (only for participants and organizer) -->
-                    <?php if (is_user_logged_in() && ($is_participant || $is_organizer)) : ?>
-                        <div class="group-chat-section">
-                            <div class="group-chat-header">
-                                <h3>Chat di Gruppo</h3>
-                                <span class="participants-count" id="chat-participants-count">
-                                    <?php echo count($participants) + 1; ?> partecipanti
-                                </span>
-                            </div>
-
-                            <div class="group-chat-container">
-                                <div class="group-chat-messages" id="group-chat-messages">
-                                    <div class="loading-indicator">Caricamento messaggi...</div>
-                                </div>
-
-                                <div class="group-chat-input">
-                                    <textarea
-                                        id="group-message-input"
-                                        placeholder="Scrivi un messaggio al gruppo..."
-                                        rows="2"
-                                    ></textarea>
-                                    <button id="send-group-message" class="btn btn-primary">
-                                        <span class="button-text">Invia</span>
-                                        <span class="button-loading" style="display: none;">...</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Pending Requests (only for organizer) -->
-                    <?php if ($is_organizer && !empty($pending_requests)) : ?>
-                        <div class="pending-requests-section">
-                            <h3>Richieste in Attesa (<?php echo count($pending_requests); ?>)</h3>
-                            <div class="requests-list">
-                                <?php foreach ($pending_requests as $request) :
-                                    $user = get_user_by('id', $request->user_id);
-                                    ?>
-                                    <div class="request-card" data-user-id="<?php echo $user->ID; ?>">
-                                        <?php echo get_avatar($user->ID, 60); ?>
-                                        <div class="request-info">
-                                            <div class="request-name"><?php echo esc_html($user->user_login); ?></div>
-                                            <?php if ($request->message) : ?>
-                                                <div class="request-message"><?php echo esc_html($request->message); ?></div>
-                                            <?php endif; ?>
-                                        </div>
-                                        <div class="request-actions">
-                                            <button class="btn-success btn-accept" data-travel-id="<?php echo $activity_id; ?>" data-user-id="<?php echo $user->ID; ?>">
-                                                Accetta
-                                            </button>
-                                            <button class="btn-danger btn-reject" data-travel-id="<?php echo $activity_id; ?>" data-user-id="<?php echo $user->ID; ?>">
-                                                Rifiuta
-                                            </button>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                </article>
-
-                <!-- Sidebar -->
-                <aside class="travel-sidebar">
-                    <!-- Organizer Card -->
-                    <div class="sidebar-card organizer-card">
-                        <h3>Organizzatore</h3>
-                        <?php
-                        $verified = get_user_meta($author_id, 'cdv_verified', true);
-                        $reputation = get_user_meta($author_id, 'cdv_reputation_score', true);
-                        $bio = get_user_meta($author_id, 'cdv_bio', true);
-                        ?>
-                        <a href="<?php echo esc_url(CDV_User_Profiles::get_profile_url($author_id)); ?>" class="organizer-profile">
-                            <?php echo get_avatar($author_id, 100); ?>
-                            <div class="organizer-name">
-                                <?php echo esc_html(get_the_author_meta('user_login', $author_id)); ?>
-                                <?php if ($verified === '1') : ?>
-                                    <span class="verified-badge" title="Verificato">✓</span>
-                                <?php endif; ?>
-                            </div>
-                            <?php if ($reputation) {
-                                cdv_display_stars($reputation);
-                            } ?>
-                            <?php if ($bio) : ?>
-                                <p class="organizer-bio"><?php echo esc_html($bio); ?></p>
-                            <?php endif; ?>
-                        </a>
-                    </div>
-
-                    <!-- Wishlist Card -->
-                    <div class="sidebar-card wishlist-card">
-                        <?php echo CDV_Wishlist::get_wishlist_button_html($activity_id, 'btn btn-secondary wishlist-toggle-btn'); ?>
-                        <p class="wishlist-help-text">Salva questo annuncio per dopo</p>
-                    </div>
-
-                    <!-- Join Card -->
-                    <?php if (is_user_logged_in()) : ?>
-                        <?php if ($is_organizer) : ?>
-                            <div class="sidebar-card">
-                                <p><strong>Questo è il tuo annuncio!</strong></p>
-                                <a href="<?php echo home_url('/modifica-attivita/?activity_id=' . $activity_id); ?>" class="btn-primary" style="width: 100%; text-align: center;">
-                                    Modifica Annuncio
-                                </a>
-                            </div>
-                        <?php elseif ($is_participant) : ?>
-                            <div class="sidebar-card success-card">
-                                <p><strong>✓ Sei un partecipante</strong></p>
-                                <p>Hai accesso alla chat di gruppo</p>
-                                <button id="leave-travel-btn" class="btn-danger" style="width: 100%; margin-top: 1rem;"
-                                        data-travel-id="<?php echo $activity_id; ?>">
-                                    Lascia l'Annuncio
-                                </button>
-                            </div>
-                        <?php elseif ($has_requested) : ?>
-                            <div class="sidebar-card warning-card">
-                                <p><strong>⏳ Richiesta in attesa</strong></p>
-                                <p>La tua richiesta è in attesa di approvazione</p>
-                            </div>
-                        <?php else : ?>
-                            <div class="sidebar-card join-card">
-                                <h3>Partecipa all'Annuncio</h3>
-                                <form id="join-travel-form">
-                                    <div class="form-group">
-                                        <label for="join-message">Messaggio per l'organizzatore</label>
-                                        <textarea id="join-message" rows="4" placeholder="Presentati e spiega perché vuoi unirti..."></textarea>
-                                    </div>
-                                    <button type="submit" class="btn-primary" style="width: 100%;">
-                                        Richiedi di Partecipare
-                                    </button>
-                                </form>
-                            </div>
-                        <?php endif; ?>
-
-                        <!-- Contact Organizer Form - Available to all logged users -->
-                        <?php if (is_user_logged_in() && !$is_organizer) : ?>
-                            <div class="sidebar-card contact-card">
-                                <h3>💬 Chiedi Informazioni</h3>
-                                <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">Hai domande? Contatta l'organizzatore</p>
-                                <form id="contact-organizer-form">
-                                    <div class="form-group">
-                                        <label for="contact-message">Il tuo messaggio</label>
-                                        <textarea id="contact-message" rows="4" placeholder="Scrivi la tua domanda o richiesta di informazioni..." required></textarea>
-                                    </div>
-                                    <button type="submit" class="btn-secondary" style="width: 100%;">
-                                        Invia Messaggio
-                                    </button>
-                                </form>
-                            </div>
-                        <?php endif; ?>
-                    <?php else : ?>
-                        <div class="sidebar-card">
-                            <h3>Vuoi partecipare?</h3>
-                            <p>Accedi o registrati per unirti a questo annuncio</p>
-                            <a href="<?php echo wp_login_url(get_permalink()); ?>" class="btn-primary" style="width: 100%; text-align: center; margin-bottom: 10px;">
-                                Accedi
-                            </a>
-                            <a href="<?php echo wp_registration_url(); ?>" class="btn-secondary" style="width: 100%; text-align: center;">
-                                Registrati
-                            </a>
-                        </div>
-                    <?php endif; ?>
-                </aside>
-            </div>
-        </div>
-
-        <!-- Gallery Lightbox -->
-        <div id="gallery-lightbox" class="gallery-lightbox">
-            <div class="gallery-lightbox-content">
-                <button class="gallery-lightbox-close">&times;</button>
-                <img id="gallery-lightbox-image" class="gallery-lightbox-image" src="" alt="">
-            </div>
-        </div>
-    </main>
-
     <style>
         /* Import Montserrat font */
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
@@ -1443,6 +913,536 @@ while (have_posts()) : the_post();
             box-shadow: none !important;
         }
     </style>
+    <main class="site-main single-travel">
+        <!-- Hero Image - Priorità alle immagini della tassonomia tipo_sport -->
+        <?php
+        $taxonomy_hero_url = false;
+        if (class_exists('CDV_Taxonomy_Images')) {
+            $activity_types = wp_get_post_terms($activity_id, 'tipo_sport', array('fields' => 'ids'));
+            if (!empty($activity_types)) {
+                $taxonomy_hero_url = CDV_Taxonomy_Images::get_random_term_image($activity_types, 'travel-hero');
+            }
+        }
+        ?>
+
+        <?php if ($taxonomy_hero_url) : ?>
+            <div class="travel-hero">
+                <img src="<?php echo esc_url($taxonomy_hero_url); ?>" alt="<?php the_title_attribute(); ?>" />
+            </div>
+        <?php elseif (has_post_thumbnail()) : ?>
+            <div class="travel-hero">
+                <?php the_post_thumbnail('travel-hero'); ?>
+            </div>
+        <?php endif; ?>
+
+        <div class="container">
+            <div class="travel-layout">
+                <!-- Main Content -->
+                <article class="travel-content">
+                    <header class="travel-header">
+                        <div class="travel-badges">
+                            <?php cdv_travel_type_badges(); ?>
+                            <?php echo cdv_get_travel_status_label(); ?>
+                        </div>
+
+                        <h1><?php the_title(); ?></h1>
+
+                        <?php cdv_travel_meta(); ?>
+                    </header>
+
+                    <!-- Travel Details Box - Prominent placement -->
+                    <div class="travel-details-box-top">
+                        <h3>📋 Dettagli Annuncio</h3>
+                        <div class="travel-details-grid">
+                            <?php
+                            // Core fields
+                            $start_date = get_post_meta($activity_id, 'cdv_start_date', true);
+                            $end_date = get_post_meta($activity_id, 'cdv_end_date', true);
+                            $date_type = get_post_meta($activity_id, 'cdv_date_type', true);
+                            $activity_month = get_post_meta($activity_id, 'cdv_activity_month', true);
+                            $destination = get_post_meta($activity_id, 'cdv_destination', true);
+                            $country = get_post_meta($activity_id, 'cdv_country', true);
+                            $budget = get_post_meta($activity_id, 'cdv_budget', true);
+                            $max_participants = get_post_meta($activity_id, 'cdv_max_participants', true);
+
+                            // Sport-specific fields
+                            $activity_time = get_post_meta($activity_id, 'cdv_activity_time', true);
+                            $activity_duration = get_post_meta($activity_id, 'cdv_activity_duration', true);
+                            $activity_level = get_post_meta($activity_id, 'cdv_activity_level', true);
+                            $equipment = get_post_meta($activity_id, 'cdv_equipment', true);
+                            $facilities = get_post_meta($activity_id, 'cdv_facilities', true);
+                            $requirements = get_post_meta($activity_id, 'cdv_activity_requirements', true);
+
+                            // Activity level labels
+                            $level_labels = array(
+                                'principiante' => 'Principiante',
+                                'intermedio' => 'Intermedio',
+                                'avanzato' => 'Avanzato',
+                                'esperto' => 'Esperto'
+                            );
+
+                            // Equipment labels
+                            $equipment_labels = array(
+                                'scarpe' => '👟 Scarpe sportive',
+                                'racchetta' => '🎾 Racchetta',
+                                'bici' => '🚴 Bicicletta',
+                                'abbigliamento' => '👕 Abbigliamento tecnico',
+                                'borraccia' => '💧 Borraccia',
+                                'pallone' => '⚽ Pallone',
+                                'casco' => '🪖 Casco',
+                                'altro' => 'Altro'
+                            );
+
+                            // Facilities labels
+                            $facilities_labels = array(
+                                'spogliatoi' => '🚿 Spogliatoi',
+                                'docce' => '🚿 Docce',
+                                'parcheggio' => '🅿️ Parcheggio',
+                                'bar' => '☕ Bar/Ristoro',
+                                'wifi' => '📶 WiFi',
+                                'campo_coperto' => '🏠 Campo coperto',
+                                'illuminazione' => '💡 Illuminazione notturna'
+                            );
+                            ?>
+
+                            <?php if ($date_type === 'month' && $activity_month) : ?>
+                                <div class="detail-item">
+                                    <strong>📅 Periodo:</strong>
+                                    <span><?php echo date_i18n('F Y', strtotime($activity_month . '-01')); ?> (flessibile)</span>
+                                </div>
+                            <?php else : ?>
+                                <?php if ($start_date) : ?>
+                                    <div class="detail-item">
+                                        <strong>📅 Inizio:</strong>
+                                        <span><?php echo date_i18n('d M Y', strtotime($start_date)); ?></span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ($end_date) : ?>
+                                    <div class="detail-item">
+                                        <strong>📅 Fine:</strong>
+                                        <span><?php echo date_i18n('d M Y', strtotime($end_date)); ?></span>
+                                    </div>
+                                <?php endif; ?>
+                            <?php endif; ?>
+
+                            <?php if ($destination) : ?>
+                                <div class="detail-item">
+                                    <strong>📍 Luogo:</strong>
+                                    <span><?php echo esc_html($destination); ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ($country) : ?>
+                                <div class="detail-item">
+                                    <strong>🌍 Paese:</strong>
+                                    <span><?php echo esc_html($country); ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ($budget) : ?>
+                                <div class="detail-item">
+                                    <strong>💰 Budget indicativo:</strong>
+                                    <span>€<?php echo number_format($budget, 0, ',', '.'); ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ($max_participants) : ?>
+                                <div class="detail-item">
+                                    <strong>👥 Partecipanti:</strong>
+                                    <span><?php echo count($participants); ?>/<?php echo $max_participants; ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ($activity_time) : ?>
+                                <div class="detail-item">
+                                    <strong>🕐 Orario:</strong>
+                                    <span><?php echo esc_html($activity_time); ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ($activity_duration) : ?>
+                                <div class="detail-item">
+                                    <strong>⏱️ Durata:</strong>
+                                    <span><?php echo esc_html($activity_duration); ?> minuti</span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ($activity_level) : ?>
+                                <div class="detail-item">
+                                    <strong>📊 Livello:</strong>
+                                    <span><?php echo isset($level_labels[$activity_level]) ? esc_html($level_labels[$activity_level]) : esc_html($activity_level); ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if (!empty($equipment) && is_array($equipment)) : ?>
+                                <div class="detail-item detail-item-full">
+                                    <strong>🎒 Attrezzatura necessaria:</strong>
+                                    <span><?php
+                                        $equipment_texts = array();
+                                        foreach ($equipment as $eq) {
+                                            if (isset($equipment_labels[$eq])) {
+                                                $equipment_texts[] = $equipment_labels[$eq];
+                                            } else {
+                                                $equipment_texts[] = esc_html($eq);
+                                            }
+                                        }
+                                        echo implode(', ', $equipment_texts);
+                                    ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if (!empty($facilities) && is_array($facilities)) : ?>
+                                <div class="detail-item detail-item-full">
+                                    <strong>🏢 Strutture disponibili:</strong>
+                                    <span><?php
+                                        $facilities_texts = array();
+                                        foreach ($facilities as $fac) {
+                                            if (isset($facilities_labels[$fac])) {
+                                                $facilities_texts[] = $facilities_labels[$fac];
+                                            } else {
+                                                $facilities_texts[] = esc_html($fac);
+                                            }
+                                        }
+                                        echo implode(', ', $facilities_texts);
+                                    ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ($requirements) : ?>
+                                <div class="detail-item detail-item-full detail-item-requirements">
+                                    <strong>📝 Requisiti e Note:</strong>
+                                    <span><?php echo nl2br(esc_html($requirements)); ?></span>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="travel-description">
+                        <?php the_content(); ?>
+                    </div>
+
+                    <!-- Featured Image caricata dall'utente - Mostrata dopo la descrizione -->
+                    <?php if (has_post_thumbnail() && $taxonomy_hero_url) : ?>
+                        <div class="travel-user-image">
+                            <h3>📸 Immagine dell'Annuncio</h3>
+                            <div class="user-image-wrapper">
+                                <?php the_post_thumbnail('large'); ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Social Sharing -->
+                    <div class="travel-share-section">
+                        <h3>💬 Condividi questo annuncio</h3>
+                        <?php
+                        if (class_exists('CDV_Social_Sharing')) {
+                            echo CDV_Social_Sharing::render_share_buttons($activity_id);
+                        }
+                        ?>
+                    </div>
+
+                    <!-- Photo Gallery -->
+                    <?php
+                    $gallery_images = CDV_Travel_Gallery::get_gallery_images($activity_id);
+                    if (!empty($gallery_images)) :
+                    ?>
+                        <div class="travel-gallery-section">
+                            <h3>📸 Galleria Fotografica (<?php echo count($gallery_images); ?> foto)</h3>
+                            <div class="travel-gallery-grid">
+                                <?php foreach ($gallery_images as $image) : ?>
+                                    <div class="gallery-item" data-image-id="<?php echo $image['id']; ?>">
+                                        <img src="<?php echo esc_url($image['medium']); ?>"
+                                             alt="<?php echo esc_attr($image['alt'] ?: 'Foto di attività'); ?>"
+                                             data-full="<?php echo esc_url($image['full']); ?>">
+                                        <div class="gallery-item-overlay">
+                                            <button class="gallery-view-btn" data-full-url="<?php echo esc_url($image['full']); ?>">
+                                                <span>🔍</span> Visualizza
+                                            </button>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <?php if ($is_organizer) : ?>
+                                <div class="gallery-manage-link">
+                                    <a href="#" id="manage-gallery-btn" class="btn btn-secondary">
+                                        <span>📷</span> Gestisci Galleria
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php elseif ($is_organizer) : ?>
+                        <div class="travel-gallery-section empty">
+                            <div class="gallery-empty-state">
+                                <p>📷 Nessuna foto ancora. Aggiungi foto per far vedere la bellezza di questo annuncio!</p>
+                                <a href="#" id="add-first-photo-btn" class="btn btn-primary">
+                                    Aggiungi Prime Foto
+                                </a>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Travel Map -->
+                    <?php
+                    // Only show map section if coordinates exist
+                    $map_coords = CDV_Travel_Maps::get_activity_coordinates($activity_id);
+                    if ($map_coords && isset($map_coords['lat']) && isset($map_coords['lon'])) :
+                    ?>
+                        <div class="travel-map-section">
+                            <h3>📍 Posizione</h3>
+                            <?php echo CDV_Travel_Maps::get_map_html($activity_id, '450px'); ?>
+                            <?php
+                            $map_destination = get_post_meta($activity_id, 'cdv_destination', true);
+                            $map_country = get_post_meta($activity_id, 'cdv_country', true);
+                            if ($map_destination || $map_country) :
+                            ?>
+                                <p class="map-location-text">
+                                    <strong>Luogo:</strong> <?php echo esc_html($map_destination); ?><?php echo $map_country ? ', ' . esc_html($map_country) : ''; ?>
+                                </p>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Participants Section -->
+                    <?php if (!empty($participants)) : ?>
+                        <div class="participants-section">
+                            <h3>Partecipanti (<?php echo count($participants); ?>)</h3>
+                            <div class="participants-grid">
+                                <!-- Organizer First -->
+                                <div class="participant-card-wrapper">
+                                    <a href="<?php echo esc_url(CDV_User_Profiles::get_profile_url($author_id)); ?>" class="participant-card organizer">
+                                        <?php echo get_avatar($author_id, 80); ?>
+                                        <div class="participant-info">
+                                            <div class="participant-name">
+                                                <?php echo esc_html(get_the_author_meta('user_login', $author_id)); ?>
+                                                <span class="organizer-badge">Organizzatore</span>
+                                            </div>
+                                            <?php
+                                            $reputation = get_user_meta($author_id, 'cdv_reputation_score', true);
+                                            if ($reputation) {
+                                                cdv_display_stars($reputation);
+                                            }
+                                            ?>
+                                        </div>
+                                    </a>
+                                    <?php if (is_user_logged_in() && get_current_user_id() != $author_id && ($is_participant || $is_organizer)) : ?>
+                                        <a href="<?php echo home_url('/dashboard?tab=messages&user_id=' . $author_id . '&activity_id=' . $activity_id); ?>" class="btn btn-sm btn-primary participant-message-btn">
+                                            Invia Messaggio
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+
+                                <!-- Other Participants -->
+                                <?php foreach ($participants as $participant) :
+                                    $user = get_user_by('id', $participant->user_id);
+                                    $reputation = get_user_meta($user->ID, 'cdv_reputation_score', true);
+                                    ?>
+                                    <div class="participant-card-wrapper">
+                                        <a href="<?php echo esc_url(CDV_User_Profiles::get_profile_url($user->ID)); ?>" class="participant-card">
+                                            <?php echo get_avatar($user->ID, 80); ?>
+                                            <div class="participant-info">
+                                                <div class="participant-name"><?php echo esc_html($user->user_login); ?></div>
+                                                <?php if ($reputation) {
+                                                    cdv_display_stars($reputation);
+                                                } ?>
+                                            </div>
+                                        </a>
+                                        <div class="participant-actions">
+                                            <?php if (is_user_logged_in() && get_current_user_id() != $user->ID && ($is_participant || $is_organizer)) : ?>
+                                                <a href="<?php echo home_url('/dashboard?tab=messages&user_id=' . $user->ID . '&activity_id=' . $activity_id); ?>" class="btn btn-sm btn-primary participant-message-btn">
+                                                    Invia Messaggio
+                                                </a>
+                                            <?php endif; ?>
+
+                                            <?php if ($is_organizer) : ?>
+                                                <button class="btn btn-sm btn-danger btn-remove-participant"
+                                                        data-travel-id="<?php echo $activity_id; ?>"
+                                                        data-user-id="<?php echo $user->ID; ?>"
+                                                        data-user-name="<?php echo esc_attr($user->user_login); ?>">
+                                                    Rimuovi
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Group Chat (only for participants and organizer) -->
+                    <?php if (is_user_logged_in() && ($is_participant || $is_organizer)) : ?>
+                        <div class="group-chat-section">
+                            <div class="group-chat-header">
+                                <h3>Chat di Gruppo</h3>
+                                <span class="participants-count" id="chat-participants-count">
+                                    <?php echo count($participants) + 1; ?> partecipanti
+                                </span>
+                            </div>
+
+                            <div class="group-chat-container">
+                                <div class="group-chat-messages" id="group-chat-messages">
+                                    <div class="loading-indicator">Caricamento messaggi...</div>
+                                </div>
+
+                                <div class="group-chat-input">
+                                    <textarea
+                                        id="group-message-input"
+                                        placeholder="Scrivi un messaggio al gruppo..."
+                                        rows="2"
+                                    ></textarea>
+                                    <button id="send-group-message" class="btn btn-primary">
+                                        <span class="button-text">Invia</span>
+                                        <span class="button-loading" style="display: none;">...</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Pending Requests (only for organizer) -->
+                    <?php if ($is_organizer && !empty($pending_requests)) : ?>
+                        <div class="pending-requests-section">
+                            <h3>Richieste in Attesa (<?php echo count($pending_requests); ?>)</h3>
+                            <div class="requests-list">
+                                <?php foreach ($pending_requests as $request) :
+                                    $user = get_user_by('id', $request->user_id);
+                                    ?>
+                                    <div class="request-card" data-user-id="<?php echo $user->ID; ?>">
+                                        <?php echo get_avatar($user->ID, 60); ?>
+                                        <div class="request-info">
+                                            <div class="request-name"><?php echo esc_html($user->user_login); ?></div>
+                                            <?php if ($request->message) : ?>
+                                                <div class="request-message"><?php echo esc_html($request->message); ?></div>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="request-actions">
+                                            <button class="btn-success btn-accept" data-travel-id="<?php echo $activity_id; ?>" data-user-id="<?php echo $user->ID; ?>">
+                                                Accetta
+                                            </button>
+                                            <button class="btn-danger btn-reject" data-travel-id="<?php echo $activity_id; ?>" data-user-id="<?php echo $user->ID; ?>">
+                                                Rifiuta
+                                            </button>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </article>
+
+                <!-- Sidebar -->
+                <aside class="travel-sidebar">
+                    <!-- Organizer Card -->
+                    <div class="sidebar-card organizer-card">
+                        <h3>Organizzatore</h3>
+                        <?php
+                        $verified = get_user_meta($author_id, 'cdv_verified', true);
+                        $reputation = get_user_meta($author_id, 'cdv_reputation_score', true);
+                        $bio = get_user_meta($author_id, 'cdv_bio', true);
+                        ?>
+                        <a href="<?php echo esc_url(CDV_User_Profiles::get_profile_url($author_id)); ?>" class="organizer-profile">
+                            <?php echo get_avatar($author_id, 100); ?>
+                            <div class="organizer-name">
+                                <?php echo esc_html(get_the_author_meta('user_login', $author_id)); ?>
+                                <?php if ($verified === '1') : ?>
+                                    <span class="verified-badge" title="Verificato">✓</span>
+                                <?php endif; ?>
+                            </div>
+                            <?php if ($reputation) {
+                                cdv_display_stars($reputation);
+                            } ?>
+                            <?php if ($bio) : ?>
+                                <p class="organizer-bio"><?php echo esc_html($bio); ?></p>
+                            <?php endif; ?>
+                        </a>
+                    </div>
+
+                    <!-- Wishlist Card -->
+                    <div class="sidebar-card wishlist-card">
+                        <?php echo CDV_Wishlist::get_wishlist_button_html($activity_id, 'btn btn-secondary wishlist-toggle-btn'); ?>
+                        <p class="wishlist-help-text">Salva questo annuncio per dopo</p>
+                    </div>
+
+                    <!-- Join Card -->
+                    <?php if (is_user_logged_in()) : ?>
+                        <?php if ($is_organizer) : ?>
+                            <div class="sidebar-card">
+                                <p><strong>Questo è il tuo annuncio!</strong></p>
+                                <a href="<?php echo home_url('/modifica-attivita/?activity_id=' . $activity_id); ?>" class="btn-primary" style="width: 100%; text-align: center;">
+                                    Modifica Annuncio
+                                </a>
+                            </div>
+                        <?php elseif ($is_participant) : ?>
+                            <div class="sidebar-card success-card">
+                                <p><strong>✓ Sei un partecipante</strong></p>
+                                <p>Hai accesso alla chat di gruppo</p>
+                                <button id="leave-travel-btn" class="btn-danger" style="width: 100%; margin-top: 1rem;"
+                                        data-travel-id="<?php echo $activity_id; ?>">
+                                    Lascia l'Annuncio
+                                </button>
+                            </div>
+                        <?php elseif ($has_requested) : ?>
+                            <div class="sidebar-card warning-card">
+                                <p><strong>⏳ Richiesta in attesa</strong></p>
+                                <p>La tua richiesta è in attesa di approvazione</p>
+                            </div>
+                        <?php else : ?>
+                            <div class="sidebar-card join-card">
+                                <h3>Partecipa all'Annuncio</h3>
+                                <form id="join-travel-form">
+                                    <div class="form-group">
+                                        <label for="join-message">Messaggio per l'organizzatore</label>
+                                        <textarea id="join-message" rows="4" placeholder="Presentati e spiega perché vuoi unirti..."></textarea>
+                                    </div>
+                                    <button type="submit" class="btn-primary" style="width: 100%;">
+                                        Richiedi di Partecipare
+                                    </button>
+                                </form>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Contact Organizer Form - Available to all logged users -->
+                        <?php if (is_user_logged_in() && !$is_organizer) : ?>
+                            <div class="sidebar-card contact-card">
+                                <h3>💬 Chiedi Informazioni</h3>
+                                <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">Hai domande? Contatta l'organizzatore</p>
+                                <form id="contact-organizer-form">
+                                    <div class="form-group">
+                                        <label for="contact-message">Il tuo messaggio</label>
+                                        <textarea id="contact-message" rows="4" placeholder="Scrivi la tua domanda o richiesta di informazioni..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn-secondary" style="width: 100%;">
+                                        Invia Messaggio
+                                    </button>
+                                </form>
+                            </div>
+                        <?php endif; ?>
+                    <?php else : ?>
+                        <div class="sidebar-card">
+                            <h3>Vuoi partecipare?</h3>
+                            <p>Accedi o registrati per unirti a questo annuncio</p>
+                            <a href="<?php echo wp_login_url(get_permalink()); ?>" class="btn-primary" style="width: 100%; text-align: center; margin-bottom: 10px;">
+                                Accedi
+                            </a>
+                            <a href="<?php echo wp_registration_url(); ?>" class="btn-secondary" style="width: 100%; text-align: center;">
+                                Registrati
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                </aside>
+            </div>
+        </div>
+
+        <!-- Gallery Lightbox -->
+        <div id="gallery-lightbox" class="gallery-lightbox">
+            <div class="gallery-lightbox-content">
+                <button class="gallery-lightbox-close">&times;</button>
+                <img id="gallery-lightbox-image" class="gallery-lightbox-image" src="" alt="">
+            </div>
+        </div>
+    </main>
+
 
     <script>
     jQuery(document).ready(function($) {
