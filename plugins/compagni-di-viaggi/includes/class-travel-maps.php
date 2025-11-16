@@ -27,7 +27,7 @@ class CDV_Travel_Maps {
      */
     public static function enqueue_scripts() {
         // Enqueue on single travel pages, travel creation pages, and calendar
-        if (is_singular('viaggio') || is_page(array('crea-viaggio', 'registrazione', 'dashboard', 'calendario-viaggi')) || is_post_type_archive('viaggio')) {
+        if (is_singular(array('viaggio', 'attivita')) || is_page(array('crea-viaggio', 'crea-attivita', 'modifica-attivita', 'registrazione', 'dashboard', 'calendario-viaggi')) || is_post_type_archive(array('viaggio', 'attivita'))) {
             // Leaflet CSS
             wp_enqueue_style(
                 'leaflet',

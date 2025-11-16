@@ -1186,7 +1186,7 @@ while (have_posts()) : the_post();
                     <!-- Travel Map -->
                     <?php
                     // Only show map section if coordinates exist
-                    $map_coords = CDV_Travel_Maps::get_activity_coordinates($activity_id);
+                    $map_coords = CDV_Travel_Maps::get_travel_coordinates($activity_id);
                     if ($map_coords && isset($map_coords['lat']) && isset($map_coords['lon'])) :
                     ?>
                         <div class="travel-map-section">
