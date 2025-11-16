@@ -20,7 +20,7 @@ class CDV_Database {
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
         // Table: travel_participants
-        $table_participants = $wpdb->prefix . 'cdv_travel_participants';
+        $table_participants = $wpdb->prefix . 'cdv_participants';
         $sql_participants = "CREATE TABLE IF NOT EXISTS $table_participants (
             id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             travel_id bigint(20) UNSIGNED NOT NULL,
@@ -39,7 +39,7 @@ class CDV_Database {
         dbDelta($sql_participants);
 
         // Table: travel_group_messages
-        $table_group_messages = $wpdb->prefix . 'cdv_travel_group_messages';
+        $table_group_messages = $wpdb->prefix . 'cdv_group_messages';
         $sql_group_messages = "CREATE TABLE IF NOT EXISTS $table_group_messages (
             id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             travel_id bigint(20) UNSIGNED NOT NULL,

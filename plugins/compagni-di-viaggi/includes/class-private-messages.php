@@ -89,7 +89,7 @@ class CDV_Private_Messages {
         $organizer_id = $travel->post_author;
 
         // Check if they are both participants or have pending request
-        $participants_table = $wpdb->prefix . 'cdv_travel_participants';
+        $participants_table = $wpdb->prefix . 'cdv_participants';
 
         $sender_participant = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM $participants_table

@@ -96,16 +96,16 @@ class CDV_Performance {
                 'check_query' => "SHOW INDEX FROM {$wpdb->prefix}cdv_participants WHERE Key_name = 'status_idx'"
             ),
             array(
-                'table' => $wpdb->prefix . 'cdv_messages',
+                'table' => $wpdb->prefix . 'cdv_private_messages',
                 'index' => 'recipient_read_idx',
                 'columns' => '(recipient_id, is_read)',
-                'check_query' => "SHOW INDEX FROM {$wpdb->prefix}cdv_messages WHERE Key_name = 'recipient_read_idx'"
+                'check_query' => "SHOW INDEX FROM {$wpdb->prefix}cdv_private_messages WHERE Key_name = 'recipient_read_idx'"
             ),
             array(
-                'table' => $wpdb->prefix . 'cdv_messages',
+                'table' => $wpdb->prefix . 'cdv_private_messages',
                 'index' => 'sent_at_idx',
                 'columns' => '(sent_at)',
-                'check_query' => "SHOW INDEX FROM {$wpdb->prefix}cdv_messages WHERE Key_name = 'sent_at_idx'"
+                'check_query' => "SHOW INDEX FROM {$wpdb->prefix}cdv_private_messages WHERE Key_name = 'sent_at_idx'"
             ),
             array(
                 'table' => $wpdb->prefix . 'cdv_reviews',
