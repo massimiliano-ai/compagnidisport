@@ -47,7 +47,7 @@ class CDV_Admin {
         );
 
         // Pending travels submenu
-        $pending_travels = CDV_Activity_Moderation::get_pending_travels_count();
+        $pending_travels = CDV_Travel_Moderation::get_pending_travels_count();
         $travels_badge = $pending_travels > 0 ? ' <span class="awaiting-mod">' . $pending_travels . '</span>' : '';
 
         add_submenu_page(
@@ -754,7 +754,7 @@ class CDV_Admin {
             $activity_id = intval($_POST['activity_id']);
             check_admin_referer('cdv_approve_travel_' . $activity_id);
 
-            CDV_Activity_Moderation::approve_travel($activity_id);
+            CDV_Travel_Moderation::approve_travel($activity_id);
             wp_redirect(add_query_arg('approved', '1', admin_url('admin.php?page=cdv-pending-travels')));
             exit;
         }
@@ -763,7 +763,7 @@ class CDV_Admin {
             $activity_id = intval($_POST['activity_id']);
             check_admin_referer('cdv_approve_travel_' . $activity_id);
 
-            CDV_Activity_Moderation::reject_travel($activity_id, 'Contenuto non conforme alle linee guida');
+            CDV_Travel_Moderation::reject_travel($activity_id, 'Contenuto non conforme alle linee guida');
             wp_redirect(add_query_arg('rejected', '1', admin_url('admin.php?page=cdv-pending-travels')));
             exit;
         }
