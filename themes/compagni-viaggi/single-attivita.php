@@ -261,7 +261,7 @@ while (have_posts()) : the_post();
             background: linear-gradient(135deg, #f0f4f8 0%, #ffffff 100%);
             border: 3px solid #315362;
             border-radius: 16px;
-            padding: calc(var(--spacing-unit) * 5);
+            padding: calc(var(--spacing-unit) * 3);
             margin: calc(var(--spacing-unit) * 4) 0;
             box-shadow: 0 8px 30px rgba(49, 83, 98, 0.15);
             transition: all 0.3s ease;
@@ -274,11 +274,11 @@ while (have_posts()) : the_post();
 
         .travel-details-box-top h3 {
             font-family: 'Montserrat', sans-serif;
-            margin: 0 0 calc(var(--spacing-unit) * 4) 0;
-            font-size: 1.7rem;
+            margin: 0 0 calc(var(--spacing-unit) * 2.5) 0;
+            font-size: 1.5rem;
             font-weight: 700;
             color: #315362;
-            padding-bottom: calc(var(--spacing-unit) * 2);
+            padding-bottom: calc(var(--spacing-unit) * 1.5);
             border-bottom: 3px solid #ef7b3c;
             position: relative;
         }
@@ -295,18 +295,18 @@ while (have_posts()) : the_post();
 
         .travel-details-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: calc(var(--spacing-unit) * 2.5);
+            grid-template-columns: repeat(3, 1fr);
+            gap: calc(var(--spacing-unit) * 1.5);
         }
 
         .detail-item {
             display: flex;
             flex-direction: column;
-            gap: calc(var(--spacing-unit) * 0.8);
-            padding: calc(var(--spacing-unit) * 2);
+            gap: calc(var(--spacing-unit) * 0.5);
+            padding: calc(var(--spacing-unit) * 1.5);
             background: white;
-            border-radius: 10px;
-            border-left: 4px solid #ef7b3c;
+            border-radius: 8px;
+            border-left: 3px solid #ef7b3c;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             transition: all 0.3s ease;
         }
@@ -320,7 +320,7 @@ while (have_posts()) : the_post();
         .detail-item strong {
             font-family: 'Montserrat', sans-serif;
             color: #315362;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 600;
             display: block;
             letter-spacing: 0.3px;
@@ -328,7 +328,7 @@ while (have_posts()) : the_post();
 
         .detail-item span {
             color: #4a5568;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
         }
 
@@ -350,16 +350,21 @@ while (have_posts()) : the_post();
             line-height: 1.7;
             color: #6b5100;
         }
+        @media (max-width: 1024px) {
+            .travel-details-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
         @media (max-width: 768px) {
             .travel-details-grid {
                 grid-template-columns: 1fr;
             }
             .travel-details-box-top {
-                padding: calc(var(--spacing-unit) * 3);
+                padding: calc(var(--spacing-unit) * 2);
                 margin: calc(var(--spacing-unit) * 3) 0;
             }
             .travel-details-box-top h3 {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
             }
         }
         .participants-section,
