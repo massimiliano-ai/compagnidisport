@@ -20,9 +20,9 @@ $user_approved = get_user_meta($current_user->ID, 'cdv_user_approved', true);
 //     exit;
 // }
 
-// Query viaggi organizzati dall'utente
+// Query attività organizzate dall'utente
 $my_travels = new WP_Query(array(
-    'post_type' => 'viaggio',
+    'post_type' => 'attivita',
     'author' => $current_user->ID,
     'post_status' => array('publish', 'pending', 'draft'),
     'posts_per_page' => -1,
@@ -30,12 +30,12 @@ $my_travels = new WP_Query(array(
     'order' => 'DESC',
 ));
 
-// Count user's travels for statistics tab visibility
+// Count user's activities for statistics tab visibility
 $user_travels_count = $my_travels->post_count;
 
-// Query viaggi a cui partecipo
+// Query attività a cui partecipo
 global $wpdb;
-$participants_table = $wpdb->prefix . 'cdv_travel_participants';
+$participants_table = $wpdb->prefix . 'cdv_participants';
 $participated_ids = $wpdb->get_col($wpdb->prepare(
     "SELECT travel_id FROM $participants_table WHERE user_id = %d AND status = 'accepted'",
     $current_user->ID
@@ -44,7 +44,7 @@ $participated_ids = $wpdb->get_col($wpdb->prepare(
 $participated_travels = null;
 if (!empty($participated_ids)) {
     $participated_travels = new WP_Query(array(
-        'post_type' => 'viaggio',
+        'post_type' => 'attivita',
         'post__in' => $participated_ids,
         'post_status' => 'publish',
         'posts_per_page' => -1,
@@ -73,9 +73,9 @@ $my_pending_requests = $wpdb->get_results($wpdb->prepare(
     $current_user->ID
 ));
 
-// Query racconti dell'utente
+// Query storie sportive dell'utente
 $my_stories = new WP_Query(array(
-    'post_type' => 'racconto',
+    'post_type' => 'storia-sport',
     'author' => $current_user->ID,
     'post_status' => 'publish',
     'posts_per_page' => -1,
@@ -181,12 +181,12 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
             <button class="tab-button" data-tab="settings">Impostazioni</button>
         </div>
 
-        <!-- Tab: I Miei Viaggi -->
+        <!-- Tab: Le Mie Attività -->
         <div class="tab-content active" id="tab-my-travels">
             <div class="section-header">
-                <h2>I Miei Viaggi</h2>
-                <a href="<?php echo esc_url(home_url('/crea-viaggio')); ?>" class="btn btn-primary" id="btn-new-travel">
-                    <i class="icon-plus"></i> Nuovo Viaggio
+                <h2>Le Mie Attività</h2>
+                <a href="<?php echo esc_url(home_url('/crea-attivita')); ?>" class="btn btn-primary" id="btn-new-travel">
+                    <i class="icon-plus"></i> Nuova Attività
                 </a>
             </div>
 
@@ -198,7 +198,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                         $participants = CDV_Participants::get_participants($travel_id, 'accepted');
                         $pending = CDV_Participants::get_participants($travel_id, 'pending');
                         $max_participants = get_post_meta($travel_id, 'cdv_max_participants', true);
-                        $travel_status = get_post_meta($travel_id, 'cdv_travel_status', true);
+                        $travel_status = get_post_meta($travel_id, 'cdv_activity_status', true);
                         $post_status = get_post_status();
                         ?>
                         <div class="travel-item" data-travel-id="<?php echo $travel_id; ?>">
@@ -260,7 +260,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                     <?php wp_reset_postdata(); ?>
                 </div>
             <?php else : ?>
-                <p class="no-content">Non hai ancora creato nessun viaggio. <a href="<?php echo esc_url(home_url('/crea-viaggio')); ?>" id="link-new-travel">Crea il tuo primo viaggio!</a></p>
+                <p class="no-content">Non hai ancora creato nessuna attività. <a href="<?php echo esc_url(home_url('/crea-attivita')); ?>" id="link-new-travel">Crea la tua prima attività!</a></p>
             <?php endif; ?>
         </div>
 
@@ -365,21 +365,21 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
             <?php if ($participated_travels && $participated_travels->have_posts()) : ?>
                 <div class="travels-grid">
                     <?php while ($participated_travels->have_posts()) : $participated_travels->the_post(); ?>
-                        <?php get_template_part('template-parts/content', 'travel-card'); ?>
+                        <?php get_template_part('template-parts/content', 'activity-card'); ?>
                     <?php endwhile; ?>
                     <?php wp_reset_postdata(); ?>
                 </div>
             <?php else : ?>
-                <p class="no-content">Non stai partecipando a nessun viaggio. <a href="<?php echo get_post_type_archive_link('viaggio'); ?>">Cerca un viaggio!</a></p>
+                <p class="no-content">Non stai partecipando a nessuna attività. <a href="<?php echo get_post_type_archive_link('attivita'); ?>">Cerca un'attività!</a></p>
             <?php endif; ?>
         </div>
 
-        <!-- Tab: I Miei Racconti -->
+        <!-- Tab: Le Mie Storie -->
         <div class="tab-content" id="tab-my-stories">
             <div class="section-header">
-                <h2>I Miei Racconti</h2>
-                <a href="<?php echo esc_url(home_url('/racconta-viaggio')); ?>" class="btn btn-primary">
-                    <i class="icon-plus"></i> Nuovo Racconto
+                <h2>Le Mie Storie Sportive</h2>
+                <a href="<?php echo esc_url(home_url('/racconta-sport')); ?>" class="btn btn-primary">
+                    <i class="icon-plus"></i> Nuova Storia
                 </a>
             </div>
 
@@ -413,7 +413,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                                 </div>
 
                                 <div class="story-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                                    <a href="<?php echo esc_url(add_query_arg('story_id', get_the_ID(), home_url('/racconta-viaggio'))); ?>" class="btn btn-secondary btn-sm">
+                                    <a href="<?php echo esc_url(add_query_arg('story_id', get_the_ID(), home_url('/racconta-sport'))); ?>" class="btn btn-secondary btn-sm">
                                         Modifica
                                     </a>
                                     <a href="<?php the_permalink(); ?>" class="btn btn-secondary btn-sm" target="_blank">
@@ -428,7 +428,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
             <?php else : ?>
                 <div class="no-content">
                     <p>Non hai ancora pubblicato nessun racconto.</p>
-                    <a href="<?php echo esc_url(home_url('/racconta-viaggio')); ?>" class="btn btn-primary" style="margin-top: 1rem;">
+                    <a href="<?php echo esc_url(home_url('/racconta-sport')); ?>" class="btn btn-primary" style="margin-top: 1rem;">
                         Racconta il Tuo Primo Viaggio
                     </a>
                 </div>
@@ -727,7 +727,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                     <h3>La tua wishlist è vuota</h3>
                     <p>Non hai ancora salvato nessun viaggio nella tua wishlist.</p>
                     <p>Esplora i viaggi disponibili e salva quelli che ti interessano per trovarli facilmente!</p>
-                    <a href="<?php echo get_post_type_archive_link('viaggio'); ?>" class="btn btn-primary">
+                    <a href="<?php echo get_post_type_archive_link('attivita'); ?>" class="btn btn-primary">
                         Esplora Viaggi
                     </a>
                 </div>
@@ -3430,7 +3430,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Wishlist remove button handler
-    const travelsArchiveUrl = '<?php echo esc_js(get_post_type_archive_link('viaggio')); ?>';
+    const travelsArchiveUrl = '<?php echo esc_js(get_post_type_archive_link('attivita')); ?>';
 
     document.addEventListener('click', function(e) {
         if (e.target.closest('.wishlist-remove-btn')) {
