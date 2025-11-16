@@ -74,6 +74,9 @@ class CDV_User_Roles {
                     'create_viaggi' => true,
                     'edit_own_viaggi' => true,
                     'delete_own_viaggi' => true,
+                    'create_attivita' => true,
+                    'edit_own_attivita' => true,
+                    'delete_own_attivita' => true,
                     'join_viaggi' => true,
                     'use_chat' => true,
                     'leave_reviews' => true,
@@ -100,6 +103,9 @@ class CDV_User_Roles {
             $admin_role->add_cap('create_viaggi');
             $admin_role->add_cap('edit_own_viaggi');
             $admin_role->add_cap('delete_own_viaggi');
+            $admin_role->add_cap('create_attivita');
+            $admin_role->add_cap('edit_own_attivita');
+            $admin_role->add_cap('delete_own_attivita');
             $admin_role->add_cap('join_viaggi');
             $admin_role->add_cap('use_chat');
             $admin_role->add_cap('leave_reviews');
