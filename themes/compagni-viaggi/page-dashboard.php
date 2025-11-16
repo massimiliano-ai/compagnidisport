@@ -99,7 +99,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
         <div class="dashboard-header">
             <div>
                 <h1>Benvenuto, <?php echo esc_html($current_user->user_login); ?>!</h1>
-                <p>Gestisci i tuoi viaggi e le richieste di partecipazione</p>
+                <p>Gestisci le tue attività e le richieste di partecipazione</p>
             </div>
             <a href="<?php echo CDV_User_Profiles::get_profile_url($current_user->ID); ?>" class="btn btn-secondary">
                 Vedi Profilo Pubblico
@@ -114,13 +114,13 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                 <span></span>
                 <span></span>
             </span>
-            <span class="current-tab-label">I Miei Viaggi</span>
+            <span class="current-tab-label">Le Mie Attività</span>
             <span class="dropdown-arrow">▼</span>
         </button>
 
         <div class="dashboard-tabs" id="dashboard-tabs">
             <button class="tab-button active" data-tab="my-travels">
-                I Miei Viaggi (<?php echo $my_travels->post_count; ?>)
+                Le Mie Attività (<?php echo $my_travels->post_count; ?>)
             </button>
             <button class="tab-button" data-tab="requests">
                 Richieste di Partecipazione
@@ -284,7 +284,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                                                 <?php echo esc_html($request->organizer_name); ?>
                                             </a>
                                         </h4>
-                                        <p class="request-travel">Viaggio: <strong><?php echo esc_html($request->post_title); ?></strong></p>
+                                        <p class="request-travel">Attività: <strong><?php echo esc_html($request->post_title); ?></strong></p>
                                         <p class="request-date">
                                             <i class="icon-clock"></i>
                                             Inviata <?php echo human_time_diff(strtotime($request->requested_at), current_time('timestamp')); ?> fa
@@ -324,7 +324,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                                                 <?php echo esc_html($request->user_login); ?>
                                             </a>
                                         </h4>
-                                        <p class="request-travel">Viaggio: <strong><?php echo esc_html($request->post_title); ?></strong></p>
+                                        <p class="request-travel">Attività: <strong><?php echo esc_html($request->post_title); ?></strong></p>
                                         <p class="request-date">
                                             <i class="icon-clock"></i>
                                             <?php echo human_time_diff(strtotime($request->requested_at), current_time('timestamp')); ?> fa
@@ -429,7 +429,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                 <div class="no-content">
                     <p>Non hai ancora pubblicato nessun racconto.</p>
                     <a href="<?php echo esc_url(home_url('/racconta-sport')); ?>" class="btn btn-primary" style="margin-top: 1rem;">
-                        Racconta il Tuo Primo Viaggio
+                        Racconta la Tua Prima Attività
                     </a>
                 </div>
             <?php endif; ?>
@@ -487,7 +487,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                 <div class="reviews-section">
                     <div class="section-header">
                         <h3>Recensioni da Lasciare (<?php echo $pending_reviews_count; ?>)</h3>
-                        <p style="color: #6c757d; margin: 10px 0;">Lascia una recensione per i compagni di viaggio dei tuoi viaggi completati.</p>
+                        <p style="color: #6c757d; margin: 10px 0;">Lascia una recensione per i compagni delle tue attività completate.</p>
                     </div>
 
                     <div class="pending-reviews-list">
@@ -536,7 +536,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
             <?php else : ?>
                 <div class="empty-state">
                     <p>✅ Non hai recensioni in sospeso!</p>
-                    <p style="color: #6c757d;">Le recensioni da lasciare appariranno qui dopo aver completato un viaggio.</p>
+                    <p style="color: #6c757d;">Le recensioni da lasciare appariranno qui dopo aver completato un'attività.</p>
                 </div>
             <?php endif; ?>
 
@@ -646,7 +646,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
         <div class="tab-content" id="tab-wishlist">
             <div class="section-header">
                 <h2>💝 La Mia Wishlist</h2>
-                <p>I viaggi che hai salvato per dopo</p>
+                <p>Le attività che hai salvato per dopo</p>
             </div>
 
             <?php
@@ -725,10 +725,10 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                 <div class="empty-state">
                     <span class="empty-icon">💝</span>
                     <h3>La tua wishlist è vuota</h3>
-                    <p>Non hai ancora salvato nessun viaggio nella tua wishlist.</p>
-                    <p>Esplora i viaggi disponibili e salva quelli che ti interessano per trovarli facilmente!</p>
+                    <p>Non hai ancora salvato nessuna attività nella tua wishlist.</p>
+                    <p>Esplora le attività disponibili e salva quelle che ti interessano per trovarle facilmente!</p>
                     <a href="<?php echo get_post_type_archive_link('attivita'); ?>" class="btn btn-primary">
-                        Esplora Viaggi
+                        Esplora Attività
                     </a>
                 </div>
             <?php endif; ?>
@@ -797,7 +797,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
                     <div class="reward-item">
                         <span class="reward-icon">🎁</span>
                         <div class="reward-details">
-                            <h4>L'Amico Partecipa a un Viaggio</h4>
+                            <h4>L'Amico Partecipa a un'Attività</h4>
                             <p>Quando completa la sua prima partecipazione, guadagni altri 30 punti!</p>
                         </div>
                     </div>
@@ -824,7 +824,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
         <div class="tab-content" id="tab-statistics">
             <div class="section-header">
                 <h2>📊 Le Tue Statistiche</h2>
-                <p>Analisi dettagliata delle performance dei tuoi viaggi</p>
+                <p>Analisi dettagliata delle performance delle tue attività</p>
             </div>
 
             <div class="stats-loading-container">
@@ -935,7 +935,7 @@ $received_reviews = CDV_Reviews::get_user_reviews($current_user->ID, 20);
             <!-- Delete Account -->
             <div class="settings-section danger-zone">
                 <h3>Zona Pericolosa</h3>
-                <p><strong>Elimina Account</strong> - Questa azione è irreversibile. Tutti i tuoi dati, viaggi e messaggi saranno eliminati permanentemente.</p>
+                <p><strong>Elimina Account</strong> - Questa azione è irreversibile. Tutti i tuoi dati, attività e messaggi saranno eliminati permanentemente.</p>
                 <button type="button" class="btn btn-danger" id="delete-account-btn">Elimina Account</button>
             </div>
         </div>
@@ -3491,7 +3491,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 wishlistContent.innerHTML = `
                                     <div class="section-header">
                                         <h2>💝 La Mia Wishlist</h2>
-                                        <p>I viaggi che hai salvato per dopo</p>
+                                        <p>Le attività che hai salvato per dopo</p>
                                     </div>
                                     <div class="empty-state">
                                         <span class="empty-icon">💝</span>
